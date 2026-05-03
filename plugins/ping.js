@@ -1,6 +1,6 @@
 module.exports = {
     name: 'ping',
-    alias: ['p'],
+    command: ['p'],
     category: 'main',
     desc: 'Check bot response speed',
     async run(DinzBotz, m, { speed, runtime }) {

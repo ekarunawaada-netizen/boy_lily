@@ -3,7 +3,7 @@ const fs = require('fs');
 
 module.exports = {
     name: 'hentaivid',
-    alias: ['hentaivid2', 'hentaivideo', 'trap', 'hneko', 'nwaifu', 'milf', 'yuri', 'zettai'],
+    command: ['hentaivid2', 'hentaivideo', 'trap', 'hneko', 'nwaifu', 'milf', 'yuri', 'zettai'],
     category: 'nsfw',
     desc: 'NSFW Content',
     async run(DinzBotz, m, { command, isPrem, mess, replyprem, replyviex, pickRandom }) {

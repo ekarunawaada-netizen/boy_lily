@@ -2,7 +2,7 @@ const axios = require('axios');
 
 module.exports = {
     name: 'anime',
-    alias: ['wibu', 'husbu', 'waifu'],
+    command: ['wibu', 'husbu', 'waifu'],
     category: 'anime',
     desc: 'Fitur untuk mencari gambar atau info anime',
     async run(DinzBotz, m, { command, mess, replyviex }) {

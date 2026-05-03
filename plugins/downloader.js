@@ -3,7 +3,7 @@ const { prepareWAMessageMedia, generateWAMessageFromContent, proto } = require('
 
 module.exports = {
     name: 'tiktok',
-    alias: ['tt', 'tiktokdl', 'igdl', 'igvideo', 'igimage', 'igvid', 'igimg'],
+    command: ['tt', 'tiktokdl', 'igdl', 'igvideo', 'igimage', 'igvid', 'igimg'],
     category: 'downloader',
     desc: 'Download media dari Tiktok dan Instagram',
     async run(DinzBotz, m, { command, args, text, q, prefix, mess, replyviex }) {
