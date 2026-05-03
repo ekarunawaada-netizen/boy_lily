@@ -1,5 +1,5 @@
 {
-  "name": "Furina-MD",
+  "name": "Lily-MD",
   "version": "0.14.0",
   "description": "Automated whatsapp md bot created using nodejs and baileys lib",
   "main": "index.js",
@@ -8,9 +8,9 @@
     "start": "node index.js"
   },
   "keywords": [
-    "Yoimiya-MD"
+    "Lily-MD"
   ],
-  "author": "FallZx",
+  "author": "Kaaphiww",
   "license": "Vyl",
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",

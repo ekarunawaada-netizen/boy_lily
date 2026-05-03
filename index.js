@@ -65,8 +65,8 @@ const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 const question = (text) => new Promise((resolve) => rl.question(text, resolve))
 
-require('./Furina.js')
-nocache('../Furina.js', module => console.log(color('[ CHANGE ]', 'green'), color(`'${module}'`, 'green'), 'Updated'))
+require('./Lily.js')
+nocache('../Lily.js', module => console.log(color('[ CHANGE ]', 'green'), color(`'${module}'`, 'green'), 'Updated'))
 require('./index.js')
 nocache('../index.js', module => console.log(color('[ CHANGE ]', 'green'), color(`'${module}'`, 'green'), 'Updated'))
 
@@ -219,7 +219,7 @@ async function theFontaine() {
             if (!Lily.public && !kay.key.fromMe) return
             if (kay.key.id.startsWith('BAE5') && kay.key.id.length === 16) return
             const m = smsg(Lily, kay, store)
-            require('./Furina')(Lily, m, chatUpdate, store)
+            require('./Lily')(Lily, m, chatUpdate, store)
         } catch (err) {
             console.log(err)
         }
