@@ -1,5 +1,6 @@
 const chalk = require("chalk")
 const fs = require("fs")
+require('dotenv').config()
 //aumto presence update
 global.autoTyping = false //auto tying in gc (true to on, false to off)
 global.autoRecord = false //auto recording (true to on, false to off)
@@ -23,7 +24,7 @@ global.my = {
 global.delayJpm = 7000
 //=====================================//
 //=========UBAH BAGIAN THUMBNAIL MENU & ALLMENU==========//
-global.gif = fs.readFileSync('./data/image/yoimiya.mp4'),
+global.gif = './data/image/yoimiya.mp4' // Use path instead of buffer
     global.thumbnail = 'https://files.catbox.moe/yng1lr.jpg', //THUMB MENU KALIAN
     global.dinzmenu = 'https://files.catbox.moe/b0j8ps.jpg', //THUMB MENU button KALIAN
     /////////////////////////////////////////////////////////////////////////////////
@@ -103,8 +104,8 @@ global.emoji = [
     "🥺"
 ]
 //==================SETTING BOT===========================\\
-global.botname = "Lily | MD ✨" //NAMA BOT LU
-global.ownernumber = '6289523888644' //NOMOR LU
+global.botname = process.env.BOT_NAME || "Lily | MD ✨" //NAMA BOT LU
+global.ownernumber = process.env.OWNER_NUMBER || '6289523888644' //NOMOR LU
 global.botnumber = '628135339529' //NOMOR LU
 global.ownername = 'KaaPhiww | ᴅᴇᴠ' //NAMA LU
 global.idSaluran = "120363186130999681@newsletter"//ID SALURAN LU
@@ -112,7 +113,7 @@ global.idch = "120363186130999681@newsletter"//ID SALURAN LU
 global.chat = '120363186130999681@newsletter' // Ganti idch buat command .chat
 global.namaSaluran = "Lily Assistant • Bot WhatsApp" //Ganti sama nama saluran lu
 global.linkSaluran = "https://whatsapp.com/channel/0029Vb7WoIXJf05c6lVZxD2X"
-global.ownerNumber = ["6289523888644@s.whatsapp.net"] //NOMORLU
+global.ownerNumber = [`${process.env.OWNER_NUMBER || '6289523888644'}@s.whatsapp.net`] //NOMORLU
 global.ownerweb = ""//WEB LU//OPSIONAL
 global.websitex = ""//OPSIONAL
 global.wagc = "https://chat.whatsapp.com/KBeOpfm2Wyw62ImBHypEUx"
@@ -130,23 +131,23 @@ global.creator = "6289523888644@s.whatsapp.net"
 
 
 //================== CPANEL FITUR ==========================\\
-global.domain = 'https://go.viexshop.web.id' // Isi Domain Lu jangan kasih tanda / di akhir link
-global.apikey = 'ptla_T8FgpXYdNWqvBZOUdX4OsIGF68uiWYd11hn36BJXdLJ' // Isi Apikey Plta Lu
-global.capikey = 'ptlc_iJTCLZmhVrfrgYZ1BaceXC1hgotj5WfGhHxMvTK0DtS' // Isi Apikey Pltc Lu
+global.domain = process.env.DOMAIN || 'https://go.viexshop.web.id' // Isi Domain Lu jangan kasih tanda / di akhir link
+global.apikey = process.env.APIKEY || 'ptla_T8FgpXYdNWqvBZOUdX4OsIGF68uiWYd11hn36BJXdLJ' // Isi Apikey Plta Lu
+global.capikey = process.env.CAPIKEY || 'ptlc_iJTCLZmhVrfrgYZ1BaceXC1hgotj5WfGhHxMvTK0DtS' // Isi Apikey Pltc Lu
 /////////////////////////////////////////////////////////////////////////////////
 
 
 
 ///////////////////Server create panel egg pm2 ///////////////////////
-global.apikey2 = 'ptla_T8FgpXYdNWqvBZOUdX4OsIGF68uiWYd11hn36BJXdLJ' // Isi Apikey Plta Lu
-global.capikey2 = 'ptlc_iJTCLZmhVrfrgYZ1BaceXC1hgotj5WfGhHxMvTK0DtS' // Isi Apikey Pltc Lu
-global.domain2 = 'https://go.viexshop.web.id' // Isi Domain Lu
+global.apikey2 = process.env.APIKEY2 || 'ptla_T8FgpXYdNWqvBZOUdX4OsIGF68uiWYd11hn36BJXdLJ' // Isi Apikey Plta Lu
+global.capikey2 = process.env.CAPIKEY2 || 'ptlc_iJTCLZmhVrfrgYZ1BaceXC1hgotj5WfGhHxMvTK0DtS' // Isi Apikey Pltc Lu
+global.domain2 = process.env.DOMAIN2 || 'https://go.viexshop.web.id' // Isi Domain Lu
 global.docker2 = "ghcr.io/cekilpedia/vip:sanzubycekil" //jangan di ubah
 global.eggsnya2 = '15' // id eggs yang dipakai
 global.location2 = '1' // id location
 /////////////////////////////////////////////////////////////////////////////////
-global.domainotp = "https://claudeotp.com/api"
-global.apikeyotp = "a395f97fe99f4fad0e790d10af518b9a"
+global.domainotp = process.env.DOMAIN_OTP || "https://claudeotp.com/api"
+global.apikeyotp = process.env.APIKEY_OTP || "a395f97fe99f4fad0e790d10af518b9a"
 global.eggsnya = '15' // id eggs yang dipakai
 global.location3 = '1' // id location
 global.tekspushkon = ""
@@ -285,10 +286,10 @@ global.prefix = ['.']
 global.sessionName = 'session' // Jangan di ubah takut nanti error
 global.hituet = 0
 //media target
-global.thum = fs.readFileSync("./data/image/thumb.jpg") //ur thumb pic
-global.log0 = fs.readFileSync("./data/image/thumb.jpg") //ur logo pic
-global.err4r = fs.readFileSync("./data/image/thumb.jpg") //ur error pic
-global.thumb = fs.readFileSync("./data/image/thumb.jpg") //ur thumb pic
+global.thum = "./data/image/thumb.jpg" // Use path
+global.log0 = "./data/image/thumb.jpg" // Use path
+global.err4r = "./data/image/thumb.jpg" // Use path
+global.thumb = "./data/image/thumb.jpg" // Use path
 global.filename = "©ᴛʀᴀᴅᴢ | ᴅᴇᴠ"
 global.defaultpp = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60' //default pp wa
 
@@ -298,7 +299,7 @@ global.fluming = 'https://www6.flamingtext.com/net-fu/proxy_form.cgi?&imageoutpu
 global.flarun = 'https://www6.flamingtext.com/net-fu/proxy_form.cgi?&imageoutput=true&script=runner-logo&doScale=true&scaleWidth=800&scaleHeight=500&fontsize=100&text='
 global.flasmurf = 'https://www6.flamingtext.com/net-fu/proxy_form.cgi?&imageoutput=true&script=smurfs-logo&doScale=true&scaleWidth=800&scaleHeight=500&fontsize=100&text='
 
-global.keyopenai = "pk-pIWAlRroXTOAigkWdHcYvmlmgzEQXuoMWbVAaLAVZswSRbEB"
+global.keyopenai = process.env.OPENAI_KEY || "pk-pIWAlRroXTOAigkWdHcYvmlmgzEQXuoMWbVAaLAVZswSRbEB"
 //documents variants
 global.doc1 = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
 global.doc2 = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

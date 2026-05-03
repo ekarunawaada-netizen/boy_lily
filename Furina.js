@@ -327,6 +327,20 @@ if (global.db) {
     ...(global.db || {})
   };
 }
+
+// ================= MODULE COMMAND HANDLER ================= //
+global.plugins = {};
+let pluginsFolder = path.join(__dirname, 'plugins');
+let pluginFilter = filename => /\.js$/.test(filename);
+for (let filename of fs.readdirSync(pluginsFolder).filter(pluginFilter)) {
+  try {
+    global.plugins[filename] = require(path.join(pluginsFolder, filename));
+    console.log(chalk.greenBright(`[ INFO ] Loaded plugin: ${filename}`));
+  } catch (e) {
+    console.error(`Error loading plugin ${filename}:`, e);
+  }
+}
+// ========================================================= //
 // read database
 let tebaklagu = [];
 let _family100 = [];
@@ -5085,6 +5099,51 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         console.error("Gagal ambil berita:", err);
       }
     }
+    // ================= PLUGIN SYSTEM ================= //
+    for (let name in global.plugins) {
+      let plugin = global.plugins[name]
+      if (!plugin) continue
+      if (plugin.name === command || (plugin.alias && plugin.alias.includes(command))) {
+        try {
+          await plugin.run(DinzBotz, m, {
+            args,
+            full_args,
+            prefix,
+            command,
+            isOwner,
+            isPrem,
+            isRegistered,
+            isAdmins,
+            isBotAdmins,
+            groupMetadata,
+            participants,
+            groupAdmins,
+            groupName,
+            text,
+            q,
+            mime,
+            quoted,
+            runtime,
+            speed,
+            fetchJson,
+            getBuffer,
+            clockString,
+            ms,
+            axios,
+            mess,
+            replyprem,
+            replyviex,
+            pickRandom
+          })
+          return // Stop execution if plugin handled it
+        } catch (e) {
+          console.error(`Error in plugin ${name}:`, e)
+          m.reply(global.mess.error.fitur)
+        }
+      }
+    }
+    // ================================================= //
+
     switch (command) {
       case "ttc":
       case "ttt":
@@ -46292,69 +46351,6 @@ ${meg.result}`);
             });
           }
         }
-        break;
-      case "hentaivid2":
-        {
-          if (!isPrem) {
-            return replyprem(mess.premium);
-          }
-          replyviex(mess.wait);
-          DinzBotz.sendMessage(m.chat, {
-            video: {
-              url: `https://api.fgmods.xyz/api/nsfw-nime/hentai-mp4?apikey=qzu9Ja5Q`
-            },
-            caption: `success`
-          }, {
-            quoted: m
-          });
-        }
-        break;
-      case "hentaivid":
-      case "hentaivideo":
-        {
-          if (!isPrem) {
-            return replyprem(mess.premium);
-          }
-          replyviex(mess.wait);
-          DinzBotz.sendMessage(m.chat, {
-            video: {
-              url: `https://api.fgmods.xyz/api/nsfw-nime/hentai-mp4?apikey=qzu9Ja5Q`
-            },
-            caption: `success`
-          }, {
-            quoted: m
-          });
-        }
-        break;
-      case "trap":
-        if (!isPrem) {
-          return replyprem(mess.premium);
-        }
-        replyviex(mess.wait);
-        waifudd = await axios.get(`https://waifu.pics/api/nsfw/${command}`);
-        DinzBotz.sendMessage(m.chat, {
-          caption: mess.success,
-          image: {
-            url: waifudd.data.url
-          }
-        }, {
-          quoted: m
-        });
-        break;
-      case "hentai-neko":
-      case "hneko":
-        if (!isPrem) {
-          return replyprem(mess.premium);
-        }
-        waifudd = await axios.get(`https://waifu.pics/api/nsfw/neko`);
-        DinzBotz.sendMessage(m.chat, {
-          caption: mess.success,
-          image: {
-            url: waifudd.data.url
-          }
-        }, {
-          quoted: m
-        });
         break;
       case "hentai-waifu":
       case "nwaifu":
