@@ -5442,18 +5442,7 @@ Ketik *surrender* untuk menyerah dan mengakui kekalahan`;
           }, m.chat);
         }
         break;
-      case "restart":
-        if (!isRegistered) {
-          return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
-        }
-        if (!DinzTheCreator) {
-          return replyviex(mess.only.owner);
-        }
-        replyviex(`restarting ${global.botname}`);
-        replyviex(`Succes`);
-        await sleep(3000);
-        process.exit();
-        break;
+
       case "totalfitur":
         {
           if (!isRegistered) {
@@ -10490,54 +10479,7 @@ Type? Case
           }).catch(err => replyviex("Error 🗿"));
         }
         break;
-      //===============
-      case "igdl":
-      case "igvideo":
-      case "igimage":
-      case "igvid":
-      case "igimg":
-        {
-          if (!text) {
-            return replyviex(`Contoh: ${prefix + command} link`);
-          }
-          DinzBotz.sendMessage(m.chat, {
-            react: {
-              text: `⏱️`,
-              key: m.key
-            }
-          });
-          try {
-            let media = await (await fetch(`https://endpoint.web.id/downloader/instagram?key=${global.key}&url=${text}`)).json();
-            let data = media.result;
-            if (data.videoUrl) {
-              await DinzBotz.sendMessage(m.chat, {
-                video: {
-                  url: data.videoUrl
-                },
-                caption: "success kak",
-                mimetype: "video/mp4"
-              }, {
-                quoted: m
-              });
-            } else if (data.imageUrl) {
-              await DinzBotz.sendMessage(m.chat, {
-                image: {
-                  url: data.imageUrl
-                },
-                caption: "success kak",
-                mimetype: "image/jpeg"
-              }, {
-                quoted: m
-              });
-            } else {
-              replyviex("Media tidak ditemukan!");
-            }
-          } catch (e) {
-            m.reply(e.message);
-            console.log(e);
-          }
-        }
-        break;
+
       //================================================================================
       //==============================================
       //case 'instagram': case 'igdl': case 'ig': case 'igvideo': case 'igimage': case 'igvid': case 'igimg': {
@@ -31350,100 +31292,6 @@ Type? Case
           m.reply('Terjadi kesalahan saat membuat gambar.')
         }
       }
-        break;
-      case "tiktok":
-      case "tt":
-        {
-          let momok = "`𝗧 𝗜 𝗞 𝗧 𝗢 𝗞 - 𝗗 𝗢 𝗪 𝗡 𝗟 𝗢 𝗔 𝗗`";
-          if (!text.startsWith("https://")) {
-            return replyviex(example("url"));
-          }
-          await tiktokDl(q).then(async result => {
-            await DinzBotz.sendMessage(m.chat, {
-              react: {
-                text: "🕖",
-                key: m.key
-              }
-            });
-            if (!result.status) {
-              return replyviex("Error!");
-            }
-            if (result.durations == 0 && result.duration == "0 Seconds") {
-              let araara = new Array();
-              let urutan = 0;
-              for (let a of result.data) {
-                let imgsc = await prepareWAMessageMedia({
-                  image: {
-                    url: `${a.url}`
-                  }
-                }, {
-                  upload: DinzBotz.waUploadToServer
-                });
-                await araara.push({
-                  header: proto.Message.InteractiveMessage.Header.fromObject({
-                    title: `Foto Slide Ke *${urutan += 1}*`,
-                    hasMediaAttachment: true,
-                    ...imgsc
-                  }),
-                  nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
-                    buttons: [{
-                      name: "cta_url",
-                      buttonParamsJson: `{\"display_text\":\"Link Tautan Foto\",\"url\":\"${a.url}\",\"merchant_url\":\"https://www.google.com\"}`
-                    }]
-                  })
-                });
-              }
-              const msgii = await generateWAMessageFromContent(m.chat, {
-                viewOnceMessageV2Extension: {
-                  message: {
-                    messageContextInfo: {
-                      deviceListMetadata: {},
-                      deviceListMetadataVersion: 2
-                    },
-                    interactiveMessage: proto.Message.InteractiveMessage.fromObject({
-                      body: proto.Message.InteractiveMessage.Body.fromObject({
-                        text: "*TIKTOK - DOWNLOADER*"
-                      }),
-                      carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({
-                        cards: araara
-                      })
-                    })
-                  }
-                }
-              }, {
-                userJid: m.sender,
-                quoted: m
-              });
-              await DinzBotz.relayMessage(m.chat, msgii.message, {
-                messageId: msgii.key.id
-              });
-            } else {
-              let urlVid = await result.data.find(e => e.type == "nowatermark_hd" || e.type == "nowatermark");
-              await DinzBotz.sendMessage(m.chat, {
-                video: {
-                  url: urlVid.url
-                },
-                caption: momok,
-                footer: `\n${global.botname}`,
-                buttons: [{
-                  buttonId: `.ttaudio ${text}`,
-                  buttonText: {
-                    displayText: "ᴀᴍʙɪʟ ᴍᴜsɪᴋɴʏᴀ"
-                  }
-                }],
-                viewOnce: true
-              }, {
-                quoted: m
-              });
-            }
-          }).catch(e => console.log(e));
-          await DinzBotz.sendMessage(m.chat, {
-            react: {
-              text: "✅",
-              key: m.key
-            }
-          });
-        }
         break;
       case "reactch1":
         {
