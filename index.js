@@ -1,6 +1,7 @@
 
 require('./settings')
 const { cleanTempFiles } = require('./lib/sessionManager')
+const db = require('./lib/db')
 const { modul } = require('./module');
 const moment = require('moment-timezone');
 const { baileys, boom, chalk, fs, figlet, FileType, path, pino, process, PhoneNumber, axios, yargs, _ } = modul;
@@ -517,7 +518,9 @@ async function theFontaine() {
 }
 
 // ── Startup ───────────────────────────────────────────────────────────
-theFontaine()
+// Hubungkan ke MongoDB Atlas (jika MONGO_URI ada di .env)
+// Fallback otomatis ke JSON lokal jika tidak tersedia
+db.connect().then(() => theFontaine())
 
 // ── Error Handlers (jangan crash karena error kecil) ─────────────────
 process.on('uncaughtException', (err) => {

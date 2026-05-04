@@ -231,6 +231,7 @@ const {
   EmojiAPI
 } = require("emoji-api");
 const emoji = new EmojiAPI();
+const mongoDb = require("./lib/db");
 const owner = JSON.parse(fs.readFileSync("./database/owner.json"));
 const prem = JSON.parse(fs.readFileSync("./database/premium.json"));
 const dinzyoimiyaverifikasiuser = JSON.parse(fs.readFileSync("./database/user.json"));
@@ -364,9 +365,19 @@ let tebakasahotak = [];
 let tebaksiapakahaku = [];
 let tebaksusunkata = [];
 let tebaktekateki = [];
-let vote = db.others.vote = [];
+let vote = global.db.others.vote = [];
 module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
   try {
+    // === [MIGRASI DB] Ambil data User & Group dari MongoDB ===
+    const user = await mongoDb.getUser(m.sender);
+    const chats = await mongoDb.getGroup(m.chat);
+
+    // Sync ke global.db supaya command lama (47rb baris) tetap jalan
+    if (!global.db.users) global.db.users = {};
+    if (!global.db.chats) global.db.chats = {};
+    global.db.users[m.sender] = user;
+    global.db.chats[m.chat] = chats;
+
     const {
       type,
       quotedMsg,
@@ -730,23 +741,8 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
 
     try {
       const isNumber = x => typeof x === "number" && !isNaN(x);
-      const user = global.db.users[m.sender];
-      if (typeof user !== "object") {
-        global.db.users[m.sender] = {
-          registered: false,
-          name: m.pushName || 'User',
-          age: 0,
-          limit: 20,
-          balance: 0,
-          xp: 0,
-          level: 0,
-          registeredAt: 0
-        };
-      }
-      const chats = global.db.chats[m.chat];
-      if (typeof chats !== "object") {
-        global.db.chats[m.chat] = {};
-      }
+      // user & chats sudah didefinisikan di awal fungsi (MIGRASI DB)
+      
       if (user) {
         if (!isNumber(user.chip)) {
           user.chip = 0;
@@ -5227,11 +5223,10 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
               user.level = levelUp;
               m.reply(`🎉 *LEVEL UP!* 🎉\n\nSelamat kak ${pushname}, level kamu naik ke *${user.level}*! ✨`);
             }
-          }
-          return // Stop execution if plugin handled it
+          } return // Stop execution if plugin handled it
         } catch (e) {
           console.error(`[PLUGIN ERROR] ${name}:`, e)
-          try { m.reply(`❌ Error pada fitur *${plugin.name || name}*\n\n_${e.message}_`) } catch {}
+          try { m.reply(`❌ Error pada fitur *${plugin.name || name}*\n\n_${e.message}_`) } catch { }
         }
       }
     }
@@ -41147,112 +41142,112 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
       const fetchData = async (url, cdn, body = {}) => {
           const headers = {
               accept: '*/ /*',
-                  referer: 'https://ytshorts.savetube.me/',
-                  origin: 'https://ytshorts.savetube.me/',
-                  'user-agent': 'Postify/1.0.0',
-                  'Content-Type': 'application/json',
-                  authority: `cdn${cdn}.savetube.su`
-                  };
-                  try {
-                  const response = await axios.post(url, body, { headers });
-                  return response.data;
-                  } catch (error) {
-                  console.error(`Error accessing CDN${cdn}: ${error.message}`);
-                  throw new Error('❌ Gagal mengambil data dari server.');
-                  }
-                  };
-                  const randomCdn = () => {
-                  const availableCdns = [51, 52, 53, 54, 56, 57, 58, 59, 60, 61];
-                  return availableCdns[Math.floor(Math.random() * availableCdns.length)];
-                  };
-                  const dLink = (cdnUrl, type, quality, videoKey) => {
-                  return `https://${cdnUrl}/download`;
-                  };
-                  const dl = async (link, qualityIndex, typeIndex) => {
-                  const type = typeIndex === 1 ? 'audio' : 'video';
-                  const qualities = { 1: '32', 2: '64', 3: '128', 4: '192' };
-                  const quality = qualities[qualityIndex];
-                  if (!type) throw new Error('❌ Tipe tidak valid. Pilih 1 untuk audio atau 2 untuk video.');
-                  checkQuality(type, qualityIndex);
-                  const cdnNumber = randomCdn();
-                  const cdnUrl = `cdn${cdnNumber}.savetube.su`;
-                  const videoInfo = await fetchData(`https://${cdnUrl}/info`, cdnNumber, { url: link });
-                  const body = {
-                  downloadType: type,
-                  quality: quality,
-                  key: videoInfo.data.key
-                  };
-                  const dlRes = await fetchData(dLink(cdnUrl, type, quality, videoInfo.data.key), cdnNumber, body);
-                  return {
-                  link: dlRes.data.downloadUrl,
-                  duration: videoInfo.data.duration,
-                  durationLabel: videoInfo.data.durationLabel,
-                  fromCache: videoInfo.data.fromCache,
-                  id: videoInfo.data.id,
-                  key: videoInfo.data.key,
-                  thumbnail: videoInfo.data.thumbnail,
-                  thumbnail_formats: videoInfo.data.thumbnail_formats,
-                  title: videoInfo.data.title,
-                  titleSlug: videoInfo.data.titleSlug,
-                  videoUrl: videoInfo.data.url,
-                  quality,
-                  type
-                  };
-                  };
-                  if (!text) return reply("Kirim perintah dengan link YouTube-nya!");
-                  try {
-                  DinzBotz.sendMessage(m.chat, { react: { text: "⏱️",key: m.key,}})
-                  let rus = await yts(text);
-                  if (rus.all.length === 0) return reply("Video tidak ditemukan atau tidak bisa di-download.");
-                  let data = rus.all.filter(v => v.type === 'video');
-                  if (data.length === 0) return reply("Tidak ada video yang ditemukan.");
-                  let res = data[0];
-                  let thumbUrl = `https://i.ytimg.com/vi/${res.videoId}/hqdefault.jpg`;
-                  let inithumb = await getBuffer(thumbUrl);
-                  let teks = `*🎶 Y O U T U B E  -  P L A Y 🎶*\n\n` +
-                  `📺 *Channel* : ${res.author.name}\n` +
-                  `👀 *Viewers* : ${res.views} kali\n` +
-                  `⏱️ *Durasi* : ${res.timestamp}\n` +
-                  `🔗 *Link Video* : ${res.url}\n\n` +
-                  `🎧 *Audio sedang diproses...* 🎶`;
-                  await DinzBotz.sendMessage(m.chat, {
-                  contextInfo: { 
-                  externalAdReply: { 
-                  showAdAttribution: true, 
-                  title: res.title,
-                  body: new Date().toLocaleString(),													
-                  mediaType: 2,  
-                  renderLargerThumbnail: true,
-                  thumbnail: inithumb,
-                  mediaUrl: res.url,
-                  sourceUrl: res.url
-                  }
-                  },
-                  image: { url: thumbUrl },
-                  text: teks
-                  }, { quoted: m });
-                  const isUrl = /^https?:\/\/(www\.)?youtube\.com\/watch\?v=/.test(q);
-                  let videoUrl = text;
-                  if (!isUrl) {
-                  let searchResults = await yts(text);
-                  if (!searchResults.all.length) return reply("Video tidak ditemukan!");
-                  let videoData = searchResults.all.find(v => v.type === 'video');
-                  if (!videoData) return reply("Tidak ada video yang cocok ditemukan!");
-                  videoUrl = videoData.url;
-                  }
-                  const qualityIndex = randomAudioQuality();
-                  const audioData = await dl(videoUrl, qualityIndex, 1); 
-                  await DinzBotz.sendMessage(m.chat, { 
-                  audio: { url: audioData.link }, 
-                  mimetype: 'audio/mp4' 
-                  }, { quoted: m });
-                  } catch (err) {
-                  console.error(err);
-                  reply(`Terjadi kesalahan: ${err.message}`);
-                  }
-                  }
-                  break;
-                  */
+          referer: 'https://ytshorts.savetube.me/',
+          origin: 'https://ytshorts.savetube.me/',
+          'user-agent': 'Postify/1.0.0',
+          'Content-Type': 'application/json',
+          authority: `cdn${cdn}.savetube.su`
+          };
+          try {
+          const response = await axios.post(url, body, { headers });
+          return response.data;
+          } catch (error) {
+          console.error(`Error accessing CDN${cdn}: ${error.message}`);
+          throw new Error('❌ Gagal mengambil data dari server.');
+          }
+          };
+          const randomCdn = () => {
+          const availableCdns = [51, 52, 53, 54, 56, 57, 58, 59, 60, 61];
+          return availableCdns[Math.floor(Math.random() * availableCdns.length)];
+          };
+          const dLink = (cdnUrl, type, quality, videoKey) => {
+          return `https://${cdnUrl}/download`;
+          };
+          const dl = async (link, qualityIndex, typeIndex) => {
+          const type = typeIndex === 1 ? 'audio' : 'video';
+          const qualities = { 1: '32', 2: '64', 3: '128', 4: '192' };
+          const quality = qualities[qualityIndex];
+          if (!type) throw new Error('❌ Tipe tidak valid. Pilih 1 untuk audio atau 2 untuk video.');
+          checkQuality(type, qualityIndex);
+          const cdnNumber = randomCdn();
+          const cdnUrl = `cdn${cdnNumber}.savetube.su`;
+          const videoInfo = await fetchData(`https://${cdnUrl}/info`, cdnNumber, { url: link });
+          const body = {
+          downloadType: type,
+          quality: quality,
+          key: videoInfo.data.key
+          };
+          const dlRes = await fetchData(dLink(cdnUrl, type, quality, videoInfo.data.key), cdnNumber, body);
+          return {
+          link: dlRes.data.downloadUrl,
+          duration: videoInfo.data.duration,
+          durationLabel: videoInfo.data.durationLabel,
+          fromCache: videoInfo.data.fromCache,
+          id: videoInfo.data.id,
+          key: videoInfo.data.key,
+          thumbnail: videoInfo.data.thumbnail,
+          thumbnail_formats: videoInfo.data.thumbnail_formats,
+          title: videoInfo.data.title,
+          titleSlug: videoInfo.data.titleSlug,
+          videoUrl: videoInfo.data.url,
+          quality,
+          type
+          };
+          };
+          if (!text) return reply("Kirim perintah dengan link YouTube-nya!");
+          try {
+          DinzBotz.sendMessage(m.chat, { react: { text: "⏱️",key: m.key,}})
+          let rus = await yts(text);
+          if (rus.all.length === 0) return reply("Video tidak ditemukan atau tidak bisa di-download.");
+          let data = rus.all.filter(v => v.type === 'video');
+          if (data.length === 0) return reply("Tidak ada video yang ditemukan.");
+          let res = data[0];
+          let thumbUrl = `https://i.ytimg.com/vi/${res.videoId}/hqdefault.jpg`;
+          let inithumb = await getBuffer(thumbUrl);
+          let teks = `*🎶 Y O U T U B E  -  P L A Y 🎶*\n\n` +
+          `📺 *Channel* : ${res.author.name}\n` +
+          `👀 *Viewers* : ${res.views} kali\n` +
+          `⏱️ *Durasi* : ${res.timestamp}\n` +
+          `🔗 *Link Video* : ${res.url}\n\n` +
+          `🎧 *Audio sedang diproses...* 🎶`;
+          await DinzBotz.sendMessage(m.chat, {
+          contextInfo: { 
+          externalAdReply: { 
+          showAdAttribution: true, 
+          title: res.title,
+          body: new Date().toLocaleString(),													
+          mediaType: 2,  
+          renderLargerThumbnail: true,
+          thumbnail: inithumb,
+          mediaUrl: res.url,
+          sourceUrl: res.url
+          }
+          },
+          image: { url: thumbUrl },
+          text: teks
+          }, { quoted: m });
+          const isUrl = /^https?:\/\/(www\.)?youtube\.com\/watch\?v=/.test(q);
+          let videoUrl = text;
+          if (!isUrl) {
+          let searchResults = await yts(text);
+          if (!searchResults.all.length) return reply("Video tidak ditemukan!");
+          let videoData = searchResults.all.find(v => v.type === 'video');
+          if (!videoData) return reply("Tidak ada video yang cocok ditemukan!");
+          videoUrl = videoData.url;
+          }
+          const qualityIndex = randomAudioQuality();
+          const audioData = await dl(videoUrl, qualityIndex, 1); 
+          await DinzBotz.sendMessage(m.chat, { 
+          audio: { url: audioData.link }, 
+          mimetype: 'audio/mp4' 
+          }, { quoted: m });
+          } catch (err) {
+          console.error(err);
+          reply(`Terjadi kesalahan: ${err.message}`);
+          }
+          }
+          break;
+          */
       case "ytvideo":
       case "ytmp4":
         {
@@ -47223,6 +47218,10 @@ Sekarang, jawab pertanyaan user dengan gaya yang santai dan menyenangkan!
           }
           DinzBotz.copyNForward(m.chat, msgs[budy.toLowerCase()], true);
         }
+
+        // === [MIGRASI DB] Auto-save data ke MongoDB setelah eksekusi ===
+        await mongoDb.updateUser(m.sender, user);
+        await mongoDb.updateGroup(m.chat, chats);
     }
   } catch (err) {
     console.log(util.format(err));
