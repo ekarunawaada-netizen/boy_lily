@@ -5134,7 +5134,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       if (!plugin) continue
       if (plugin.name === command || (plugin.command && plugin.command.includes(command))) {
         const user = global.db.users[m.sender];
-        if (!isOwner && !DinzTheCreator && user.limit <= 0) return m.reply(`Limit harian kamu habis kak! 🎫\nBeli limit lewat owner atau tunggu besok.`);
+        if (!isOwner && !DinzTheCreator && !isPrem && user.limit <= 0) return m.reply(`Limit harian kamu habis kak! 🎫\nBeli limit lewat owner atau tunggu besok.`);
         try {
           await plugin.run(DinzBotz, m, {
             // === Command Info ===
@@ -5212,8 +5212,8 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             chat: global.db.chats[m.chat]
           })
 
-          // Kurangi Limit & Tambah XP jika sukses (Kecuali Owner)
-          if (!isOwner && !DinzTheCreator) {
+          // Kurangi Limit & Tambah XP jika sukses (Kecuali Owner & Premium)
+          if (!isOwner && !DinzTheCreator && !isPrem) {
             const user = global.db.users[m.sender];
             user.limit -= 1;
             user.xp += 10;
@@ -41403,9 +41403,48 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           if (ceknya.length == 0) {
             return replyviex(`Masukkan nomor yang valid dan terdaftar di WhatsApp!!!`);
           }
+          if (prem.includes(prrkek)) return replyviex(`Nomor tersebut sudah menjadi user premium!`);
           prem.push(prrkek);
           fs.writeFileSync("./database/premium.json", JSON.stringify(prem));
+          if (global.db.users[prrkek]) {
+             global.db.users[prrkek].premium = true;
+             global.db.users[prrkek].premiumTime = Date.now() + (30 * 24 * 60 * 60 * 1000); // Default 30 days
+          }
           replyviex(`The Number ${prrkek} Has Been Premium!`);
+        }
+        break;
+      case "addlimit":
+        {
+          if (!DinzTheCreator) return reply(mess.only.owner);
+          if (!args[0]) return reply(`Contoh: ${prefix + command} @user 100 atau ${prefix + command} 628xxx 100`);
+          let userJid = Input ? Input : m.sender;
+          let count = args[1] ? parseInt(args[1]) : (args[0] && !isNaN(args[0]) ? parseInt(args[0]) : 1);
+          if (!(userJid in global.db.users)) return reply(`User ${userJid} tidak terdaftar di database!`);
+          global.db.users[userJid].limit += count;
+          reply(`Berhasil menambahkan ${count} limit ke ${userJid.split("@")[0]}`);
+        }
+        break;
+      case "addmoney":
+        {
+          if (!DinzTheCreator) return reply(mess.only.owner);
+          if (!args[0]) return reply(`Contoh: ${prefix + command} @user 100000 atau ${prefix + command} 628xxx 100000`);
+          let userJid = Input ? Input : m.sender;
+          let count = args[1] ? parseInt(args[1]) : (args[0] && !isNaN(args[0]) ? parseInt(args[0]) : 1000);
+          if (!(userJid in global.db.users)) return reply(`User ${userJid} tidak terdaftar di database!`);
+          global.db.users[userJid].money += count;
+          reply(`Berhasil menambahkan Rp ${count} money ke ${userJid.split("@")[0]}`);
+        }
+        break;
+      case "addheal":
+      case "adddarah":
+        {
+          if (!DinzTheCreator) return reply(mess.only.owner);
+          if (!args[0]) return reply(`Contoh: ${prefix + command} @user 100 atau ${prefix + command} 628xxx 100`);
+          let userJid = Input ? Input : m.sender;
+          let count = args[1] ? parseInt(args[1]) : (args[0] && !isNaN(args[0]) ? parseInt(args[0]) : 100);
+          if (!(userJid in global.db.users)) return reply(`User ${userJid} tidak terdaftar di database!`);
+          global.db.users[userJid].health += count;
+          reply(`Berhasil menambahkan ${count} health ke ${userJid.split("@")[0]}`);
         }
         break;
       //=========================================\\
@@ -41418,8 +41457,13 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
         }
         ya = `${q.split("|")[0].replace(/[^0-9]/g, "")}@s.whatsapp.net`;
         unp = prem.indexOf(ya);
+        if (unp === -1) return replyviex(`Nomor tersebut bukan user premium!`);
         prem.splice(unp, 1);
         fs.writeFileSync("./database/premium.json", JSON.stringify(prem));
+        if (global.db.users[ya]) {
+           global.db.users[ya].premium = false;
+           global.db.users[ya].premiumTime = 0;
+        }
         replyviex(`The Number ${ya} Has Been Removed Premium!`);
         break;
       case "addbadword":
