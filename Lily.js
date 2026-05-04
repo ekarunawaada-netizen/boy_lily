@@ -313,13 +313,13 @@ function loadDB() {
   }
 }
 function saveDB(db) {
+  if (!db || !db.users) return; // Jangan save jika db rusak
   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
 }
-global.db = loadDB();
-setInterval(() => {
-  saveDB(global.db);
-}, 30000); // Auto-save setiap 30 detik
-if (global.db) {
+
+// Hanya load dari JSON jika global.db masih kosong (belum diisi oleh index.js/MongoDB)
+if (!global.db || Object.keys(global.db.users || {}).length === 0) {
+  let localDB = loadDB();
   global.db = {
     sticker: {},
     database: {},
@@ -328,9 +328,14 @@ if (global.db) {
     users: {},
     chats: {},
     settings: {},
+    ...(localDB || {}),
     ...(global.db || {})
   };
 }
+
+setInterval(() => {
+  saveDB(global.db);
+}, 30000); // Auto-save ke JSON lokal setiap 30 detik
 
 // ================= MODULE COMMAND HANDLER ================= //
 global.plugins = {};
@@ -348,6 +353,15 @@ for (let filename of fs.readdirSync(pluginsFolder).filter(pluginFilter)) {
 // read database
 let tebaklagu = [];
 let _family100 = [];
+
+// Sync registration array dari global.db (agar data dari MongoDB ikut terbaca)
+if (global.db && global.db.users) {
+  for (let jid in global.db.users) {
+    if (global.db.users[jid].registered && !dinzyoimiyaverifikasiuser.includes(jid)) {
+      dinzyoimiyaverifikasiuser.push(jid);
+    }
+  }
+}
 let kuismath = [];
 let tebakgambar = [];
 let tebakkata = [];
@@ -495,6 +509,32 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
     const numberQuery = q.replace(new RegExp("[()+-/ +/]", "gi"), "") + "@s.whatsapp.net";
     const usernya = mentionByReply ? mentionByReply : mentionByTag[0];
     const Input = mentionByTag[0] ? mentionByTag[0] : mentionByReply ? mentionByReply : q ? numberQuery : false;
+
+    // ================= [GENERIC GAME HANDLER] ================= //
+    // Mendeteksi jawaban untuk semua game tebak-tebakan secara otomatis
+    const tebakNames = [
+      'tebakhewan', 'tebakgambar', 'tebakkata', 'tebakkalimat', 'tebaklirik', 
+      'tebaktebakan', 'tebakbendera', 'tebakbendera2', 'tebakmakanan', 
+      'tebakprofesi', 'tebaknegara', 'tebakjkt48', 'tebakepep', 'tebakdrakor', 
+      'tebakfilm', 'tebakkimia', 'tebakkabupaten', 'siapakahaku', 'susunkata', 
+      'asahotak', 'tekateki', 'caklontong', 'riddle', 'asmaulhusna'
+    ];
+
+    for (let gName of tebakNames) {
+      if (DinzBotz[gName] && DinzBotz[gName][m.chat]) {
+        let [msg, item, timer, reward, xp] = DinzBotz[gName][m.chat];
+        if (budy.toLowerCase() == item.jawaban.toLowerCase().trim()) {
+          global.db.users[m.sender].money += (reward || 5000);
+          global.db.users[m.sender].exp += (xp || 50);
+          let winMsg = `🎉 *JAWABAN BENAR!*\n\nSelamat @${m.sender.split('@')[0]}, kamu mendapatkan:\n💰 Money: Rp ${(reward || 5000).toLocaleString()}\n✨ XP: +${(xp || 50)}\n\n${item.deskripsi ? `💡 *Penjelasan:* ${item.deskripsi}` : ''}`;
+          DinzBotz.sendMessage(m.chat, { text: winMsg, mentions: [m.sender] }, { quoted: m });
+          clearTimeout(timer);
+          delete DinzBotz[gName][m.chat];
+        }
+      }
+    }
+    // ========================================================== //
+
     const isEval = body.startsWith("=>");
     const isAutoAiGc = m.isGroup ? openaigc.includes(m.chat) : true;
     const isDinzIDchat = m.isGroup ? chatDinzID.includes(m.chat) : true;
@@ -5134,6 +5174,15 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       if (!plugin) continue
       if (plugin.name === command || (plugin.command && plugin.command.includes(command))) {
         const user = global.db.users[m.sender];
+        
+        // Cek Registrasi (Kecuali kategori dasar: main, owner, info, atau command daftar)
+        const basicCategories = ['main', 'owner', 'info'];
+        const isBasic = basicCategories.includes(plugin.category?.toLowerCase()) || command === 'daftar' || command === 'menu' || command === 'ping';
+        
+        if (!isRegistered && !isBasic) {
+          return replydaftar("👋 Halo kak, anda belum bisa mengakses fitur ini nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA");
+        }
+        
         if (!isOwner && !DinzTheCreator && !isPrem && user.limit <= 0) return m.reply(`Limit harian kamu habis kak! 🎫\nBeli limit lewat owner atau tunggu besok.`);
         try {
           await plugin.run(DinzBotz, m, {
@@ -5231,6 +5280,11 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       }
     }
     // ================================================= //
+    // Global Registration Check untuk Command Hardcoded
+    const basicHardcoded = ['public', 'self', 'daftar', 'menu', 'owner', 'ping', 'runtime', 'speed'];
+    if (!isRegistered && !basicHardcoded.includes(command) && command) {
+        return replydaftar("👋 Halo kak, anda belum bisa mengakses fitur ini nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA");
+    }
 
     switch (command) {
       case "public":

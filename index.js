@@ -68,8 +68,8 @@ const question = (text) => new Promise((resolve) => rl.question(text, resolve))
 
 require('./Lily.js')
 nocache('../Lily.js', module => console.log(color('[ CHANGE ]', 'green'), color(`'${module}'`, 'green'), 'Updated'))
-require('./index.js')
-nocache('../index.js', module => console.log(color('[ CHANGE ]', 'green'), color(`'${module}'`, 'green'), 'Updated'))
+// require('./index.js') // REMOVED RECURSION BUG
+// nocache('../index.js', module => console.log(color('[ CHANGE ]', 'green'), color(`'${module}'`, 'green'), 'Updated'))
 
 // ── Reconnect state ──────────────────────────────────────────────────
 let reconnectAttempts = 0;
@@ -519,8 +519,83 @@ async function theFontaine() {
 
 // ── Startup ───────────────────────────────────────────────────────────
 // Hubungkan ke MongoDB Atlas (jika MONGO_URI ada di .env)
-// Fallback otomatis ke JSON lokal jika tidak tersedia
-db.connect().then(() => theFontaine())
+db.connect().then(async () => {
+    console.log('📦 [DB] Memulai Sinkronisasi Data...');
+    
+    if (db.isConnected()) {
+        const { User, Group } = require('./lib/schema');
+        
+        // 1. Tarik data dari MongoDB ke Memory
+        const mongoUsers = await User.find({}).lean();
+        if (mongoUsers.length > 0) {
+            console.log(`👥 [DB] Menarik ${mongoUsers.length} user dari MongoDB...`);
+            mongoUsers.forEach(u => {
+                const jid = u._id;
+                delete u._id;
+                global.db.users[jid] = { ...(global.db.users[jid] || {}), ...u };
+            });
+        }
+        
+        const mongoGroups = await Group.find({}).lean();
+        if (mongoGroups.length > 0) {
+            console.log(`🏘️ [DB] Menarik ${mongoGroups.length} grup dari MongoDB...`);
+            mongoGroups.forEach(g => {
+                const jid = g._id;
+                delete g._id;
+                global.db.groups[jid] = { ...(global.db.groups[jid] || {}), ...g };
+            });
+        }
+
+        // 2. Mass Push dari Memory ke MongoDB (Bulk Upload)
+        // Ini memastikan data lama di JSON lokal ikut terupload ke MongoDB
+        const userJids = Object.keys(global.db.users);
+        if (userJids.length > 0) {
+            const ops = userJids.map(jid => ({
+                updateOne: {
+                    filter: { _id: jid },
+                    update: { $set: global.db.users[jid] },
+                    upsert: true
+                }
+            }));
+            await User.bulkWrite(ops);
+            console.log(`🚀 [DB] Berhasil upload ${userJids.length} user ke MongoDB.`);
+        }
+
+        const groupJids = Object.keys(global.db.groups);
+        if (groupJids.length > 0) {
+            const gOps = groupJids.map(jid => ({
+                updateOne: {
+                    filter: { _id: jid },
+                    update: { $set: global.db.groups[jid] },
+                    upsert: true
+                }
+            }));
+            await Group.bulkWrite(gOps);
+            console.log(`🚀 [DB] Berhasil upload ${groupJids.length} grup ke MongoDB.`);
+        }
+
+        console.log('✅ [DB] Sinkronisasi Selesai!');
+
+        // Auto Save ke MongoDB setiap 5 menit (Bulk) agar tidak berat
+        setInterval(async () => {
+            if (db.isConnected()) {
+                const uJids = Object.keys(global.db.users);
+                if (uJids.length > 0) {
+                    const uOps = uJids.map(jid => ({
+                        updateOne: {
+                            filter: { _id: jid },
+                            update: { $set: global.db.users[jid] },
+                            upsert: true
+                        }
+                    }));
+                    await User.bulkWrite(uOps);
+                }
+            }
+        }, 300000); // 5 menit sekali
+    }
+
+    theFontaine();
+})
 
 // ── Error Handlers (jangan crash karena error kecil) ─────────────────
 process.on('uncaughtException', (err) => {

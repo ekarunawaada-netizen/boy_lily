@@ -2,9 +2,9 @@ const TicTacToe = require('../lib/tictactoe');
 
 module.exports = {
     name: 'games',
-    command: ['ttc', 'ttt', 'tictactoe', 'delttc', 'delttt', 'suitpvp', 'rps', 'rockpaperscissors', 'suit'],
+    command: ['ttc', 'ttt', 'tictactoe', 'delttc', 'delttt', 'suitpvp', 'rps', 'rockpaperscissors', 'suit', 'nyerah', 'surrender'],
     category: 'game',
-    desc: 'Fitur game interaktif (TicTacToe, Suit)',
+    desc: 'Fitur game interaktif (TicTacToe, Suit, Surrender)',
     async run(DinzBotz, m, { command, text, prefix, isRegistered, replydaftar, replyviex, parseMention }) {
         if (!isRegistered) {
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
@@ -113,6 +113,39 @@ module.exports = {
                     timeout
                 };
                 break;
+            }
+
+            case 'nyerah':
+            case 'surrender': {
+                const id = m.chat;
+                const games = [
+                    'tebaklagu', 'family100', 'tebakgambar', 'tebakkata', 'kuismath',
+                    'tebakkalimat', 'tebaklirik', 'tebaktebakan', 'tebakbendera',
+                    'tebaksiapakahaku', 'tebaksusunkata', 'tebaktekateki', 'suit', 'game'
+                ];
+
+                let found = false;
+                for (let gameName of games) {
+                    if (DinzBotz[gameName] && DinzBotz[gameName][id]) {
+                        if (gameName === 'game') { // TicTacToe special handle
+                            const room = DinzBotz.game[id];
+                            if (room) {
+                                delete DinzBotz.game[id];
+                                found = true;
+                            }
+                        } else {
+                            if (DinzBotz[gameName][id][3]) clearTimeout(DinzBotz[gameName][id][3]); // Clear timeout if exists
+                            delete DinzBotz[gameName][id];
+                            found = true;
+                        }
+                    }
+                }
+
+                if (found) {
+                    return m.reply(`🏳️ Kamu telah menyerah dari permainan ini. Sesi game di chat ini telah dihentikan.`);
+                } else {
+                    return m.reply(`🧐 Tidak ada permainan aktif yang sedang berlangsung di chat ini.`);
+                }
             }
         }
     }
