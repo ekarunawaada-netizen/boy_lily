@@ -149,13 +149,13 @@
       "skill": "",
       "warning": 0,
       "WarnReason": "",
-      "money": 1000647731,
+      "money": 1000628254,
       "bank": 999999999,
       "atm": 10,
       "fullatm": 999999999,
       "chip": 999999,
       "rokets": 0,
-      "exp": 315,
+      "exp": 64,
       "level": 100,
       "limit": 999,
       "freelimit": 0,
@@ -169,7 +169,7 @@
       "afk": -1,
       "afkTime": -1,
       "afkReason": "",
-      "health": 1000,
+      "health": 802,
       "ojekk": 0,
       "potion": 999,
       "armor": 10,
@@ -190,7 +190,7 @@
       "diamond": 9999,
       "trash": 0,
       "botol": 0,
-      "kardus": 508,
+      "kardus": 0,
       "kaleng": 0,
       "gelas": 0,
       "plastik": 0,
@@ -269,8 +269,7 @@
       "ayam": 0,
       "panda": 0,
       "babihutan": 0,
-      "lastkerja": 1777865261575,
-      "lastmaling": 1777865318605
+      "lastfight": 1777865960665
     }
   },
   "chats": {
@@ -329,7 +328,7 @@
       "chatDinzID": false,
       "autosticker": false,
       "totalChat": {
-        "6289523888644@s.whatsapp.net": 9
+        "6289523888644@s.whatsapp.net": 2
       }
     }
   },
