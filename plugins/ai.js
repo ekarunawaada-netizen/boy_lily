@@ -7,33 +7,50 @@ module.exports = {
     desc: 'Fitur kecerdasan buatan (Artificial Intelligence)',
     async run(DinzBotz, m, { command, text, q, isRegistered, replydaftar, replyviex, mess }) {
         if (!isRegistered) {
-            return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
+            return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦");
         }
 
         if (!text) return replyviex("Mau nanya apa sama Lily?");
 
-        switch (command) {
-            case 'ai':
-            case 'chatgpt': {
-                await m.reply(mess.wait);
-                try {
-                    let res = await axios.get(`https://api.lolhuman.xyz/api/openai?apikey=GataDios&text=${encodeURIComponent(text)}`);
-                    replyviex(res.data.result);
-                } catch (e) {
-                    replyviex("Error: " + e.message);
+        await m.react('🤖');
+
+        try {
+            switch (command) {
+                case 'ai':
+                case 'chatgpt': {
+                    await m.reply(mess.wait);
+                    let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt4?content=${encodeURIComponent(text)}`);
+                    if (res.data.status) {
+                        replyviex(res.data.result || res.data.data);
+                    } else {
+                        throw new Error("API Error");
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'gemini': {
-                await m.reply(mess.wait);
-                try {
-                    let res = await axios.get(`https://api.lolhuman.xyz/api/gemini?apikey=GataDios&text=${encodeURIComponent(text)}`);
-                    replyviex(res.data.result);
-                } catch (e) {
-                    replyviex("Error: " + e.message);
+                case 'gemini': {
+                    await m.reply(mess.wait);
+                    let res = await axios.get(`https://api.siputzx.my.id/api/ai/gemini?content=${encodeURIComponent(text)}`);
+                    if (res.data.status) {
+                        replyviex(res.data.result || res.data.data);
+                    } else {
+                        throw new Error("API Error");
+                    }
+                    break;
                 }
-                break;
+                case 'logic': {
+                    await m.reply(mess.wait);
+                    let res = await axios.get(`https://api.siputzx.my.id/api/ai/logic-ai?content=${encodeURIComponent(text)}`);
+                    if (res.data.status) {
+                        replyviex(res.data.result || res.data.data);
+                    } else {
+                        throw new Error("API Error");
+                    }
+                    break;
+                }
             }
+        } catch (e) {
+            console.error(e);
+            replyviex("❌ Maaf kak, server AI sedang mengalami gangguan. Coba lagi nanti ya!");
         }
     }
 }

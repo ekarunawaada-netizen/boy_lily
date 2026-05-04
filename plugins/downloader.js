@@ -1,89 +1,67 @@
-const { tiktokDl } = require('../scrape/scraper1'); // Asumsikan scraper ada di sini
+const axios = require('axios');
+const { tiktokDl } = require('../scrape/scraper1'); 
 const { prepareWAMessageMedia, generateWAMessageFromContent, proto } = require('lily-baileys');
 
 module.exports = {
-    name: 'tiktok',
-    command: ['tt', 'tiktokdl', 'igdl', 'igvideo', 'igimage', 'igvid', 'igimg'],
+    name: 'downloader',
+    command: ['tiktok', 'tt', 'tiktokdl', 'igdl', 'igvideo', 'igimage', 'igvid', 'igimg'],
     category: 'downloader',
     desc: 'Download media dari Tiktok dan Instagram',
-    async run(DinzBotz, m, { command, args, text, q, prefix, mess, replyviex }) {
+    async run(DinzBotz, m, { command, args, text, q, prefix, mess, replyviex, fetchJson }) {
         if (!text || !text.startsWith("http")) return replyviex(`Contoh: ${prefix}${command} https://...`);
         
         await m.reply(mess.wait);
         
         try {
             if (['igdl', 'igvideo', 'igimage', 'igvid', 'igimg'].includes(command)) {
-                await DinzBotz.sendMessage(m.chat, { react: { text: `⏱️`, key: m.key } });
-                let media = await (await fetch(`https://endpoint.web.id/downloader/instagram?key=${global.key}&url=${text}`)).json();
-                let data = media.result;
-                if (data.videoUrl) {
-                    await DinzBotz.sendMessage(m.chat, { video: { url: data.videoUrl }, caption: "success kak", mimetype: "video/mp4" }, { quoted: m });
-                } else if (data.imageUrl) {
-                    await DinzBotz.sendMessage(m.chat, { image: { url: data.imageUrl }, caption: "success kak", mimetype: "image/jpeg" }, { quoted: m });
-                } else {
-                    replyviex("Media tidak ditemukan!");
+                await m.react('⏱️');
+                // Menggunakan API Siputzx yang lebih stabil daripada endpoint.web.id
+                let res = await fetchJson(`https://api.siputzx.my.id/api/d/instagram?url=${encodeURIComponent(text)}`);
+                if (!res?.data || res.data.length === 0) return replyviex("Media tidak ditemukan!");
+                
+                for (let item of res.data) {
+                    if (item.url.includes('.mp4')) {
+                        await DinzBotz.sendMessage(m.chat, { video: { url: item.url }, caption: "Success download IG video" }, { quoted: m });
+                    } else {
+                        await DinzBotz.sendMessage(m.chat, { image: { url: item.url }, caption: "Success download IG image" }, { quoted: m });
+                    }
                 }
+                await m.react('✅');
                 return;
             }
 
             if (['tiktok', 'tt', 'tiktokdl'].includes(command)) {
-                let momok = "`𝗧 𝗜 𝗞 𝗧 𝗢 𝗞 - 𝗗 𝗢 𝗪 𝗡 𝗟 𝗢 𝗔 𝗗`";
-            const result = await tiktokDl(q);
-            await DinzBotz.sendMessage(m.chat, { react: { text: "🕖", key: m.key } });
-
-            if (!result.status) return replyviex("Error!");
-
-            if (result.durations == 0 && result.duration == "0 Seconds") {
-                let araara = [];
-                let urutan = 0;
-                for (let a of result.data) {
-                    let imgsc = await prepareWAMessageMedia({ image: { url: `${a.url}` } }, { upload: DinzBotz.waUploadToServer });
-                    araara.push({
-                        header: proto.Message.InteractiveMessage.Header.fromObject({
-                            title: `Foto Slide Ke *${urutan += 1}*`,
-                            hasMediaAttachment: true,
-                            ...imgsc
-                        }),
-                        nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
-                            buttons: [{
-                                name: "cta_url",
-                                buttonParamsJson: `{"display_text":"Link Tautan Foto","url":"${a.url}","merchant_url":"https://www.google.com"}`
-                            }]
-                        })
-                    });
+                await m.react('🕖');
+                // Menggunakan API Siputzx sebagai fallback jika scraper lokal gagal
+                try {
+                    let res = await fetchJson(`https://api.siputzx.my.id/api/d/tiktok?url=${encodeURIComponent(text)}`);
+                    if (res?.data?.nowm) {
+                        await DinzBotz.sendMessage(m.chat, { video: { url: res.data.nowm }, caption: "✅ TikTok Video Downloader" }, { quoted: m });
+                        await m.react('✅');
+                        return;
+                    }
+                } catch (e) {
+                    console.log('Siputzx TikTok fail, trying local scraper...');
                 }
-                const msgii = await generateWAMessageFromContent(m.chat, {
-                    viewOnceMessageV2Extension: {
-                        message: {
-                            messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
-                            interactiveMessage: proto.Message.InteractiveMessage.fromObject({
-                                body: proto.Message.InteractiveMessage.Body.fromObject({ text: "*TIKTOK - DOWNLOADER*" }),
-                                carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: araara })
-                            })
+
+                // Fallback to local scraper if exists
+                if (typeof tiktokDl === 'function') {
+                    const result = await tiktokDl(q);
+                    if (result.status) {
+                        let urlVid = result.data.find(e => e.type == "nowatermark_hd" || e.type == "nowatermark");
+                        if (urlVid) {
+                            await DinzBotz.sendMessage(m.chat, { video: { url: urlVid.url }, caption: "✅ TikTok Downloader" }, { quoted: m });
+                            await m.react('✅');
+                            return;
                         }
                     }
-                }, { userJid: m.sender, quoted: m });
-                await DinzBotz.relayMessage(m.chat, msgii.message, { messageId: msgii.key.id });
-            } else {
-                let urlVid = result.data.find(e => e.type == "nowatermark_hd" || e.type == "nowatermark");
-                if (!urlVid) return replyviex("Video tidak ditemukan.");
+                }
                 
-                await DinzBotz.sendMessage(m.chat, {
-                    video: { url: urlVid.url },
-                    caption: momok,
-                    footer: `\n${global.botname}`,
-                    buttons: [{
-                        buttonId: `.ttaudio ${text}`,
-                        buttonText: { displayText: "ᴀᴍʙɪʟ ᴍᴜsɪᴋɴʏᴀ" }
-                    }],
-                    viewOnce: true
-                }, { quoted: m });
-            }
-            await DinzBotz.sendMessage(m.chat, { react: { text: "✅", key: m.key } });
+                replyviex("Gagal mendownload TikTok. Link mungkin tidak valid atau server down.");
             }
         } catch (error) {
             console.error(error);
-            m.reply('Terjadi kesalahan saat memproses permintaan.');
+            m.reply('Terjadi kesalahan saat memproses permintaan: ' + error.message);
         }
     }
 }

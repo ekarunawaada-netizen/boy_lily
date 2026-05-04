@@ -24,12 +24,46 @@ module.exports = {
 
                 case 'igstalk':
                 case 'igstalk2': {
-                    const res = await fetchJson(`https://api.siputzx.my.id/api/s/instagram?username=${q}`);
-                    if (!res?.data) return replyviex('User Instagram tidak ditemukan!');
+                    const axios = require('axios');
+                    const shortNum = (num) => {
+                        if (!num) return '0';
+                        if (num >= 1000000000) return (num / 1000000000).toFixed(1).replace('.0', '') + ' Miliar';
+                        if (num >= 1000000) return (num / 1000000).toFixed(1).replace('.0', '') + ' Jt';
+                        if (num >= 1000) return (num / 1000).toFixed(1).replace('.0', '') + ' Rb';
+                        return num.toString();
+                    };
+
+                    const username = q.replace('@', '');
+                    const res = await axios.post(
+                        'https://api.boostfluence.com/api/instagram-profile-v2',
+                        { username },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'User-Agent': 'Mozilla/5.0'
+                            },
+                            timeout: 30000
+                        }
+                    );
+                    
                     const d = res.data;
-                    const teks = `╭──「 *INSTAGRAM STALK* 」──\n│ 👤 Nama: ${d.full_name||'-'}\n│ 📛 Username: @${d.username||q}\n│ 📝 Bio: ${d.biography||'-'}\n│ 👥 Followers: ${(d.follower_count||0).toLocaleString()}\n│ 👣 Following: ${(d.following_count||0).toLocaleString()}\n│ 📸 Post: ${(d.media_count||0).toLocaleString()}\n│ ✅ Verified: ${d.is_verified?'Ya':'Tidak'}\n│ 🔒 Private: ${d.is_private?'Ya':'Tidak'}\n╰───────────────────✦`;
-                    if (d.profile_pic_url) {
-                        await DinzBotz.sendMessage(m.chat, { image: { url: d.profile_pic_url }, caption: teks }, { quoted: m });
+                    if (!d?.username) return replyviex('❌ Akun Instagram tidak ditemukan!');
+
+                    const teks = `╭──「 *INSTAGRAM STALK* 」──\n` +
+                        `│ 👤 *Nama:* ${d.full_name || '-'}\n` +
+                        `│ 📛 *Username:* @${d.username}\n` +
+                        `│ ✅ *Verified:* ${d.is_verified ? 'Ya' : 'Tidak'}\n` +
+                        `│ 🔒 *Private:* ${d.is_private ? 'Ya' : 'Tidak'}\n` +
+                        `│ 📝 *Bio:* ${d.biography || '-'}\n` +
+                        `│ 👥 *Followers:* ${shortNum(d.follower_count)}\n` +
+                        `│ 👣 *Following:* ${shortNum(d.following_count)}\n` +
+                        `│ 📸 *Post:* ${shortNum(d.media_count)}\n` +
+                        `│ 🔗 https://instagram.com/${d.username}\n` +
+                        `╰───────────────────✦`;
+
+                    const profilePic = d.profile_pic_url_hd || d.profile_pic_url;
+                    if (profilePic) {
+                        await DinzBotz.sendMessage(m.chat, { image: { url: profilePic }, caption: teks }, { quoted: m });
                     } else replyviex(teks);
                     break;
                 }
