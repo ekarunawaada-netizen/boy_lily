@@ -231,18 +231,17 @@ const {
   EmojiAPI
 } = require("emoji-api");
 const emoji = new EmojiAPI();
-const mongoDb = require("./lib/db");
-const owner = JSON.parse(fs.readFileSync("./database/owner.json"));
-const prem = JSON.parse(fs.readFileSync("./database/premium.json"));
-const dinzyoimiyaverifikasiuser = JSON.parse(fs.readFileSync("./database/user.json"));
-const DinzIDVoiceNote = JSON.parse(fs.readFileSync("./data/DinzIDMedia/database/xeonvn.json"));
-const DinzIDSticker = JSON.parse(fs.readFileSync("./data/DinzIDMedia/database/xeonsticker.json"));
-const ImageDinzID = JSON.parse(fs.readFileSync("./data/DinzIDMedia/database/xeonimage.json"));
-const VideoDinzID = JSON.parse(fs.readFileSync("./data/DinzIDMedia/database/xeonvideo.json"));
-const BadDinzID = JSON.parse(fs.readFileSync("./database/bad.json"));
-const pler = JSON.parse(fs.readFileSync("./database/idgrup.json").toString());
-const siminya = JSON.parse(fs.readFileSync("./database/simi.json"));
-const chatDinzID = JSON.parse(fs.readFileSync("./database/chatDinzID.json"));
+const owner = ["6289523888644"];
+const prem = [];
+const dinzyoimiyaverifikasiuser = [];
+const DinzIDVoiceNote = [];
+const DinzIDSticker = [];
+const ImageDinzID = [];
+const VideoDinzID = [];
+const BadDinzID = [];
+const pler = [];
+const siminya = [];
+const chatDinzID = [];
 const {
   isSetProses,
   addSetProses,
@@ -266,34 +265,34 @@ const {
   changeSetDone,
   getTextSetDone
 } = require("./lib/setdone");
-let autosticker = JSON.parse(fs.readFileSync("./database/autosticker.json"));
-let mute = JSON.parse(fs.readFileSync("./database/mute.json"));
-let ntnsfw = JSON.parse(fs.readFileSync("./database/nsfw.json"));
-let ntvirtex = JSON.parse(fs.readFileSync("./database/antivirus.json"));
-let _cmd = JSON.parse(fs.readFileSync("./database/command.json"));
-let _cmdUser = JSON.parse(fs.readFileSync("./database/commandUser.json"));
-let nttoxic = JSON.parse(fs.readFileSync("./database/antitoxic.json"));
-let ntwame = JSON.parse(fs.readFileSync("./database/antiwame.json"));
+let autosticker = [];
+let mute = [];
+let ntnsfw = [];
+let ntvirtex = [];
+let _cmd = [];
+let _cmdUser = [];
+let nttoxic = [];
+let ntwame = [];
 let footxt = `${footer}`;
-let ntlinkgc = JSON.parse(fs.readFileSync("./database/antilinkgc.json"));
-let ntlinkch = JSON.parse(fs.readFileSync("./database/antilinkch.json"));
-let ntilinkall = JSON.parse(fs.readFileSync("./database/antilinkall.json"));
-let ntilinktwt = JSON.parse(fs.readFileSync("./database/antilinktwitter.json"));
-let ntilinktt = JSON.parse(fs.readFileSync("./database/antilinktiktok.json"));
-let ntilinktg = JSON.parse(fs.readFileSync("./database/antilinktelegram.json"));
-let ntilinkfb = JSON.parse(fs.readFileSync("./database/antilinkfacebook.json"));
-let ntilinkig = JSON.parse(fs.readFileSync("./database/antilinkinstagram.json"));
-let ntilinkytch = JSON.parse(fs.readFileSync("./database/antilinkytchannel.json"));
-let ntilinkytvid = JSON.parse(fs.readFileSync("./database/antilinkytvideo.json"));
-let sewa = JSON.parse(fs.readFileSync("./database/sewa.json"));
-let openaigc = JSON.parse(fs.readFileSync("./database/openaigc.json"));
-let set_welcome_db = JSON.parse(fs.readFileSync("./database/set_welcome.json"));
-let set_left_db = JSON.parse(fs.readFileSync("./database/set_left.json"));
-let _welcome = JSON.parse(fs.readFileSync("./database/welcome.json"));
-let _left = JSON.parse(fs.readFileSync("./database/left.json"));
-let set_proses = JSON.parse(fs.readFileSync("./database/set_proses.json"));
-let set_done = JSON.parse(fs.readFileSync("./database/set_done.json"));
-let db_respon_list = JSON.parse(fs.readFileSync("./database/list-message.json"));
+let ntlinkgc = [];
+let ntlinkch = [];
+let ntilinkall = [];
+let ntilinktwt = [];
+let ntilinktt = [];
+let ntilinktg = [];
+let ntilinkfb = [];
+let ntilinkig = [];
+let ntilinkytch = [];
+let ntilinkytvid = [];
+let sewa = [];
+let openaigc = [];
+let set_welcome_db = [];
+let set_left_db = [];
+let _welcome = [];
+let _left = [];
+let set_proses = [];
+let set_done = [];
+let db_respon_list = [];
 const DB_FILE = "./database/database.json";
 function loadDB() {
   if (fs.existsSync(DB_FILE)) {
@@ -380,17 +379,24 @@ let tebaksiapakahaku = [];
 let tebaksusunkata = [];
 let tebaktekateki = [];
 let vote = global.db.others.vote = [];
-module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
+module.exports = LilyBot = async (LilyBot, m, chatUpdate, store) => {
   try {
-    // === [MIGRASI DB] Ambil data User & Group dari MongoDB ===
-    const user = await mongoDb.getUser(m.sender);
-    const chats = await mongoDb.getGroup(m.chat);
-
-    // Sync ke global.db supaya command lama (47rb baris) tetap jalan
+    // === [MIGRASI DB] ===
     if (!global.db.users) global.db.users = {};
     if (!global.db.chats) global.db.chats = {};
-    global.db.users[m.sender] = user;
-    global.db.chats[m.chat] = chats;
+    if (!global.db.settings) global.db.settings = {};
+    
+    if (!global.db.users[m.sender]) {
+      global.db.users[m.sender] = {
+        money: 0, exp: 0, limit: 20, level: 1, role: 'Beginner', afkTime: -1, afkReason: ''
+      };
+    }
+    if (m.chat && !global.db.chats[m.chat]) {
+      global.db.chats[m.chat] = {};
+    }
+
+    const user = global.db.users[m.sender];
+    const chats = global.db.chats[m.chat];
 
     const {
       type,
@@ -408,7 +414,7 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
     if (!body || typeof body !== 'string') return;
 
     const isCmd = body.startsWith(prefix);
-    const command = body.slice(1).trim().split(/ +/).shift().toLowerCase();
+    const command = isCmd ? body.slice(1).trim().split(/ +/).shift().toLowerCase() : body.trim().split(/ +/).shift().toLowerCase();
 
     //Kalau Mau Single Prefix Kamu Ganti Command Diatas Pakai Ini : 
 
@@ -420,10 +426,10 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
         text: text,
         mentions: m.mentionedJid
       }, {
-        userJid: DinzBotz.user.id,
+        userJid: LilyBot.user.id,
         quoted: m.quoted && m.quoted.fakeObj
       });
-      messages.key.fromMe = areJidsSameUser(m.sender, DinzBotz.user.id);
+      messages.key.fromMe = areJidsSameUser(m.sender, LilyBot.user.id);
       messages.key.id = m.key.id;
       messages.pushName = m.pushName;
       if (m.isGroup) {
@@ -434,7 +440,7 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
         messages: [proto.WebMessageInfo.fromObject(messages)],
         type: "append"
       };
-      DinzBotz.ev.emit("messages.upsert", msg);
+      LilyBot.ev.emit("messages.upsert", msg);
     }
     const chath = m.mtype === "conversation" && m.message.conversation ? m.message.conversation : m.mtype == "imageMessage" && m.message.imageMessage.caption ? m.message.imageMessage.caption : m.mtype == "documentMessage" && m.message.documentMessage.caption ? m.message.documentMessage.caption : m.mtype == "videoMessage" && m.message.videoMessage.caption ? m.message.videoMessage.caption : m.mtype == "extendedTextMessage" && m.message.extendedTextMessage.text ? m.message.extendedTextMessage.text : m.mtype == "buttonsResponseMessage" && m.message.buttonsResponseMessage.selectedButtonId ? m.message.buttonsResponseMessage.selectedButtonId : m.mtype == "templateButtonReplyMessage" && m.message.templateButtonReplyMessage.selectedId ? m.message.templateButtonReplyMessage.selectedId : m.mtype == "listResponseMessage" ? m.message.listResponseMessage.singleSelectReply.selectedRowId : m.mtype == "messageContextInfo" ? m.message.listResponseMessage.singleSelectReply.selectedRowId : "";
     const pes = m.mtype === "conversation" && m.message.conversation ? m.message.conversation : m.mtype == "imageMessage" && m.message.imageMessage.caption ? m.message.imageMessage.caption : m.mtype == "videoMessage" && m.message.videoMessage.caption ? m.message.videoMessage.caption : m.mtype == "extendedTextMessage" && m.message.extendedTextMessage.text ? m.message.extendedTextMessage.text : " ";
@@ -450,7 +456,10 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
     const from = m.key.remoteJid;
     const messagesD = body.slice(0).trim().split(/ +/).shift().toLowerCase();
     const pushname = m.pushName || "No Name";
-    const botNumber = await DinzBotz.decodeJid(DinzBotz.user.id);
+    const botNumber = await LilyBot.decodeJid(LilyBot.user.id);
+    if (!global.db.settings[botNumber]) {
+      global.db.settings[botNumber] = { autobio: false, anticall: false };
+    }
     const DinzTheCreator = [botNumber, ...owner].map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(m.sender);
     const text = q = args.join(" ");
     const quoted = m.quoted ? m.quoted : m;
@@ -472,7 +481,7 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
     const isQuotedDocument = type === "extendedTextMessage" && content.includes("documentMessage");
     const sender = m.isGroup ? m.key.participant ? m.key.participant : m.participant : m.key.remoteJid;
     const senderNumber = sender.split("@")[0];
-    const groupMetadata = m?.isGroup ? await DinzBotz.groupMetadata(m.chat).catch(() => ({})) : {};
+    const groupMetadata = m?.isGroup ? await LilyBot.groupMetadata(m.chat).catch(() => ({})) : {};
     const groupName = m?.isGroup ? groupMetadata.subject || '' : '';
     const participants = m?.isGroup ? groupMetadata.participants?.map(p => {
       let admin = null;
@@ -495,7 +504,7 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
       const p = participants.find(p => p.jid === m.sender);
       return p?.lid || null;
     })();
-    const groupMembers = m.isGroup ? (await DinzBotz.groupMetadata(m.chat).catch(() => ({}))).participants || [] : []
+    const groupMembers = m.isGroup ? (await LilyBot.groupMetadata(m.chat).catch(() => ({}))).participants || [] : []
     //=========================================\\
     // @Lid Participants 
 
@@ -521,15 +530,15 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
     ];
 
     for (let gName of tebakNames) {
-      if (DinzBotz[gName] && DinzBotz[gName][m.chat]) {
-        let [msg, item, timer, reward, xp] = DinzBotz[gName][m.chat];
+      if (LilyBot[gName] && LilyBot[gName][m.chat]) {
+        let [msg, item, timer, reward, xp] = LilyBot[gName][m.chat];
         if (budy.toLowerCase() == item.jawaban.toLowerCase().trim()) {
           global.db.users[m.sender].money += (reward || 5000);
           global.db.users[m.sender].exp += (xp || 50);
           let winMsg = `🎉 *JAWABAN BENAR!*\n\nSelamat @${m.sender.split('@')[0]}, kamu mendapatkan:\n💰 Money: Rp ${(reward || 5000).toLocaleString()}\n✨ XP: +${(xp || 50)}\n\n${item.deskripsi ? `💡 *Penjelasan:* ${item.deskripsi}` : ''}`;
-          DinzBotz.sendMessage(m.chat, { text: winMsg, mentions: [m.sender] }, { quoted: m });
+          LilyBot.sendMessage(m.chat, { text: winMsg, mentions: [m.sender] }, { quoted: m });
           clearTimeout(timer);
-          delete DinzBotz[gName][m.chat];
+          delete LilyBot[gName][m.chat];
         }
       }
     }
@@ -611,7 +620,7 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
           evaled = inspect(evaled);
         }
       } catch (e) {
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: String(e)
         }, {
           quoted: m
@@ -648,7 +657,7 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
           if (mean && command.toLowerCase() !== mean.toLowerCase()) {
             let respon = `
 ᴄᴏᴍᴍᴀɴᴅ ɪᴛᴜ ᴛɪᴅᴀᴋ ᴀᴅᴀ ᴍᴜɴɢᴋɪɴ ʏᴀɴɢ ᴋᴀᴍᴜ ᴍᴀᴋsᴜᴅ\n\n➠ Command \`${prefix + mean}\`\n➠ Similarity   \`[ ${similarityPercentage}% ]\``.trim();
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               footer: `${botname}`,
               buttons: [{
                 buttonId: `.${mean}`,
@@ -1287,13 +1296,13 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
         return;
       }
     }
-    if (!DinzBotz.public) {
+    if (!LilyBot.public) {
       if (!m.key.fromMe) {
         return;
       }
     }
     if (db.settings[botNumber].autoread) {
-      DinzBotz.readMessages([m.key]);
+      LilyBot.readMessages([m.key]);
     }
     if (m.message && m.isGroup) {
       console.log(`
@@ -1319,7 +1328,7 @@ module.exports = DinzBotz = async (DinzBotz, m, chatUpdate, store) => {
       dinzyoimiyaverifikasiuser.push(sender);
       fs.writeFileSync("./database/user.json", JSON.stringify(dinzyoimiyaverifikasiuser, null, 2));
     }
-    DinzBotz.sendPresenceUpdate("unavailable", from);
+    LilyBot.sendPresenceUpdate("unavailable", from);
     for (let jid of mentionUser) {
       let user = global.db.users[jid];
       if (!user) {
@@ -1415,11 +1424,11 @@ Ketik *surrender* untuk menyerah dan mengaku kalah`;
         room13[room13.game._currentTurn ^ isSurrender ? "x" : "o"] = m.chat;
       }
       if (room13.x !== room13.o) {
-        await DinzBotz.sendText(room13.x, str, m, {
+        await LilyBot.sendText(room13.x, str, m, {
           mentions: parseMention(str)
         });
       }
-      await DinzBotz.sendText(room13.o, str, m, {
+      await LilyBot.sendText(room13.o, str, m, {
         mentions: parseMention(str)
       });
       if (isTie || isWin) {
@@ -1435,7 +1444,7 @@ Ketik *surrender* untuk menyerah dan mengaku kalah`;
       let tie = false;
       if (m.sender == roof.p2 && /^(acc(ept)?|accept|yes|okay?|reject|no|later|nop(e.)?yes|y)/i.test(m.text) && m.isGroup && roof.status == "wait") {
         if (/^(reject|no|later|n|nop(e.)?yes)/i.test(m.text)) {
-          DinzBotz.sendTextWithMentions(m.chat, `@${roof.p2.split`@`[0]} rejected the suit, the suit is canceled`, m);
+          LilyBot.sendTextWithMentions(m.chat, `@${roof.p2.split`@`[0]} rejected the suit, the suit is canceled`, m);
           delete this.suit[roof.id];
           return true;
         }
@@ -1443,7 +1452,7 @@ Ketik *surrender* untuk menyerah dan mengaku kalah`;
         roof.asal = m.chat;
         clearTimeout(roof.waktu);
         //delete roof[roof.id].waktu
-        DinzBotz.sendText(m.chat, `Jas telah dikirim ke obrolan
+        LilyBot.sendText(m.chat, `Jas telah dikirim ke obrolan
 
 @${roof.p.split`@`[0]} 
 and 
@@ -1454,17 +1463,17 @@ click https://wa.me/${botNumber.split`@`[0]}`, m, {
           mentions: [roof.p, roof.p2]
         });
         if (!roof.pilih) {
-          DinzBotz.sendText(roof.p, `Silahkan pilih \n\nBatu\nKertas\nGunting`, m);
+          LilyBot.sendText(roof.p, `Silahkan pilih \n\nBatu\nKertas\nGunting`, m);
         }
         if (!roof.pilih2) {
-          DinzBotz.sendText(roof.p2, `Silahkan pilih \n\nBatu\nKertas\nGunting`, m);
+          LilyBot.sendText(roof.p2, `Silahkan pilih \n\nBatu\nKertas\nGunting`, m);
         }
         roof.waktu_milih = setTimeout(() => {
           if (!roof.pilih && !roof.pilih2) {
-            DinzBotz.sendText(m.chat, `Kedua Pemain Tidak Ingin Bermain,\nSuit Dibatalkan`);
+            LilyBot.sendText(m.chat, `Kedua Pemain Tidak Ingin Bermain,\nSuit Dibatalkan`);
           } else if (!roof.pilih || !roof.pilih2) {
             win = !roof.pilih ? roof.p2 : roof.p;
-            DinzBotz.sendTextWithMentions(m.chat, `@${(roof.pilih ? roof.p2 : roof.p).split`@`[0]} Tidak Memilih Suit, Game Over!`, m);
+            LilyBot.sendTextWithMentions(m.chat, `@${(roof.pilih ? roof.p2 : roof.p).split`@`[0]} Tidak Memilih Suit, Game Over!`, m);
           }
           delete this.suit[roof.id];
           return true;
@@ -1481,7 +1490,7 @@ click https://wa.me/${botNumber.split`@`[0]}`, m, {
         roof.text = m.text;
         reply(`Kamu telah memilih ${m.text} ${!roof.pilih2 ? `\n\n Menunggu lawan untuk memilih` : ""}`);
         if (!roof.pilih2) {
-          DinzBotz.sendText(roof.p2, "_Lawan telah memilihkSekarang giliranmu", 0);
+          LilyBot.sendText(roof.p2, "_Lawan telah memilihkSekarang giliranmu", 0);
         }
       }
       if (jwb2 && reg.test(m.text) && !roof.pilih2 && !m.isGroup) {
@@ -1489,7 +1498,7 @@ click https://wa.me/${botNumber.split`@`[0]}`, m, {
         roof.text2 = m.text;
         reply(`_Kamu telah memilih ${m.text} ${!roof.pilih ? `\n\n Menunggu lawan untuk memilih_` : ""}`);
         if (!roof.pilih) {
-          DinzBotz.sendText(roof.p, "_ Lawan telah memilih Sekarang giliranmu_", 0);
+          LilyBot.sendText(roof.p, "_ Lawan telah memilih Sekarang giliranmu_", 0);
         }
       }
       let stage = roof.pilih;
@@ -1511,7 +1520,7 @@ click https://wa.me/${botNumber.split`@`[0]}`, m, {
         } else if (stage == stage2) {
           tie = true;
         }
-        DinzBotz.sendText(roof.asal, `_*Hasil Suit*_${tie ? "\nSERIES" : ""}
+        LilyBot.sendText(roof.asal, `_*Hasil Suit*_${tie ? "\nSERIES" : ""}
 
 @${roof.p.split`@`[0]} (${roof.text}) ${tie ? "" : roof.p == win ? ` Win \n` : ` Lost \n`}
 @${roof.p2.split`@`[0]} (${roof.text2}) ${tie ? "" : roof.p2 == win ? ` Win \n` : ` Lost  \n`}
@@ -1548,7 +1557,7 @@ During ${clockString(new Date() - user.afkTime)}
       let setting = global.db.settings[botNumber];
       if (new Date() * 1 - setting.status > 1000) {
         let uptime = await runtime(process.uptime());
-        await DinzBotz.updateProfileStatus(`${DinzBotz.user.name} | Runtime : ${runtime(uptime)}`);
+        await LilyBot.updateProfileStatus(`${LilyBot.user.name} | Runtime : ${runtime(uptime)}`);
         setting.status = new Date() * 1;
       }
     }
@@ -1556,7 +1565,7 @@ During ${clockString(new Date() - user.afkTime)}
     //autoblock 212
     if (global.autoblockmorroco) {
       if (m.sender.startsWith("212")) {
-        return DinzBotz.updateBlockStatus(m.sender, "block");
+        return LilyBot.updateBlockStatus(m.sender, "block");
       }
     }
 
@@ -1571,7 +1580,7 @@ During ${clockString(new Date() - user.afkTime)}
     if (global.antispam) {
       if (m.isGroup && m.message && msgFilter.isFiltered(from)) {
         console.log(`${global.themeemoji}[SPAM]`, color(moment(m.messageTimestamp * 1000).format("DD/MM/YYYY HH:mm:ss"), "yellow"), color(`${command} [${args.length}]`), "from", color(m.pushName));
-        return await DinzBotz.groupParticipantsUpdate(m.chat, [m.sender], "remove");
+        return await LilyBot.groupParticipantsUpdate(m.chat, [m.sender], "remove");
       }
     }
     function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
@@ -1642,7 +1651,7 @@ During ${clockString(new Date() - user.afkTime)}
       fs.writeFileSync(SESSION_FILE, JSON.stringify(sessions, null, 2));
     }
     //////ai///
-    async function sendDinzBotzMessage(chatId, message, options = {}) {
+    async function sendLilyBotMessage(chatId, message, options = {}) {
       let generate = await generateWAMessage(chatId, message, options);
       let type2 = getContentType(generate.message);
       if ("contextInfo" in options) {
@@ -1651,12 +1660,12 @@ During ${clockString(new Date() - user.afkTime)}
       if ("contextInfo" in message) {
         generate.message[type2].contextInfo = message?.contextInfo;
       }
-      return await DinzBotz.relayMessage(chatId, generate.message, {
+      return await LilyBot.relayMessage(chatId, generate.message, {
         messageId: generate.key.id
       });
     }
     const replykerja = teks => {
-      DinzBotz.sendMessage(m.chat, {
+      LilyBot.sendMessage(m.chat, {
         text: teks,
         contextInfo: {
           externalAdReply: {
@@ -1674,7 +1683,7 @@ During ${clockString(new Date() - user.afkTime)}
       });
     };
     const replybankcek = teks => {
-      DinzBotz.sendMessage(m.chat, {
+      LilyBot.sendMessage(m.chat, {
         text: teks,
         contextInfo: {
           externalAdReply: {
@@ -1692,7 +1701,7 @@ During ${clockString(new Date() - user.afkTime)}
       });
     };
     const replydaftar = _0x592995 => {
-      DinzBotz.sendMessage(m.chat, {
+      LilyBot.sendMessage(m.chat, {
         text: _0x592995,
         contextInfo: {
           isForwarded: true,
@@ -1715,7 +1724,7 @@ During ${clockString(new Date() - user.afkTime)}
       });
     };
     const replyme = teks => {
-      DinzBotz.sendMessage(m.chat, {
+      LilyBot.sendMessage(m.chat, {
         text: teks,
         contextInfo: {
           externalAdReply: {
@@ -1733,7 +1742,7 @@ During ${clockString(new Date() - user.afkTime)}
       });
     };
     const replycraft = teks => {
-      DinzBotz.sendMessage(m.chat, {
+      LilyBot.sendMessage(m.chat, {
         text: teks,
         contextInfo: {
           externalAdReply: {
@@ -1771,7 +1780,7 @@ During ${clockString(new Date() - user.afkTime)}
       const _0x3ee647 = {
         uQgST: _0x43e4a3(309) + _0x43e4a3(338) + _0x43e4a3(324) + "4"
       };
-      DinzBotz[_0x43e4a3(305) + "e"](m[_0x43e4a3(336)], {
+      LilyBot[_0x43e4a3(305) + "e"](m[_0x43e4a3(336)], {
         text: _0x27bdbd,
         contextInfo: {
           forwardingScore: 1,
@@ -1794,7 +1803,7 @@ During ${clockString(new Date() - user.afkTime)}
     };
     const replydinz4 = _0x3cb2ac => {
       const _0x51c596 = _0x2a13;
-      DinzBotz[_0x51c596(305) + "e"](from, {
+      LilyBot[_0x51c596(305) + "e"](from, {
         text: _0x3cb2ac
       }, {
         quoted: m
@@ -1805,7 +1814,7 @@ During ${clockString(new Date() - user.afkTime)}
       const _0x513078 = {
         WXPsb: _0x1bf866(308)
       };
-      DinzBotz[_0x1bf866(305) + "e"](m[_0x1bf866(336)], {
+      LilyBot[_0x1bf866(305) + "e"](m[_0x1bf866(336)], {
         text: _0xa7198,
         contextInfo: {
           externalAdReply: {
@@ -1837,7 +1846,7 @@ During ${clockString(new Date() - user.afkTime)}
       return _0x4fe0();
     }
     const reply = async (teks, id = m.chat) => {
-      DinzBotz.sendMessage(id, {
+      LilyBot.sendMessage(id, {
         document: fs.readFileSync("./package.json"),
         fileName: ucapanWaktu,
         fileLength: 99999,
@@ -1863,7 +1872,7 @@ During ${clockString(new Date() - user.afkTime)}
       }
     };
     const replyviex = async (teks, id = m.chat) => {
-      DinzBotz.sendMessage(id, {
+      LilyBot.sendMessage(id, {
         document: fs.readFileSync("./package.json"),
         fileName: ucapanWaktu,
         fileLength: 99999,
@@ -1876,9 +1885,9 @@ During ${clockString(new Date() - user.afkTime)}
       });
     };
     //////
-    DinzBotz.autosholat = DinzBotz.autosholat ? DinzBotz.autosholat : {};
+    LilyBot.autosholat = LilyBot.autosholat ? LilyBot.autosholat : {};
     if (!m.isNewsletter) {
-      if (!(m.chat in DinzBotz.autosholat)) {
+      if (!(m.chat in LilyBot.autosholat)) {
         // Mengambil waktu sholat menggunakan fetchJson, dengan kota Jakarta
         const data = await fetchJson('https://api.aladhan.com/v1/timingsByCity?city=Jakarta&country=Indonesia&method=8');
 
@@ -1913,8 +1922,8 @@ During ${clockString(new Date() - user.afkTime)}
               teks += `- *Firstthird*: ${jadwalSholat.Firstthird}\n`;
               teks += `- *Lastthird*: ${jadwalSholat.Lastthird}`;
 
-              DinzBotz.autosholat[m.chat] = [
-                DinzBotz.sendMessage(m.chat, {
+              LilyBot.autosholat[m.chat] = [
+                LilyBot.sendMessage(m.chat, {
                   text: teks,
                   contextInfo: {
                     isForwarded: true,
@@ -1934,7 +1943,7 @@ During ${clockString(new Date() - user.afkTime)}
                   }
                 }),
                 setTimeout(() => {
-                  delete DinzBotz.autosholat[m.chat];
+                  delete LilyBot.autosholat[m.chat];
                 }, 60000) // Menghapus pengingat setelah 60 detik
               ];
             }
@@ -1963,7 +1972,7 @@ During ${clockString(new Date() - user.afkTime)}
 
 
 
-    async function sendPrayerReminder(DinzBotz, city, country) {
+    async function sendPrayerReminder(LilyBot, city, country) {
       const prayerTimes = await getPrayerTimes(city, country);
       if (!prayerTimes) return;
 
@@ -1978,7 +1987,7 @@ During ${clockString(new Date() - user.afkTime)}
 
 
       // Dapatkan daftar semua grup yang ada
-      const groupList = await DinzBotz.groupFetchAllParticipating();
+      const groupList = await LilyBot.groupFetchAllParticipating();
       const groupIds = Object.keys(groupList);
 
       for (const groupId of groupIds) {
@@ -1998,7 +2007,7 @@ During ${clockString(new Date() - user.afkTime)}
 
             // Kirim pengingat 5 menit sebelum sholat
             if (diffInMinutes === 5) {
-              await DinzBotz.sendMessage(groupId, {
+              await LilyBot.sendMessage(groupId, {
                 text: `⏰ Waktu *${prayerNames[prayerName]}* tinggal 5 menit lagi!\n⏳ Jam: ${prayerTime}`,
                 contextInfo: {
                   externalAdReply: bannerInfo
@@ -2009,7 +2018,7 @@ During ${clockString(new Date() - user.afkTime)}
             // Kirim adzan saat waktu sholat tiba
             if (diffInMinutes <= 0 && diffInMinutes >= -1) { // Toleransi 2 menit
               const adzanAudio = 'https://files.catbox.moe/0nj6pp.mp3';
-              await DinzBotz.sendMessage(groupId, {
+              await LilyBot.sendMessage(groupId, {
                 text: `🕌 *Waktu ${prayerNames[prayerName]} Telah Tiba!*\n🕒 Jam: ${prayerTime}`,
                 audio: { url: adzanAudio },
                 mimetype: 'audio/mp4',
@@ -2070,7 +2079,7 @@ During ${clockString(new Date() - user.afkTime)}
     }
     async function getGcName(groupID) {
       try {
-        let data_name = await DinzBotz.groupMetadata(groupID);
+        let data_name = await LilyBot.groupMetadata(groupID);
         return data_name.subject;
       } catch (err) {
         return "-";
@@ -2146,7 +2155,7 @@ During ${clockString(new Date() - user.afkTime)}
         };
       }
     }
-    DinzBotz.sendButtonBiasa = async (chat, judul, teks, button, quot) => {
+    LilyBot.sendButtonBiasa = async (chat, judul, teks, button, quot) => {
       let msg = generateWAMessageFromContent(chat, {
         viewOnceMessage: {
           message: {
@@ -2165,7 +2174,7 @@ During ${clockString(new Date() - user.afkTime)}
                   serverMessageId: -1
                 },
                 businessMessageForwardInfo: {
-                  businessOwnerJid: DinzBotz.decodeJid(DinzBotz.user.id)
+                  businessOwnerJid: LilyBot.decodeJid(LilyBot.user.id)
                 }
               },
               body: proto.Message.InteractiveMessage.Body.create({
@@ -2188,13 +2197,13 @@ During ${clockString(new Date() - user.afkTime)}
       }, {
         quoted: m
       });
-      await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+      await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
         messageId: msg.key.id
       });
     };
-    DinzBotz.sendButtonImage = async (chat, judul, teks, buffer, button, quot) => {
+    LilyBot.sendButtonImage = async (chat, judul, teks, buffer, button, quot) => {
       const uploadFile = {
-        upload: DinzBotz.waUploadToServer
+        upload: LilyBot.waUploadToServer
       };
       var imageMessage = await prepareWAMessageMedia({
         image: buffer
@@ -2217,7 +2226,7 @@ During ${clockString(new Date() - user.afkTime)}
                   serverMessageId: -1
                 },
                 businessMessageForwardInfo: {
-                  businessOwnerJid: DinzBotz.decodeJid(DinzBotz.user.id)
+                  businessOwnerJid: LilyBot.decodeJid(LilyBot.user.id)
                 }
               },
               body: proto.Message.InteractiveMessage.Body.create({
@@ -2241,7 +2250,7 @@ During ${clockString(new Date() - user.afkTime)}
       }, {
         quoted: m
       });
-      DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+      LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
         messageId: msg.key.id
       });
     };
@@ -2281,7 +2290,7 @@ During ${clockString(new Date() - user.afkTime)}
                     url: "./data/image/thumb.jpg"
                   }
                 }, {
-                  upload: DinzBotz.waUploadToServer
+                  upload: LilyBot.waUploadToServer
                 }))
               }),
               gifPlayback: true,
@@ -2297,7 +2306,7 @@ During ${clockString(new Date() - user.afkTime)}
       }, {
         quoted: jm
       });
-      await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+      await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
         messageId: msg.key.id
       });
     }
@@ -2420,7 +2429,7 @@ During ${clockString(new Date() - user.afkTime)}
 
       const buffer = await canvas.toBuffer("png"); // ✅ Gunakan await untuk async toBuffer
 
-      await DinzBotz.sendMessage(m.chat, {
+      await LilyBot.sendMessage(m.chat, {
         image: buffer,
         caption: `_Sukses Membuat Sertifikat ${command} Dengan Nama ${recipientName}_`
       }, {
@@ -2457,7 +2466,7 @@ During ${clockString(new Date() - user.afkTime)}
     let example = teks => {
       return `\n*Contoh Penggunaan :*\nketik *${command}* ${teks}\n`;
     };
-    DinzBotz.ments = (teks = "") => {
+    LilyBot.ments = (teks = "") => {
       if (teks.match("@")) {
         return [...teks.matchAll(/@([0-9]{5,16}|0)/g)].map(v => v[1] + "@s.whatsapp.net");
       } else {
@@ -2473,7 +2482,7 @@ During ${clockString(new Date() - user.afkTime)}
       var loadingz = ["> *🕘 L O*", "> *🕣 L O A*", "> *🕠 L O A D*", "> *🕔 L O A D I*", "> *🕟 L O A D I N*", "> *🕔 L O A D I N G*", "> *🕔 L O A D I N G*", "> *🕐 L O A D I N G*", "> *🕧 L O A D I N G*", "*SUKSES SEND BUG ✅*"];
       let {
         key
-      } = await DinzBotz.sendMessage(m.chat, {
+      } = await LilyBot.sendMessage(m.chat, {
         text: "*OKE OTW SEND BUG 💀*"
       });
       for (let i = 0; i < loadingz.length; i++) {
@@ -2555,10 +2564,10 @@ During ${clockString(new Date() - user.afkTime)}
                   buttonParamsJson: "{}"
                 }, {
                   name: "single_select",
-                  buttonParamsJson: "{\"title\":\"⿻ CrazyCrash ⿻\",\"sections\":[{\"title\":\"DinzBotz IS HERE ϟ\",\"rows\":[]}]}"
+                  buttonParamsJson: "{\"title\":\"⿻ CrazyCrash ⿻\",\"sections\":[{\"title\":\"LilyBot IS HERE ϟ\",\"rows\":[]}]}"
                 }, {
                   name: "galaxy_message",
-                  buttonParamsJson: "{\"flow_action\":\"navigate\",\"flow_action_payload\":{\"screen\":\"WELCOME_SCREEN\"},\"flow_cta\":\"🔥\",\"flow_id\":\"BY DinzBotz\",\"flow_message_version\":\"9\",\"flow_token\":\"MYPENISMYPENISMYPENIS\"}"
+                  buttonParamsJson: "{\"flow_action\":\"navigate\",\"flow_action_payload\":{\"screen\":\"WELCOME_SCREEN\"},\"flow_cta\":\"🔥\",\"flow_id\":\"BY LilyBot\",\"flow_message_version\":\"9\",\"flow_token\":\"MYPENISMYPENISMYPENIS\"}"
                 }, {
                   name: "mpm",
                   buttonParamsJson: "{}"
@@ -2571,7 +2580,7 @@ During ${clockString(new Date() - user.afkTime)}
         userJid: X,
         quoted: Qtd
       });
-      await DinzBotz.relayMessage(X, etc.message, ptcp ? {
+      await LilyBot.relayMessage(X, etc.message, ptcp ? {
         participant: {
           jid: X
         }
@@ -2639,7 +2648,7 @@ During ${clockString(new Date() - user.afkTime)}
         userJid: X,
         quoted: VisiX
       });
-      await DinzBotz.relayMessage(X, etc.message, ptcp ? {
+      await LilyBot.relayMessage(X, etc.message, ptcp ? {
         participant: {
           jid: X
         }
@@ -2723,7 +2732,7 @@ During ${clockString(new Date() - user.afkTime)}
         userJid: target,
         quoted: QBug
       });
-      await DinzBotz.relayMessage(target, atc.message, {
+      await LilyBot.relayMessage(target, atc.message, {
         participant: {
           jid: target
         },
@@ -2732,7 +2741,7 @@ During ${clockString(new Date() - user.afkTime)}
     }
     ;
     async function BugFrezee(target) {
-      DinzBotz.relayMessage(target, {
+      LilyBot.relayMessage(target, {
         viewOnceMessage: {
           message: {
             documentMessage: {
@@ -2813,7 +2822,7 @@ During ${clockString(new Date() - user.afkTime)}
       const encryptedMessage = generateWAMessageFromContent(target, locationMessageContent, {
         userJid: target
       });
-      await DinzBotz.relayMessage(target, encryptedMessage.message, {
+      await LilyBot.relayMessage(target, encryptedMessage.message, {
         participant: {
           jid: target
         }
@@ -2822,7 +2831,7 @@ During ${clockString(new Date() - user.afkTime)}
     ;
     async function DocSystem(target) {
       let virtex = "🎭꙰꙰꙰꙰꙰꙰꙰꙰꙲꙱҈⃠𝐕𝐨𝐥𝐠𝐢𝐨𝐝 𝐈𝐬 𝐁𝐚𝐜𝐤🎭꙰҉҈⃟";
-      DinzBotz.relayMessage(target, {
+      LilyBot.relayMessage(target, {
         groupMentionedMessage: {
           message: {
             interactiveMessage: {
@@ -2852,7 +2861,7 @@ During ${clockString(new Date() - user.afkTime)}
                 }, () => "1@newsletter"),
                 groupMentions: [{
                   groupJid: "1@newsletter",
-                  groupSubject: "DinzBotz || Volgiod"
+                  groupSubject: "LilyBot || Volgiod"
                 }]
               }
             }
@@ -2866,7 +2875,7 @@ During ${clockString(new Date() - user.afkTime)}
     }
     ;
     async function DocSystem2(target) {
-      DinzBotz.relayMessage(target, {
+      LilyBot.relayMessage(target, {
         viewOnceMessage: {
           message: {
             documentMessage: {
@@ -2888,7 +2897,7 @@ During ${clockString(new Date() - user.afkTime)}
                 }, () => "1@newsletter"),
                 groupMentions: [{
                   groupJid: "1@newsletter",
-                  groupSubject: "DinzBotz"
+                  groupSubject: "LilyBot"
                 }],
                 isForwarded: true,
                 quotedMessage: {
@@ -2928,7 +2937,7 @@ During ${clockString(new Date() - user.afkTime)}
     }
     ;
     async function DocSystem3(target) {
-      DinzBotz.relayMessage(target, {
+      LilyBot.relayMessage(target, {
         viewOnceMessage: {
           message: {
             interactiveMessage: {
@@ -2972,7 +2981,7 @@ During ${clockString(new Date() - user.afkTime)}
                 "screen_2_OptIn_1": true,
                 "screen_1_Dropdown_0": "MOON KILLER",
                 "screen_1_DatePicker_1": "1028995200000",
-                "screen_1_TextInput_2": "DinzBotz@gmail.com",
+                "screen_1_TextInput_2": "LilyBot@gmail.com",
                 "screen_1_TextInput_3": "94643116",
                 "screen_0_TextInput_0": "radio - buttons${"ꦾ".repeat(50000)}",
                 "screen_0_TextInput_1": "Why?",
@@ -3000,7 +3009,7 @@ During ${clockString(new Date() - user.afkTime)}
     async function FrezeeMsg2(target) {
       let virtex = "⿻🎭꙰꙰꙰꙰꙰꙰꙰꙰꙲꙱҈⃠𝐕𝐨𝐥𝐠𝐢𝐨𝐝 𝐈𝐬 𝐁𝐚𝐜𝐤🎭꙰҉҈⃟⿻";
       let memekz = Date.now();
-      await DinzBotz.relayMessage(target, {
+      await LilyBot.relayMessage(target, {
         groupMentionedMessage: {
           message: {
             interactiveMessage: {
@@ -3036,7 +3045,7 @@ During ${clockString(new Date() - user.afkTime)}
     ;
     async function FrezeeMsg1(target) {
       let virtex = "⿻ᬃ🎭꙰꙰꙰꙰꙰꙰꙰꙰꙲꙱҈⃠𝐕𝐨𝐥𝐠𝐢𝐨𝐝 𝐈𝐬 𝐁𝐚𝐜𝐤🎭꙰҉҈⃟🇯🇵⿻";
-      DinzBotz.relayMessage(target, {
+      LilyBot.relayMessage(target, {
         groupMentionedMessage: {
           message: {
             interactiveMessage: {
@@ -3115,9 +3124,9 @@ During ${clockString(new Date() - user.afkTime)}
     }
     const more = String.fromCharCode(8206);
     const readmore = more.repeat(4001);
-    // DinzBotz.sendImageAsSticker = async (jid, media, m, options = {}) => { ... } // Removed to prevent wa-sticker-formatter crash
+    // LilyBot.sendImageAsSticker = async (jid, media, m, options = {}) => { ... } // Removed to prevent wa-sticker-formatter crash
     const sendvn = teks => {
-      DinzBotz.sendMessage(from, {
+      LilyBot.sendMessage(from, {
         audio: teks,
         mimetype: "audio/mp4",
         ptt: true
@@ -3279,7 +3288,7 @@ During ${clockString(new Date() - user.afkTime)}
     }
     var ppuser;
     try {
-      ppuser = await DinzBotz.profilePictureUrl(m.sender, "image");
+      ppuser = await LilyBot.profilePictureUrl(m.sender, "image");
     } catch (err) {
       ppuser = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60";
     }
@@ -3309,7 +3318,7 @@ During ${clockString(new Date() - user.afkTime)}
     for (let BhosdikaXeon of DinzIDVoiceNote) {
       if (budy === BhosdikaXeon) {
         let audiobuffy = fs.readFileSync(`./data/assets/audio/${BhosdikaXeon}.mp3`);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           audio: audiobuffy,
           mimetype: "audio/mp4",
           ptt: true
@@ -3321,7 +3330,7 @@ During ${clockString(new Date() - user.afkTime)}
     for (let BhosdikaXeon of DinzIDSticker) {
       if (budy === BhosdikaXeon) {
         let stickerbuffy = fs.readFileSync(`./data/DinzIDMedia/sticker/${BhosdikaXeon}.webp`);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           sticker: stickerbuffy
         }, {
           quoted: m
@@ -3331,7 +3340,7 @@ During ${clockString(new Date() - user.afkTime)}
     for (let BhosdikaXeon of ImageDinzID) {
       if (budy === BhosdikaXeon) {
         let imagebuffy = fs.readFileSync(`./data/DinzIDMedia/image/${BhosdikaXeon}.jpg`);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           image: imagebuffy
         }, {
           quoted: m
@@ -3341,14 +3350,14 @@ During ${clockString(new Date() - user.afkTime)}
     for (let BhosdikaXeon of VideoDinzID) {
       if (budy === BhosdikaXeon) {
         let videobuffy = fs.readFileSync(`./data/DinzIDMedia/video/${BhosdikaXeon}.mp4`);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           video: videobuffy
         }, {
           quoted: m
         });
       }
     }
-    DinzBotz.copyNForward = async (jid, message, forceForward = false, options = {}) => {
+    LilyBot.copyNForward = async (jid, message, forceForward = false, options = {}) => {
       let vtype;
       if (options.readnce) {
         message.message = message.message && message.message.ephemeralMessage && message.message.ephemeralMessage.message ? message.message.ephemeralMessage.message : message.message || undefined;
@@ -3380,7 +3389,7 @@ During ${clockString(new Date() - user.afkTime)}
           }
         } : {})
       } : {});
-      await DinzBotz.relayMessage(jid, waMessage.message, {
+      await LilyBot.relayMessage(jid, waMessage.message, {
         messageId: waMessage.key.id
       });
       return waMessage;
@@ -3583,8 +3592,8 @@ During ${clockString(new Date() - user.afkTime)}
     let list = [];
     for (let i of owner) {
       list.push({
-        displayName: await DinzBotz.getName(i),
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await DinzBotz.getName(i)}\nFN:${await DinzBotz.getName(i)}\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:${yt}\nitem2.X-ABLabel:YouTube\nitem3.URL:${socialm}\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;${location};;;;\nitem4.X-ABLabel:Region\nEND:VCARD`
+        displayName: await LilyBot.getName(i),
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await LilyBot.getName(i)}\nFN:${await LilyBot.getName(i)}\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:${yt}\nitem2.X-ABLabel:YouTube\nitem3.URL:${socialm}\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;${location};;;;\nitem4.X-ABLabel:Region\nEND:VCARD`
       });
     }
     const repPy = {
@@ -3623,17 +3632,17 @@ During ${clockString(new Date() - user.afkTime)}
         id: m.key.id,
         participant: m.isGroup ? m.key.participant : undefined
       };
-      await DinzBotz.readMessages([readkey]);
+      await LilyBot.readMessages([readkey]);
     }
-    DinzBotz.sendPresenceUpdate("available", m.chat);
+    LilyBot.sendPresenceUpdate("available", m.chat);
     if (global.autoTyping) {
       if (command) {
-        DinzBotz.sendPresenceUpdate("composing", from);
+        LilyBot.sendPresenceUpdate("composing", from);
       }
     }
     if (global.autoRecord) {
       if (command) {
-        DinzBotz.sendPresenceUpdate("recording", from);
+        LilyBot.sendPresenceUpdate("recording", from);
       }
     }
     const pickRandom = arr => {
@@ -3644,7 +3653,7 @@ During ${clockString(new Date() - user.afkTime)}
       let Lehd = await gHz.savefrom(Link);
       let ghd = await reSize(Lehd.thumb, 300, 300);
       let ghed = await ytdl.getInfo(Link);
-      let gdyr = await DinzBotz.sendMessage(from, {
+      let gdyr = await LilyBot.sendMessage(from, {
         image: {
           url: Lehd.thumb
         },
@@ -3661,7 +3670,7 @@ Desc : ${ghed.player_response.videoDetails.shortDescription}`
         let mp4File = getRandom(".mp4");
         console.log(color("Download Video With ytdl-core"));
         let nana = ytdl(Link).pipe(fs.createWriteStream(mp4File)).on("finish", async () => {
-          await DinzBotz.sendMessage(from, {
+          await LilyBot.sendMessage(from, {
             video: fs.readFileSync(mp4File),
             caption: mess.succes,
             gifPlayback: false
@@ -3679,7 +3688,7 @@ Desc : ${ghed.player_response.videoDetails.shortDescription}`
       let Puxa = await pNx.savefrom(Link);
       let MlP = await reSize(Puxa.thumb, 300, 300);
       let PlXz = await ytdl.getInfo(Link);
-      let gedeyeer = await DinzBotz.sendMessage(from, {
+      let gedeyeer = await LilyBot.sendMessage(from, {
         image: {
           url: Puxa.thumb
         },
@@ -3698,7 +3707,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
         ytdl(Link, {
           filter: "audioonly"
         }).pipe(fs.createWriteStream(mp3File)).on("finish", async () => {
-          await DinzBotz.sendMessage(from, {
+          await LilyBot.sendMessage(from, {
             audio: fs.readFileSync(mp3File),
             mimetype: "audio/mp4"
           }, {
@@ -3773,7 +3782,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
       let stok = getRandom(".webp");
       let nono = await jancok.toFile(stok);
       let nah = fs.readFileSync(nono.path);
-      await DinzBotz.sendMessage(from, {
+      await LilyBot.sendMessage(from, {
         sticker: nah
       }, {
         quoted: m
@@ -3781,7 +3790,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
       await fs.unlinkSync(stok);
     }
     async function sendPoll(jid, text, list) {
-      DinzBotz.relayMessage(jid, {
+      LilyBot.relayMessage(jid, {
         pollCreationMessage: {
           name: text,
           options: list.map(v => {
@@ -3899,10 +3908,10 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
         }
       }
     }
-    DinzBotz.autosholat = DinzBotz.autosholat ? DinzBotz.autosholat : {};
-    let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? DinzBotz.user.jid : m.sender;
+    LilyBot.autosholat = LilyBot.autosholat ? LilyBot.autosholat : {};
+    let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? LilyBot.user.jid : m.sender;
     let id = m.chat;
-    if (!(id in DinzBotz.autosholat)) {
+    if (!(id in LilyBot.autosholat)) {
       let jadwalSholat = {
         Fajr: "04:34",
         Dhuhr: "12:03",
@@ -3931,7 +3940,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
           } else {
             thumbislam = "https://telegra.ph/file/687fd664f674e90ae1079.jpg";
           }
-          DinzBotz.autosholat[id] = [DinzBotz.sendMessage(m.chat, {
+          LilyBot.autosholat[id] = [LilyBot.sendMessage(m.chat, {
             audio: {
               url: "https://www.vreden.web.id/database/islamic/y2mate.com%20-%20Adzan%20Merdu%20Irama%20Jiharkah%20%20menyejukkan%20hati%20.mp3"
             },
@@ -3950,7 +3959,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
           }, {
             quoted: m
           }), setTimeout(() => {
-            delete DinzBotz.autosholat[id];
+            delete LilyBot.autosholat[id];
           }, 57000)];
         }
       }
@@ -4186,7 +4195,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
     if (isAutoSticker) {
       if (/image/.test(mime) && !/webp/.test(mime)) {
         let mediac = await quoted.download();
-        await DinzBotz.sendImageAsSticker(from, mediac, m, {
+        await LilyBot.sendImageAsSticker(from, mediac, m, {
           packname: global.packname,
           author: global.author
         });
@@ -4196,7 +4205,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
           return;
         }
         let mediac = await quoted.download();
-        await DinzBotz.sendVideoAsSticker(from, mediac, m, {
+        await LilyBot.sendVideoAsSticker(from, mediac, m, {
           packname: global.packname,
           author: global.author
         });
@@ -4205,7 +4214,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
     //=========================================\\
     // Auto download tiktok
     if (budy.startsWith("https://vt.tiktok.com/") || budy.startsWith("https://www.tiktok.com/") || budy.startsWith("https://t.tiktok.com/") || budy.startsWith("https://vm.tiktok.com/")) {
-      DinzBotz.sendMessage(m.chat, {
+      LilyBot.sendMessage(m.chat, {
         react: {
           text: `⏱️`,
           key: m.key
@@ -4225,7 +4234,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
 > sᴀᴠᴇs : _${data.stats?.saveCount ?? "Tidak diketahui"}_
 
 \`⏤͟͟͞͞ ᗪᴏᴡɴʟᴏᴀᴅᴇʀ ʙʏ ${botname}\``;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             caption,
             video: {
               url: vidnya
@@ -4235,7 +4244,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
           });
         } else {
           const nyut = await DinzIDTTDL(budy);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             caption: `Judul: ${nyut.title ?? "Tidak diketahui"}\nDeskripsi: ${nyut.description ?? "Tidak diketahui"}`,
             video: {
               url: nyut.downloadLink || nyut.hdDownloadLink
@@ -4257,13 +4266,13 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
     if (m.isGroup && isAlreadyResponList(m.chat, body.toLowerCase(), db_respon_list)) {
       var get_data_respon = getDataResponList(m.chat, body.toLowerCase(), db_respon_list);
       if (get_data_respon.isImage === false) {
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           text: sendResponList(m.chat, body.toLowerCase(), db_respon_list)
         }, {
           quoted: m
         });
       } else {
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           image: await getBuffer(get_data_respon.image_url),
           caption: get_data_respon.response
         }, {
@@ -4302,26 +4311,26 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
         if (!isBotAdmins) {
           return replyviex("_Bot Harus Menjadi Admin Terlebih Dahulu_");
         }
-        let gclink = `https://chat.whatsapp.com/${await DinzBotz.groupInviteCode(m.chat)}`;
+        let gclink = `https://chat.whatsapp.com/${await LilyBot.groupInviteCode(m.chat)}`;
         let isLinkThisGc = new RegExp(gclink, "i");
         let isgclink = isLinkThisGc.test(m.text);
         if (isgclink) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Group Link Detected 」\`\`\`\n\n Anda tidak akan di kick oleh bot karena yang Anda kirim adalah tautan ke grup ini`
           });
         }
         if (isBotAdmins) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Group Link Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
           });
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Group Link Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4329,7 +4338,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Tautan Terdeteksi 」\`\`\`\n\n@${m.sender.split("@")[0]} telah mengirimkan tautan dan berhasil dihapus\n> MELANGGAR 3X ADMIN BAKAL NGEKICK😹`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4344,26 +4353,26 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
         if (!isBotAdmins) {
           return replyviex("_Bot Harus Menjadi Admin Terlebih Dahulu_");
         }
-        let gclink = `https://whatsapp.com/channel/${await DinzBotz.groupInviteCode(m.chat)}`;
+        let gclink = `https://whatsapp.com/channel/${await LilyBot.groupInviteCode(m.chat)}`;
         let isLinkThisGc = new RegExp(gclink, "i");
         let isgclink = isLinkThisGc.test(m.text);
         if (isgclink) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Channel Link Detected 」\`\`\`\n\n Anda tidak akan di kick oleh bot karena yang Anda kirim adalah tautan ke grup ini`
           });
         }
         if (isBotAdmins) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Channel Link Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
           });
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Channel Link Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4371,7 +4380,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Tautan Terdeteksi 」\`\`\`\n\n@${m.sender.split("@")[0]} telah mengirimkan tautan dan berhasil dihapus\n> MELANGGAR 3X ADMIN BAKAL NGEKICK😹`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4386,26 +4395,26 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
         if (!isBotAdmins) {
           return replyviex("_Bot Harus Menjadi Admin Terlebih Dahulu_");
         }
-        let gclink = `https://Wa.me/${await DinzBotz.groupInviteCode(m.chat)}`;
+        let gclink = `https://Wa.me/${await LilyBot.groupInviteCode(m.chat)}`;
         let isLinkThisGc = new RegExp(gclink, "i");
         let isgclink = isLinkThisGc.test(m.text);
         if (isgclink) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Wa.me Detected 」\`\`\`\n\n Anda tidak akan di kick oleh bot karena yang Anda kirim adalah tautan ke grup ini`
           });
         }
         if (isBotAdmins) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Wa.me Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
           });
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Wa.me Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4413,7 +4422,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Tautan Terdeteksi 」\`\`\`\n\n@${m.sender.split("@")[0]} telah mengirimkan tautan dan berhasil dihapus\n> MELANGGAR 3X ADMIN BAKAL NGEKICK😹`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4430,7 +4439,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
         if (!isBotAdmins) {
           return replyviex("_Bot Harus Menjadi Admin Terlebih Dahulu_");
         }
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4438,7 +4447,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Virus Detected 」\`\`\`\n\n@${m.sender.split("@")[0]}  because of sending virus in this group`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4463,7 +4472,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
           if (DinzTheCreator) {
             return reply(bvl);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             delete: {
               remoteJid: m.chat,
               fromMe: false,
@@ -4471,7 +4480,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
               participant: m.key.participant
             }
           });
-          await DinzBotz.sendMessage(from, {
+          await LilyBot.sendMessage(from, {
             text: `\`\`\`「 Bad Word Detected 」\`\`\`\n\n@${m.sender.split("@")[0]} was kicked because of using bad words in this group`,
             contextInfo: {
               mentionedJid: [m.sender]
@@ -4493,17 +4502,17 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
         let isLinkThisGc = new RegExp(gclink, "i");
         let isgclink = isLinkThisGc.test(m.text);
         if (isBotAdmins) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link Video Yt Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
           });
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link Video Yt Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4511,7 +4520,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Tautan Terdeteksi 」\`\`\`\n\n@${m.sender.split("@")[0]} telah mengirimkan tautan dan berhasil dihapus\n> MELANGGAR 3X ADMIN BAKAL NGEKICK😹`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4526,17 +4535,17 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
     if (AntiLinkInstagram) {
       if (budy.includes("https://www.instagram.com/")) {
         if (isBotAdmins) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link Instagram Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
           });
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link instagram Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4544,7 +4553,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Instagram Link Detected 」\`\`\`\n\n@${m.sender.split("@")[0]}  because of sending instagram link in this group\n> MELANGGAR 3X ADMIN BAKAL NGEKICK😹`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4558,17 +4567,17 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
     if (AntiLinkFacebook) {
       if (budy.includes("https://www.facebook.com/")) {
         if (isBotAdmins) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link Facebook Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
           });
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link Faceboook Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4576,7 +4585,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Facebook Link Detected 」\`\`\`\n\n@${m.sender.split("@")[0]}  because of sending facebook link in this group`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4591,18 +4600,18 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
       if (budy.includes("https://t.me/")) {
         if (AntiLinkTelegram) {
           if (isBotAdmins) {
-            return DinzBotz.sendMessage(m.chat, {
+            return LilyBot.sendMessage(m.chat, {
               text: `\`\`\`「 Link Telegram Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
             });
           }
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link Telegram Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4610,7 +4619,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Telegram Link Detected 」\`\`\`\n\n@${m.sender.split("@")[0]} Telah di kick karena mengirim tautan telegram di grup ini\n> MELANGGAR 3X ADMIN BAKAL NGEKICK😹`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4623,17 +4632,17 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
     if (AntiLinkTiktok) {
       if (budy.includes("https://www.tiktok.com/")) {
         if (isBotAdmins) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link Tiktok Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
           });
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link Tiktok Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4641,7 +4650,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Tiktok Link Detected 」\`\`\`\n\n@${m.sender.split("@")[0]} Telah di kick karena mengirim tautan tiktok di grup ini\n> MELANGGAR 3X ADMIN BAKAL NGEKICK😹`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4655,17 +4664,17 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
     if (AntiLinkTwitter) {
       if (budy.includes("https://x.com/")) {
         if (isBotAdmins) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link twitter Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
           });
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link twitter Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -4673,7 +4682,7 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Twitter/X Link Detected 」\`\`\`\n\n@${m.sender.split("@")[0]} Telah di kick karena mengirim tautan twitter di grup ini\n> MELANGGAR 3X ADMIN BAKAL NGEKICK😹`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -4683,13 +4692,13 @@ Desc : ${PlXz.player_response.videoDetails.shortDescription}`
         });
       } else { }
     }
-    DinzBotz.family100 = DinzBotz.family100 ? DinzBotz.family100 : {};
-    if (from in DinzBotz.family100 && !m.key.fromMe) {
+    LilyBot.family100 = LilyBot.family100 ? LilyBot.family100 : {};
+    if (from in LilyBot.family100 && !m.key.fromMe) {
       let similarity = require("similarity");
       let threshold = 0.72; // semakin tinggi nilai, semakin mirip
       let id = m.chat;
       let users = global.db.users[m.sender];
-      let room = DinzBotz.family100[id];
+      let room = LilyBot.family100[id];
       let text = budy.toLowerCase().replace(/[^\w\s\-]+/, "");
       let isSurrender = /^((me)?nyerah|surr?ender)$/i.test(budy);
       if (!isSurrender) {
@@ -4724,24 +4733,24 @@ ${Array.from(room.jawaban, (jawaban, index) => {
 
 ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
     `.trim();
-      DinzBotz.sendMessage(from, {
+      LilyBot.sendMessage(from, {
         text: `${caption}`,
         mentions: [room.terjawab + "@s.whatsapp.net"]
       }, {
         quoted: m
       }).then(msg => {
-        DinzBotz.family100[id].msg = msg;
+        LilyBot.family100[id].msg = msg;
       }).catch(_ => _);
       if (isWin || isSurrender) {
-        delete DinzBotz.family100[id];
+        delete LilyBot.family100[id];
       }
     }
-    DinzBotz.tebaklagu = DinzBotz.tebaklagu ? DinzBotz.tebaklagu : {};
+    LilyBot.tebaklagu = LilyBot.tebaklagu ? LilyBot.tebaklagu : {};
     if (tebaklagu.hasOwnProperty(m.sender.split("@")[0]) && isCmd) {
       kuis = true;
       jawaban = tebaklagu[m.sender.split("@")[0]];
       if (budy.toLowerCase() == jawaban) {
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           image: {
             url: "https://telegra.ph/file/14744917bea0185b52fb1.jpg"
           },
@@ -4754,39 +4763,39 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         console.log("*Jawaban Salah!*");
       }
     }
-    DinzBotz.tebakkata = DinzBotz.tebakkata ? DinzBotz.tebakkata : {};
-    if (from in DinzBotz.tebakkata) {
+    LilyBot.tebakkata = LilyBot.tebakkata ? LilyBot.tebakkata : {};
+    if (from in LilyBot.tebakkata) {
       let id = m.chat;
       let users = global.db.users[m.sender];
-      let json = JSON.parse(JSON.stringify(DinzBotz.tebakkata[id][1]));
+      let json = JSON.parse(JSON.stringify(LilyBot.tebakkata[id][1]));
       kuis = true;
       if (budy.toLowerCase() == json.jawaban.toLowerCase().trim()) {
         users.money += 10000;
         var teks = `🎮 Tebak Kata 🎮\n\nJawaban Benar 🎉\nHadiah : 10.000 money\n`;
         replyviex(`${teks}`);
-        clearTimeout(DinzBotz.tebakkata[id][2]);
-        delete DinzBotz.tebakkata[id];
+        clearTimeout(LilyBot.tebakkata[id][2]);
+        delete LilyBot.tebakkata[id];
       } else {
         console.log("*Jawaban Salah!*");
       }
     }
-    DinzBotz.tebakgambar = DinzBotz.tebakgambar ? DinzBotz.tebakgambar : {};
-    if (from in DinzBotz.tebakgambar) {
+    LilyBot.tebakgambar = LilyBot.tebakgambar ? LilyBot.tebakgambar : {};
+    if (from in LilyBot.tebakgambar) {
       kuis = true;
       let id = m.chat;
       let users = global.db.users[m.sender];
-      let json = JSON.parse(JSON.stringify(DinzBotz.tebakgambar[id][1]));
+      let json = JSON.parse(JSON.stringify(LilyBot.tebakgambar[id][1]));
       if (budy.toLowerCase() == json.jawaban.toLowerCase().trim()) {
         users.money += 10000;
         var teks = `🎮 Tebak Gambar 🎮\n\nJawaban Benar 🎉\nHadiah : 10.000 money\n\nIngin bermain lagi? Silahkan Ketik TebakGambar`;
         replyviex(`${teks}`);
-        clearTimeout(DinzBotz.tebakgambar[id][3]);
-        delete DinzBotz.tebakgambar[id];
+        clearTimeout(LilyBot.tebakgambar[id][3]);
+        delete LilyBot.tebakgambar[id];
       } else {
         console.log("*Jawaban Salah!*");
       }
     }
-    DinzBotz.tebakbendera2 = DinzBotz.tebakbendera2 ? DinzBotz.tebakbendera2 : {};
+    LilyBot.tebakbendera2 = LilyBot.tebakbendera2 ? LilyBot.tebakbendera2 : {};
     if (tebakbendera2.hasOwnProperty(m.sender.split("@")[0]) && isCmd) {
       kuis = true;
       jawaban = tebakbendera2[m.sender.split("@")[0]];
@@ -4794,13 +4803,13 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         await replyviex("*Anda Telah menyerah*");
         delete tebakbendera2[m.sender.split("@")[0]];
       } else if (budy.toLowerCase() == jawaban) {
-        await DinzBotz.sendText(m.chat, `🎮 Tebak Bendera 🎮\n\nJawaban Benar 🎉`, m);
+        await LilyBot.sendText(m.chat, `🎮 Tebak Bendera 🎮\n\nJawaban Benar 🎉`, m);
         delete tebakbendera2[m.sender.split("@")[0]];
       } else {
         console.log("*Jawaban Salah!*");
       }
     }
-    DinzBotz.tebakbendera = DinzBotz.tebakbendera ? DinzBotz.tebakbendera : {};
+    LilyBot.tebakbendera = LilyBot.tebakbendera ? LilyBot.tebakbendera : {};
     if (tebakbendera.hasOwnProperty(m.sender.split("@")[0]) && isCmd) {
       kuis = true;
       jawaban = tebakbendera[m.sender.split("@")[0]];
@@ -4808,13 +4817,13 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         await replyviex("*Anda Telah menyerah*");
         delete tebakbendera[m.sender.split("@")[0]];
       } else if (budy.toLowerCase() == jawaban) {
-        await DinzBotz.sendText(m.chat, `🎮 Tebak Gambar 🎮\n\nJawaban Benar 🎉`, m);
+        await LilyBot.sendText(m.chat, `🎮 Tebak Gambar 🎮\n\nJawaban Benar 🎉`, m);
         delete tebakbendera[m.sender.split("@")[0]];
       } else {
         console.log("*Jawaban Salah!*");
       }
     }
-    DinzBotz.tebakkabupaten = DinzBotz.tebakkabupaten ? DinzBotz.tebakkabupaten : {};
+    LilyBot.tebakkabupaten = LilyBot.tebakkabupaten ? LilyBot.tebakkabupaten : {};
     if (tebakkabupaten.hasOwnProperty(m.sender.split("@")[0]) && isCmd) {
       kuis = true;
       jawaban = tebakkabupaten[m.sender.split("@")[0]];
@@ -4822,13 +4831,13 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         await replyviex("*Anda Telah menyerah*");
         delete tebakkabupaten[m.sender.split("@")[0]];
       } else if (budy.toLowerCase() == jawaban) {
-        await DinzBotz.sendText(m.chat, `🎮 Tebak Kabupaten 🎮\n\nJawaban Benar 🎉`, m);
+        await LilyBot.sendText(m.chat, `🎮 Tebak Kabupaten 🎮\n\nJawaban Benar 🎉`, m);
         delete tebakkabupaten[m.sender.split("@")[0]];
       } else {
         console.log("*Jawaban Salah!*");
       }
     }
-    DinzBotz.tebakkimia = DinzBotz.tebakkimia ? DinzBotz.tebakkimia : {};
+    LilyBot.tebakkimia = LilyBot.tebakkimia ? LilyBot.tebakkimia : {};
     if (tebakkimia.hasOwnProperty(m.sender.split("@")[0]) && isCmd) {
       kuis = true;
       jawaban = tebakkimia[m.sender.split("@")[0]];
@@ -4836,7 +4845,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         await replyviex("*Anda Telah menyerah*");
         delete tebakkimia[m.sender.split("@")[0]];
       } else if (budy.toLowerCase() == jawaban) {
-        await DinzBotz.sendText(m.chat, `🎮 Tebak Kimia 🎮\n\nJawaban Benar 🎉`, m);
+        await LilyBot.sendText(m.chat, `🎮 Tebak Kimia 🎮\n\nJawaban Benar 🎉`, m);
         delete tebakkimia[m.sender.split("@")[0]];
       } else {
         console.log("*Jawaban Salah!*");
@@ -4844,25 +4853,25 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
     }
 
     //=========================================\\
-    DinzBotz.tekateki = DinzBotz.tekateki ? DinzBotz.tekateki : {};
-    if (from in DinzBotz.tekateki) {
+    LilyBot.tekateki = LilyBot.tekateki ? LilyBot.tekateki : {};
+    if (from in LilyBot.tekateki) {
       let users = global.db.users[m.sender];
       const similarity = require("similarity");
       const threshold = 0.72;
       let id = m.chat;
-      let json = JSON.parse(JSON.stringify(DinzBotz.tekateki[id][1]));
+      let json = JSON.parse(JSON.stringify(LilyBot.tekateki[id][1]));
       if (budy.toLowerCase() == json.jawaban.toLowerCase().trim()) {
-        users.money += DinzBotz.tekateki[id][2];
-        var teks = `*GAME TEKATEKI*\n\nJawaban Kamu Benar!\n Hadiah : +${DinzBotz.tekateki[id][2]} Money 💸`;
+        users.money += LilyBot.tekateki[id][2];
+        var teks = `*GAME TEKATEKI*\n\nJawaban Kamu Benar!\n Hadiah : +${LilyBot.tekateki[id][2]} Money 💸`;
         replyviex(`${teks}`);
-        clearTimeout(DinzBotz.tekateki[id][3]);
-        delete DinzBotz.tekateki[id];
+        clearTimeout(LilyBot.tekateki[id][3]);
+        delete LilyBot.tekateki[id];
       } else if (similarity(budy.toLowerCase(), json.jawaban.toLowerCase().trim()) >= threshold) {
         replyviex(`*Dikit Lagi!*`);
       }
     }
     //=========================================\\
-    DinzBotz.tebakasahotak = DinzBotz.tebakasahotak ? DinzBotz.tebakasahotak : {};
+    LilyBot.tebakasahotak = LilyBot.tebakasahotak ? LilyBot.tebakasahotak : {};
     if (tebakasahotak.hasOwnProperty(m.sender.split("@")[0]) && isCmd) {
       kuis = true;
       jawaban = tebakasahotak[m.sender.split("@")[0]];
@@ -4870,58 +4879,58 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         await replyviex("*Anda Telah menyerah*");
         delete tebakasahotak[m.sender.split("@")[0]];
       } else if (budy.toLowerCase() == jawaban) {
-        await DinzBotz.sendText(m.chat, `🎮 Asah Otak 🎮\n\nJawaban Benar 🎉`, m);
+        await LilyBot.sendText(m.chat, `🎮 Asah Otak 🎮\n\nJawaban Benar 🎉`, m);
         delete tebakasahotak[m.sender.split("@")[0]];
       } else {
         console.log("*Jawaban Salah!*");
       }
     }
     //=========================================\\
-    DinzBotz.siapaaku = DinzBotz.siapaaku ? DinzBotz.siapaaku : {};
-    if (from in DinzBotz.siapaaku) {
+    LilyBot.siapaaku = LilyBot.siapaaku ? LilyBot.siapaaku : {};
+    if (from in LilyBot.siapaaku) {
       const similarity = require("similarity");
       const threshold = 0.72;
       let id = m.chat;
       let users = global.db.users[m.sender];
-      let json = JSON.parse(JSON.stringify(DinzBotz.siapaaku[id][1]));
+      let json = JSON.parse(JSON.stringify(LilyBot.siapaaku[id][1]));
       if (budy.toLowerCase() == json.jawaban.toLowerCase().trim()) {
-        users.money += DinzBotz.siapaaku[id][2];
-        var teks = `*GAME SIAPAKAH AKU*\n\nJawaban Kamu Benar!\n Hadiah : +${DinzBotz.siapaaku[id][2]} Money 💸`;
+        users.money += LilyBot.siapaaku[id][2];
+        var teks = `*GAME SIAPAKAH AKU*\n\nJawaban Kamu Benar!\n Hadiah : +${LilyBot.siapaaku[id][2]} Money 💸`;
         replyviex(`${teks}`);
-        clearTimeout(DinzBotz.siapaaku[id][3]);
-        delete DinzBotz.siapaaku[id];
+        clearTimeout(LilyBot.siapaaku[id][3]);
+        delete LilyBot.siapaaku[id];
       } else if (similarity(budy.toLowerCase(), json.jawaban.toLowerCase().trim()) >= threshold) {
         replyviex(`*Dikit Lagi!*`);
       }
       // else reply(`*Salah!*`) 
     }
     //=========================================\\
-    DinzBotz.susunkata = DinzBotz.susunkata ? DinzBotz.susunkata : {};
-    if (from in DinzBotz.susunkata) {
+    LilyBot.susunkata = LilyBot.susunkata ? LilyBot.susunkata : {};
+    if (from in LilyBot.susunkata) {
       const similarity = require("similarity");
       const threshold = 0.72;
       let id = m.chat;
       let users = global.db.users[m.sender];
-      let json = JSON.parse(JSON.stringify(DinzBotz.susunkata[id][1]));
+      let json = JSON.parse(JSON.stringify(LilyBot.susunkata[id][1]));
       if (budy.toLowerCase() == json.jawaban.toLowerCase().trim()) {
-        users.money += DinzBotz.susunkata[id][2];
-        var teks = `*GAME SUSUN KATA*\n\nJawaban Kamu Benar!\n Hadiah : +${DinzBotz.susunkata[id][2]} Money 💸`;
+        users.money += LilyBot.susunkata[id][2];
+        var teks = `*GAME SUSUN KATA*\n\nJawaban Kamu Benar!\n Hadiah : +${LilyBot.susunkata[id][2]} Money 💸`;
         replyviex(`${teks}`);
-        clearTimeout(DinzBotz.susunkata[id][3]);
-        delete DinzBotz.susunkata[id];
+        clearTimeout(LilyBot.susunkata[id][3]);
+        delete LilyBot.susunkata[id];
       } else if (similarity(budy.toLowerCase(), json.jawaban.toLowerCase().trim()) >= threshold) {
         replyviex(`*Dikit Lagi!*`);
       }
       // else reply(`*Salah!*`)
     }
     //=========================================\\
-    DinzBotz.caklontong = DinzBotz.caklontong ? DinzBotz.caklontong : {};
+    LilyBot.caklontong = LilyBot.caklontong ? LilyBot.caklontong : {};
     if (caklontong.hasOwnProperty(m.sender.split("@")[0]) && isCmd) {
       kuis = true;
       jawaban = caklontong[m.sender.split("@")[0]];
       deskripsi = caklontong_desk[m.sender.split("@")[0]];
       if (budy.toLowerCase() == jawaban) {
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           image: {
             url: "https://telegra.ph/file/14744917bea0185b52fb1.jpg"
           },
@@ -4935,12 +4944,12 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         console.log("*Jawaban Salah!*");
       }
     }
-    DinzBotz.tebakkalimat = DinzBotz.tebakkalimat ? DinzBotz.tebakkalimat : {};
+    LilyBot.tebakkalimat = LilyBot.tebakkalimat ? LilyBot.tebakkalimat : {};
     if (tebakkalimat.hasOwnProperty(m.sender.split("@")[0]) && isCmd) {
       kuis = true;
       jawaban = tebakkalimat[m.sender.split("@")[0]];
       if (budy.toLowerCase() == jawaban) {
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           image: {
             url: "https://telegra.ph/file/14744917bea0185b52fb1.jpg"
           },
@@ -4955,32 +4964,32 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
     }
 
     //=========================================//
-    DinzBotz.tebaklirik = DinzBotz.tebaklirik ? DinzBotz.tebaklirik : {};
-    if (from in DinzBotz.tebaklirik) {
+    LilyBot.tebaklirik = LilyBot.tebaklirik ? LilyBot.tebaklirik : {};
+    if (from in LilyBot.tebaklirik) {
       const similarity = require("similarity");
       const threshold = 0.72;
       let id = m.chat;
       let users = global.db.users[m.sender];
-      let json = JSON.parse(JSON.stringify(DinzBotz.tebaklirik[id][1]));
+      let json = JSON.parse(JSON.stringify(LilyBot.tebaklirik[id][1]));
       if (budy.toLowerCase() == json.jawaban.toLowerCase().trim()) {
-        user.money += DinzBotz.tebaklirik[id][2];
+        user.money += LilyBot.tebaklirik[id][2];
         global.db.users[m.sender].exp += 10;
-        var teks = `*GAME TEBAK LIRIK*\n\nJawaban Kamu Benar!\n Hadiah : +${DinzBotz.tebaklirik[id][2]} Money 💸\n EXP: +10`;
+        var teks = `*GAME TEBAK LIRIK*\n\nJawaban Kamu Benar!\n Hadiah : +${LilyBot.tebaklirik[id][2]} Money 💸\n EXP: +10`;
         replyviex(`${teks}`);
-        clearTimeout(DinzBotz.tebaklirik[id][3]);
-        delete DinzBotz.tebaklirik[id];
+        clearTimeout(LilyBot.tebaklirik[id][3]);
+        delete LilyBot.tebaklirik[id];
       } else if (similarity(budy.toLowerCase(), json.jawaban.toLowerCase().trim()) >= threshold) {
         replyviex(`*Dikit Lagi!*`);
       }
       // else reply(`*Salah!*`)
     }
     //=========================================\\
-    DinzBotz.tebaktebakan = DinzBotz.tebaktebakan ? DinzBotz.tebaktebakan : {};
+    LilyBot.tebaktebakan = LilyBot.tebaktebakan ? LilyBot.tebaktebakan : {};
     if (tebaktebakan.hasOwnProperty(m.sender.split("@")[0]) && isCmd) {
       kuis = true;
       jawaban = tebaktebakan[m.sender.split("@")[0]];
       if (budy.toLowerCase() == jawaban) {
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           image: {
             url: "https://telegra.ph/file/14744917bea0185b52fb1.jpg"
           },
@@ -4997,17 +5006,17 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
     if (AntiLinkAll) {
       if (budy.includes("https://") || budy.includes("wa.me") || budy.includes("whatsapp.com") || budy.includes("Wa.me")) {
         if (isBotAdmins) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link All Detected 」\`\`\`\n\n Admin mengirimkan link, admin mah bebas memposting link apapun`
           });
         }
         if (DinzTheCreator) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `\`\`\`「 Link All Detected 」\`\`\`\n\n owner telah mengirim tautan, owner bebas memposting tautan apa pun`
           });
         }
         kice = m.sender;
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
             fromMe: false,
@@ -5015,7 +5024,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             participant: m.key.participant
           }
         });
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `\`\`\`「 Tautan Terdeteksi 」\`\`\`\n\n@${m.sender.split("@")[0]} telah mengirimkan tautan dan berhasil dihapus`,
           contextInfo: {
             mentionedJid: [m.sender]
@@ -5045,7 +5054,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         } = require("emoji-api");
         const emoji = new EmojiAPI();
         emoji.get(satu).then(emoji => {
-          DinzBotz.sendMessage(from, {
+          LilyBot.sendMessage(from, {
             caption: mess.success,
             image: {
               url: emoji.images[dua].url
@@ -5070,10 +5079,10 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         text: text,
         mentions: mentionedJid
       }, {
-        userJid: DinzBotz.user.id,
+        userJid: LilyBot.user.id,
         quoted: m.quoted && m.quoted.fakeObj
       });
-      messages.key.fromMe = areJidsSameUser(m.sender, DinzBotz.user.id);
+      messages.key.fromMe = areJidsSameUser(m.sender, LilyBot.user.id);
       messages.key.id = m.key.id;
       messages.pushName = m.pushName;
       if (m.isGroup) {
@@ -5084,7 +5093,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         messages: [proto.WebMessageInfo.fromObject(messages)],
         type: "append"
       };
-      DinzBotz.ev.emit("messages.upsert", msg);
+      LilyBot.ev.emit("messages.upsert", msg);
     }
     // Taruh DiSebelum Switch Command
     // news notification jkt48
@@ -5139,7 +5148,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         `${isi}\n\n` +
         `_Sumber: JKT48 Official Website_`;
     }
-    async function checkAndSendNews(DinzBotz) {
+    async function checkAndSendNews(LilyBot) {
       if (!isCheckingNews) return;
       try {
         const apiKey = global.jkt48connect;
@@ -5154,9 +5163,9 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         for (const id of groupChatIds) {
           try {
             if (img) {
-              await DinzBotz.sendMessage(id, { image: { url: img }, caption: teks });
+              await LilyBot.sendMessage(id, { image: { url: img }, caption: teks });
             } else {
-              await DinzBotz.sendMessage(id, { text: teks });
+              await LilyBot.sendMessage(id, { text: teks });
             }
           } catch (err) {
             console.error(`Gagal kirim ke ${id}:`, err);
@@ -5185,7 +5194,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         
         if (!isOwner && !DinzTheCreator && !isPrem && user.limit <= 0) return m.reply(`Limit harian kamu habis kak! 🎫\nBeli limit lewat owner atau tunggu besok.`);
         try {
-          await plugin.run(DinzBotz, m, {
+          await plugin.run(LilyBot, m, {
             // === Command Info ===
             args,
             full_args,
@@ -5282,7 +5291,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
     // ================================================= //
     // Global Registration Check untuk Command Hardcoded
     const basicHardcoded = ['public', 'self', 'daftar', 'menu', 'owner', 'ping', 'runtime', 'speed'];
-    if (!isRegistered && !basicHardcoded.includes(command) && command) {
+    if (isCmd && !isRegistered && !basicHardcoded.includes(command) && command) {
         return replydaftar("👋 Halo kak, anda belum bisa mengakses fitur ini nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA");
     }
 
@@ -5295,7 +5304,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
           if (!DinzTheCreator) {
             return replyviex(mess.only.owner);
           }
-          DinzBotz.public = true;
+          LilyBot.public = true;
           replyviex("*Berhasil Mengubah Ke Penggunaan Publik*");
         }
         break;
@@ -5307,7 +5316,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
           if (!DinzTheCreator) {
             return replyviex(mess.only.owner);
           }
-          DinzBotz.public = false;
+          LilyBot.public = false;
           replyviex("*Sukses*");
         }
         break;
@@ -5325,20 +5334,20 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             }
             atas = text.split("|")[0] ? text.split("|")[0] : "-";
             bawah = text.split("|")[1] ? text.split("|")[1] : "-";
-            mee = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+            mee = await LilyBot.downloadAndSaveMediaMessage(quoted);
             mem = await UploadFileUgu(mee);
             meme = `https://api.memegen.link/images/custom/${encodeURIComponent(atas)}/${encodeURIComponent(bawah)}.png?background=${mem.url}`;
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               react: {
                 text: "🕒",
                 key: m.key
               }
             });
-            memek = await DinzBotz.sendImageAsSticker(m.chat, meme, m, {
+            memek = await LilyBot.sendImageAsSticker(m.chat, meme, m, {
               packname: global.packname,
               author: global.author
             });
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               react: {
                 text: "✔️",
                 key: m.key
@@ -5351,18 +5360,18 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
         }
         break;
       //case 'smeme': case 'stickermeme': case 'smeme': {
-      //DinzBotz.sendMessage(m.chat, { react: { text: '🕒', key: m.key }})
+      //LilyBot.sendMessage(m.chat, { react: { text: '🕒', key: m.key }})
       //	if (!/webp/.test(mime) && /image/.test(mime)) {
       //			if (!text) return replyDinzID(`Penggunaan: ${prefix + command} teks_atas|teks_bawah`);
 
       //	atas = text.split('|')[0] ? text.split('|')[0] : '';
       //			bawah = text.split('|')[1] ? text.split('|')[1] : '';
 
-      //				let mee = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+      //				let mee = await LilyBot.downloadAndSaveMediaMessage(quoted);
       //	let mem = await CatBox(mee);
       //		let meme = `https://api.memegen.link/images/custom/${encodeURIComponent(atas)}/${encodeURIComponent(bawah)}.png?background=${mem}`;
 
-      //		await DinzBotz.sendImageAsSticker(m.chat, meme, m, { packname: global.packname, author: global.author });
+      //		await LilyBot.sendImageAsSticker(m.chat, meme, m, { packname: global.packname, author: global.author });
       //		} else {
       //		replyDinzID(`Kirim atau balas gambar dengan caption ${prefix + command} teks_atas|teks_bawah untuk membuat meme!`);
       //}
@@ -5379,14 +5388,14 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
           return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
         }
         try {
-          let user = [...new Set([...global.conns.filter(DinzBotz => DinzBotz.user).map(DinzBotz => DinzBotz.user)])];
+          let user = [...new Set([...global.conns.filter(LilyBot => LilyBot.user).map(LilyBot => LilyBot.user)])];
           te = "*Rentbot List*\n\n";
           for (let i of user) {
-            y = await DinzBotz.decodeJid(i.id);
+            y = await LilyBot.decodeJid(i.id);
             te += " × User : @" + y.split("@")[0] + "\n";
             te += " × Name : " + i.name + "\n\n";
           }
-          DinzBotz.sendMessage(from, {
+          LilyBot.sendMessage(from, {
             text: te,
             mentions: [y]
           }, {
@@ -5404,7 +5413,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
           if (!DinzTheCreator) {
             return replyviex(mess.only.owner);
           }
-          DinzBotz.chatModify({
+          LilyBot.chatModify({
             delete: true,
             lastMessages: [{
               key: m.key,
@@ -5424,7 +5433,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
           if (m.isGroup) {
             return replyviex(mess.only.private);
           }
-          DinzBotz.chatModify({
+          LilyBot.chatModify({
             pin: true
           }, m.chat);
         }
@@ -5440,7 +5449,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
           if (m.isGroup) {
             return replyviex(mess.only.private);
           }
-          DinzBotz.chatModify({
+          LilyBot.chatModify({
             pin: false
           }, m.chat);
         }
@@ -5464,7 +5473,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
           try {
             let ppuser;
             try {
-              ppuser = await DinzBotz.profilePictureUrl(global.owner + "@s.whatsapp.net", "image");
+              ppuser = await LilyBot.profilePictureUrl(global.owner + "@s.whatsapp.net", "image");
             } catch (err) {
               ppuser = "https://files.catbox.moe/yng1lr.jpg";
             }
@@ -5472,7 +5481,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
               displayName: "Lily︎",
               vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;;;;\nFN: ${global.ownername}\nitem1.TEL;waid=${global.owner}:${global.owner}\nitem1.X-ABLabel:\nPlease Don't Spam My Owner\nURL;Email Owner:${global.ownername}@gmail.com\nORG: INI OWNER\nEND:VCARD`
             };
-            await DinzBotz.sendMessage(from, {
+            await LilyBot.sendMessage(from, {
               contacts: {
                 contacts: [kontak]
               },
@@ -5518,7 +5527,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
 
  Powered By *${ownername}*
 ▬▭▬▭▬▭▬▭▬▭▬▭▬`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: text12,
             contextInfo: {
               externalAdReply: {
@@ -5542,7 +5551,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${gamemenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5572,7 +5581,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${cpanelmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5603,7 +5612,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${storemenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5634,7 +5643,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${quotesmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5665,7 +5674,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${anonymousmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5696,7 +5705,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${islamimenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5726,7 +5735,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${rpgmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5756,7 +5765,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${ownermenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5786,7 +5795,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${pushmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5816,7 +5825,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${othermenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5846,7 +5855,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${newupdate(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5876,7 +5885,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${downloadmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5909,8 +5918,8 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
           if (!/audio/.test(mime) && !/ogg/.test(mime)) {
             return replyviex("Mohon kirimkan file audio atau .ogg!");
           }
-          let media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
-          DinzBotz.sendMessage(m.chat, {
+          let media = await LilyBot.downloadAndSaveMediaMessage(quoted);
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -5938,7 +5947,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
               let search = await yts(jr[0].title);
               let uii = await search.all;
               let buffer = await getBuffer(uii[0].thumbnail);
-              DinzBotz.sendButtonImage(m.chat, `\`Hasil Pencarian Musik\``, result, buffer, buttons, m);
+              LilyBot.sendButtonImage(m.chat, `\`Hasil Pencarian Musik\``, result, buffer, buttons, m);
             } else {
               replyviex("Gagal memproses pencarian musik. Coba lagi nanti!");
             }
@@ -5955,7 +5964,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${groupmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -5985,7 +5994,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${funmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6015,7 +6024,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${stalkermenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6042,7 +6051,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "randomphotomenu":
         {
           let DinzID_sad = `${randomphotomenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6072,7 +6081,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${randomvideomenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6102,7 +6111,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${ephoto360menu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6132,7 +6141,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
           }
           let DinzID_sad = `${nsfwmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6159,7 +6168,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "animemenu":
         {
           let DinzID_sad = `${animemenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6186,7 +6195,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "primbonmenu":
         {
           let DinzID_sad = `${primbonmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6213,7 +6222,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "beritamenu":
         {
           let DinzID_sad = `${beritamenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6240,7 +6249,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "sertifikatmenu":
         {
           let DinzID_sad = `${sertifikatmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6267,7 +6276,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "stickermenu":
         {
           let DinzID_sad = `${stickermenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6294,7 +6303,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "databasemenu":
         {
           let DinzID_sad = `${databasemenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6321,7 +6330,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "aimenu":
         {
           let DinzID_sad = `${aimenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6348,7 +6357,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "bugmenu":
         {
           let DinzID_sad = `${bugmenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6375,7 +6384,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "pyterodactylemenu":
         {
           let DinzID_sad = `${pyterodactylemenu(prefix, hituet)}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: fs.readFileSync("./data/image/thumb.jpg"),
             gifPlayback: true,
             caption: DinzID_sad,
@@ -6402,7 +6411,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       case "friend":
       case "searchfriend":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -6414,7 +6423,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
             replyviex("Berhasil Mendapatkan Satu Orang");
           }, 5000);
           setTimeout(() => {
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `Di Sini @${teman.split("@")[0]}`,
               mentions: [teman]
             }, {
@@ -6521,7 +6530,7 @@ mau sc ini?, jika benar mau silahkan hubungi nomer di bawah ini
 ᴏᴡɴᴇʀ :
 ${global.owner}
 `;
-          DinzBotz.relayMessage(m.chat, {
+          LilyBot.relayMessage(m.chat, {
             requestPaymentMessage: {
               currencyCodeIso4217: "IDR",
               amount1000: 40000000,
@@ -6547,7 +6556,7 @@ ${global.owner}
         }
         replyviex("Tunggu sebentar, saat ini sedang mengambil file sesi Anda");
         let sesi = await fs.readFileSync("./DinzID_Chx/creds.json");
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           document: sesi,
           mimetype: "application/json",
           fileName: "creds.json"
@@ -6611,7 +6620,7 @@ ${global.owner}
 *NOTE :*
 •○⊱𝙎𝙚𝙨𝙖𝙢𝙖 𝙈𝙚𝙢𝙗𝙚𝙧 𝘿𝙞 𝙇𝙖𝙧𝙖𝙣𝙜 𝙎𝙖𝙡𝙞𝙣𝙜 𝘿𝘿𝙊𝙎
 •○⊱𝘽𝙤𝙡𝙚𝙝 𝘿𝙞 𝙋𝙖𝙠𝙚 𝙐𝙣𝙩𝙪𝙠 𝙒𝙃𝙈/𝘾𝙥𝙖𝙣𝙚𝙡 𝘼𝙨𝙖𝙡 𝙉𝙜𝙤𝙩𝙖𝙠`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: text12,
             contextInfo: {
               externalAdReply: {
@@ -9649,7 +9658,7 @@ ${global.owner}
       case "request":
       case "reportbug":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -9662,14 +9671,14 @@ ${global.owner}
           teks1 = `\n\n*User* : @${m.sender.split("@")[0]}\n*Request/Bug* : ${text}`;
           teks2 = `\n\n*Hai ${pushname}, Permintaan Anda telah diteruskan ke Pemilik saya*.\n*Harap tunggu...*`;
           for (let i of owner) {
-            DinzBotz.sendMessage(i + "@s.whatsapp.net", {
+            LilyBot.sendMessage(i + "@s.whatsapp.net", {
               text: textt + teks1,
               mentions: [m.sender]
             }, {
               quoted: m
             });
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: textt + teks2 + teks1,
             mentions: [m.sender]
           }, {
@@ -9683,7 +9692,7 @@ ${global.owner}
           if (!m.quoted) {
             return replyviex("Reply the Message!!");
           }
-          let xeonquotx = await DinzBotz.serializeM(await m.getQuotedObj());
+          let xeonquotx = await LilyBot.serializeM(await m.getQuotedObj());
           if (!xeonquotx.quoted) {
             return replyviex("Pesan yang Anda balas tidak dikirim oleh bot");
           }
@@ -9692,7 +9701,7 @@ ${global.owner}
         break;
       case "igstalk2":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -9701,14 +9710,14 @@ ${global.owner}
           if (!q) {
             return replyviex(`Contoh ${prefix + command} unicorn_xeon`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
             }
           });
           const aj = await igstalk(`${q}`);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: aj.profile
             },
@@ -9727,7 +9736,7 @@ Bio : ${aj.bio}`
         break;
       case "ffstalk":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -9785,7 +9794,7 @@ Nickname : ${data1}`);
                 caption += ` URL: ${video.videoUrl}\n\n`;
               }
             }
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: {
                 url: result.profile
               },
@@ -9903,15 +9912,15 @@ Type? Case
           result.forEach((v, i) => {
             caption += `${i + 1}. *${v.quality}*\n${v.url}\n\n`;
           });
-          await DinzBotz.sendMessage(m.chat, { text: caption }, { quoted: m });
+          await LilyBot.sendMessage(m.chat, { text: caption }, { quoted: m });
           const video1280 = result.find(v => v.quality.includes("1280"));
           if (video1280) {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               video: { url: video1280.url },
               caption: `Berikut video kualitas *${video1280.quality}*`
             }, { quoted: m });
           } else {
-            await DinzBotz.sendMessage(m.chat, { text: "Video kualitas 1280 tidak ditemukan." }, { quoted: m });
+            await LilyBot.sendMessage(m.chat, { text: "Video kualitas 1280 tidak ditemukan." }, { quoted: m });
           }
         } catch (e) {
           console.error(e);
@@ -9971,7 +9980,7 @@ Type? Case
       //        downloadUrls: downloadUrls.length > 0 ? downloadUrls : ['Download URL not found']
       //    };}    if (args.length == 0) {
       //       reply(`Contoh: ${prefix + command} <link Instagram>`);
-      //       DinzBotz.sendMessage(m.chat, { react: { text: `⏱️`, key: m.key }})
+      //       LilyBot.sendMessage(m.chat, { react: { text: `⏱️`, key: m.key }})
       //       break;
       //    }
       //    const url = args[0];
@@ -9988,7 +9997,7 @@ Type? Case
 
       //${global.botname}`;
       //     if (result.downloadUrls[0] !== 'Download URL not found') {
-      //          await DinzBotz.sendMessage(m.chat, { 
+      //          await LilyBot.sendMessage(m.chat, { 
       //           video: { url: result.downloadUrls[0] }, 
       //             caption: caption 
       //          });
@@ -10014,7 +10023,7 @@ Type? Case
           if (!text) {
             return replyviex(`contoh ${prefix + command} https://wwww.mediafire.com/file/u0etafh6ujcd6or/Yoimiya.zip/file`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -10059,7 +10068,7 @@ Type? Case
    ◦ Size : ${result.size}`;
             let filename = result.filename;
             let url = result.download;
-            await DinzBotz.sendFile(m.chat, url, filename, cpt, m, false, {
+            await LilyBot.sendFile(m.chat, url, filename, cpt, m, false, {
               mimetype: result.mimetype,
               fileName: filename
             });
@@ -10096,7 +10105,7 @@ Type? Case
       //==============================================
       //case 'instagram': case 'igdl': case 'ig': case 'igvideo': case 'igimage': case 'igvid': case 'igimg': {
       // if (!text) return replyviex(`Anda perlu memberikan URL video, postingan, reel, gambar Instagram apa pun`)
-      //DinzBotz.sendMessage(m.chat, { react: { text: `⏱️`, key: m.key }})
+      //LilyBot.sendMessage(m.chat, { react: { text: `⏱️`, key: m.key }})
       //try {
       //const data = await fetchJson(`https://api.neekoi.me/api/igdl?url=${encodeURIComponent(text)}`);
       //if (data && data.result && data.result.length > 0) {
@@ -10106,24 +10115,24 @@ Type? Case
       // const hasil = item.url;
       // const cap = `Ini dia kak🔥`;
       // if (hasil.includes('dst-jpg') || hasil.includes('.jpg') || hasil.includes('.jpeg') || hasil.includes('image')) {
-      //await DinzBotz.sendMessage(m.chat, { 
+      //await LilyBot.sendMessage(m.chat, { 
       // image: { url: hasil }, 
       //  caption: cap 
       //   }, { quoted: m });
       // sudahDikirim = true;
       //   } else {
-      // await DinzBotz.sendMessage(m.chat, { 
+      // await LilyBot.sendMessage(m.chat, { 
       //        video: { url: hasil }, 
       //            caption: cap 
       // }, { quoted: m });
       //   } 
       // }
       //} else {
-      //  await DinzBotz.sendMessage(m.chat, { text: 'Maaf, media tidak ditemukan.' }, { quoted: m });
+      //  await LilyBot.sendMessage(m.chat, { text: 'Maaf, media tidak ditemukan.' }, { quoted: m });
       //}
       // } catch (error) {
       // console.error('Gagal fetch media IG:', error);
-      //  await DinzBotz.sendMessage(m.chat, { text: 'Terjadi kesalahan saat mengambil media.' }, { quoted: m });
+      //  await LilyBot.sendMessage(m.chat, { text: 'Terjadi kesalahan saat mengambil media.' }, { quoted: m });
       //}
       case "snackvideo":
         {
@@ -10134,7 +10143,7 @@ Type? Case
           const data = fetchJson(`https://api.alyachan.dev/api/snackvideo?url=${encodeURIComponent(text)}&apikey=DinzIDgembul`);
           const vidnya = data.data.url;
           const cption = "nih kak";
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             caption: cption,
             video: {
               url: vidnya
@@ -10150,14 +10159,14 @@ Type? Case
           if (!q) {
             return replyviex(`Contoh ${prefix + command} DGXeon`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
             }
           });
           aj = await githubstalk.githubstalk(`${q}`);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: aj.profile_pic
             },
@@ -10258,7 +10267,7 @@ Silakan hubungi owner atau Ketik : *.owner*
 > Dana
 ⛩️ *Jangan ragu, kami juga memiliki testimoni!!*
 `;
-          await DinzBotz.sendMessage(m.key.remoteJid, {
+          await LilyBot.sendMessage(m.key.remoteJid, {
             image: {
               url: global.thumbnail
             },
@@ -10318,16 +10327,21 @@ _Sekarang anda sudah bisa mengakses Lily MD_
 _Sekarang anda sudah bisa mengakses Lily MD_
 `;
           veri = m.sender;
+          global.db.users[m.sender].registered = true;
+          global.db.users[m.sender].name = pushname;
+          global.db.users[m.sender].age = umurUser;
+          global.db.users[m.sender].regTime = new Date().toLocaleString();
+          global.db.users[m.sender].serial = serialUser;
           addRegisteredUser(m.sender, pushname, umurUser, serialUser);
           let ppuser;
           try {
-            ppuser = await DinzBotz.profilePictureUrl(m.sender, "image");
+            ppuser = await LilyBot.profilePictureUrl(m.sender, "image");
           } catch {
             ppuser = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460960720.png?q=60";
           }
 
           // Kirim ke user
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: mzd,
             contextInfo: {
               isForwarded: true,
@@ -10348,7 +10362,7 @@ _Sekarang anda sudah bisa mengakses Lily MD_
           });
 
           // Kirim ke channel
-          DinzBotz.sendMessage(channelJid, {
+          LilyBot.sendMessage(channelJid, {
             text: notifLog,
             contextInfo: {
               mentionedJid: [m.sender],
@@ -10369,14 +10383,14 @@ _Sekarang anda sudah bisa mengakses Lily MD_
           if (!mime) {
             return replyviex(`Kirim/Reply Video/Gambar Dengan Caption ${prefix + command}`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏳️",
               key: m.key
             }
           });
           try {
-            let media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+            let media = await LilyBot.downloadAndSaveMediaMessage(quoted);
             if (/image|video/.test(mime)) {
               let response = await CatBox(media);
               let fileSize = (fs.statSync(media).size / 1024).toFixed(2);
@@ -10398,7 +10412,7 @@ _Sekarang anda sudah bisa mengakses Lily MD_
                                 url: "./data/image/yoimiyatobrut.jpg"
                               }
                             }, {
-                              upload: DinzBotz.waUploadToServer
+                              upload: LilyBot.waUploadToServer
                             })),
                             title: "",
                             gifPlayback: true,
@@ -10423,7 +10437,7 @@ _Sekarang anda sudah bisa mengakses Lily MD_
               }, {
                 quoted: m
               });
-              await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+              await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
                 messageId: msg.key.id
               });
             } else if (!/image/.test(mime)) {
@@ -10473,7 +10487,7 @@ _Sekarang anda sudah bisa mengakses Lily MD_
             }
           }
           try {
-            const media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+            const media = await LilyBot.downloadAndSaveMediaMessage(quoted);
             const anuu = await uploadwidipe(media);
             replyviex(`📮 *L I N K :*
 ${anuu}
@@ -10493,13 +10507,13 @@ ${anuu}
           if (!quoted) {
             return replyviex(`mana fotonya kak?`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
             }
           });
-          const media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          const media = await LilyBot.downloadAndSaveMediaMessage(quoted);
           const anuu = await UploadFileUgu(media);
           const data = await fetchJson(`https://api.alyachan.dev/api/ocr?image=${anuu.url}&apikey=DinzIDgembul`);
           const textnya = data.data.text;
@@ -10513,11 +10527,11 @@ ${anuu}
             return replyviex(`mana fotonya kak?`);
           }
           replyviex(mess.wait);
-          const media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          const media = await LilyBot.downloadAndSaveMediaMessage(quoted);
           const anuu = await UploadFileUgu(media);
           const data = await fetchJson(`https://widipe.com/tools/jadizombie?url=${anuu.url}`);
           const zombie = data.result;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: zombie
             },
@@ -10545,9 +10559,9 @@ ${anuu}
             buffer = Buffer.concat([buffer, chunk]);
           }
           if (/video/.test(type)) {
-            return DinzBotz.sendFile(m.chat, buffer, "media.mp4", msg[type].caption || "", m);
+            return LilyBot.sendFile(m.chat, buffer, "media.mp4", msg[type].caption || "", m);
           } else if (/image/.test(type)) {
-            return DinzBotz.sendFile(m.chat, buffer, "media.jpg", msg[type].caption || "", m);
+            return LilyBot.sendFile(m.chat, buffer, "media.jpg", msg[type].caption || "", m);
           }
         }
         break;
@@ -10563,7 +10577,7 @@ ${anuu}
             return replyviex("Link Invalid!");
           }
           let result = args[0].split("https://chat.whatsapp.com/")[1];
-          await DinzBotz.groupAcceptInvite(result);
+          await LilyBot.groupAcceptInvite(result);
           await replyviex(`sukses kak`);
         }
         break;
@@ -10580,7 +10594,7 @@ ${anuu}
           for (let i of opt.split(",")) {
             options.push(i);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             poll: {
               name: poll,
               values: options
@@ -10626,7 +10640,7 @@ Please Type Below
 *${prefix}upvote* - to cast vote
 *${prefix}downvote* -  to downvote
 *${prefix}deletevote* - to delete vote`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: teks_vote
           }, {
             quoted: m
@@ -10670,7 +10684,7 @@ Please Type Below
 *${prefix}upvote* - to upvote
 *${prefix}downvote* -  to downvote
 *${prefix}deletevote* - to delete vote`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: teks_vote,
             mentions: menvote
           }, {
@@ -10715,7 +10729,7 @@ Please Type Below
 *${prefix}upvote* - to upvote
 *${prefix}downvote* -  to downvote
 *${prefix}deletevote* - to delete vote`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: teks_vote,
             mentions: menvote
           }, {
@@ -10751,9 +10765,9 @@ ${vote[m.chat][2].map((v, i) => `├ ${i + 1}. @${v.split`@`[0]}`).join("\n")}
 *${prefix}deletevote* - to delete votes
 
 
-©${DinzBotz.user.id}
+©${LilyBot.user.id}
 `;
-        DinzBotz.sendTextWithMentions(m.chat, teks_vote, m);
+        LilyBot.sendTextWithMentions(m.chat, teks_vote, m);
         break;
       case "deletevote":
       case "delvote":
@@ -10775,15 +10789,15 @@ ${vote[m.chat][2].map((v, i) => `├ ${i + 1}. @${v.split`@`[0]}`).join("\n")}
           if (!quoted) {
             return replyviex(`Reply Image/Video`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
             }
           });
           if (/image/.test(mime)) {
-            anuan = await DinzBotz.downloadAndSaveMediaMessage(quoted);
-            DinzBotz.sendMessage(m.chat, {
+            anuan = await LilyBot.downloadAndSaveMediaMessage(quoted);
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: anuan
               },
@@ -10794,8 +10808,8 @@ ${vote[m.chat][2].map((v, i) => `├ ${i + 1}. @${v.split`@`[0]}`).join("\n")}
               quoted: m
             });
           } else if (/video/.test(mime)) {
-            anuanuan = await DinzBotz.downloadAndSaveMediaMessage(quoted);
-            DinzBotz.sendMessage(m.chat, {
+            anuanuan = await LilyBot.downloadAndSaveMediaMessage(quoted);
+            LilyBot.sendMessage(m.chat, {
               video: {
                 url: anuanuan
               },
@@ -10825,7 +10839,7 @@ ${vote[m.chat][2].map((v, i) => `├ ${i + 1}. @${v.split`@`[0]}`).join("\n")}
           }
           global.paptt = ["https://telegra.ph/file/5c62d66881100db561c9f.mp4", "https://telegra.ph/file/a5730f376956d82f9689c.jpg", "https://telegra.ph/file/8fb304f891b9827fa88a5.jpg", "https://telegra.ph/file/0c8d173a9cb44fe54f3d3.mp4", "https://telegra.ph/file/b58a5b8177521565c503b.mp4", "https://telegra.ph/file/34d9348cd0b420eca47e5.jpg", "https://telegra.ph/file/73c0fecd276c19560133e.jpg", "https://telegra.ph/file/af029472c3fcf859fd281.jpg", "https://telegra.ph/file/0e5be819fa70516f63766.jpg", "https://telegra.ph/file/29146a2c1a9836c01f5a3.jpg", "https://telegra.ph/file/85883c0024081ffb551b8.jpg", "https://telegra.ph/file/d8b79ac5e98796efd9d7d.jpg", "https://telegra.ph/file/267744a1a8c897b1636b9.jpg"];
           let url = paptt[Math.floor(Math.random() * paptt.length)];
-          DinzBotz.sendFile(m.chat, url, null, "Tch, dasar sangean", m);
+          LilyBot.sendFile(m.chat, url, null, "Tch, dasar sangean", m);
         }
         break;
       case "alkitab":
@@ -10853,7 +10867,7 @@ ${vote[m.chat][2].map((v, i) => `├ ${i + 1}. @${v.split`@`[0]}`).join("\n")}
           let foto = "https://telegra.ph/file/a333442553b1bc336cc55.jpg";
           let judul = "*────────「 Alkitab 」 ────────*";
           let caption = result.map(v => `💌 ${v.title}\n📮 ${v.teks}`).join("\n┄┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┄\n");
-          DinzBotz.sendFile(m.chat, foto, "alkitab.jpg", `${judul}\n\n${caption}`, m);
+          LilyBot.sendFile(m.chat, foto, "alkitab.jpg", `${judul}\n\n${caption}`, m);
         }
         break;
       case "listpc":
@@ -10864,7 +10878,7 @@ ${vote[m.chat][2].map((v, i) => `├ ${i + 1}. @${v.split`@`[0]}`).join("\n")}
             let nama = store.messages[i].array[0].pushName;
             teks += `${themeemoji} *Name :* ${nama}\n${themeemoji} *User :* @${i.split("@")[0]}\n${themeemoji} *Chat :* https://wa.me/${i.split("@")[0]}\n\n────────────────────────\n\n`;
           }
-          DinzBotz.sendTextWithMentions(m.chat, teks, m);
+          LilyBot.sendTextWithMentions(m.chat, teks, m);
         }
         break;
       case "listgc":
@@ -10872,10 +10886,10 @@ ${vote[m.chat][2].map((v, i) => `├ ${i + 1}. @${v.split`@`[0]}`).join("\n")}
           let anulistg = await store.chats.all().filter(v => v.id.endsWith("@g.us")).map(v => v.id);
           let teks = `${themeemoji} *GROUP CHAT LIST*\n\nTotal Group : ${anulistg.length} Group\n\n`;
           for (let i of anulistg) {
-            let metadata = await DinzBotz.groupMetadata(i);
+            let metadata = await LilyBot.groupMetadata(i);
             teks += `${themeemoji} *Name :* ${metadata.subject}\n${themeemoji} *Owner :* ${metadata.owner !== undefined ? "@" + metadata.owner.split`@`[0] : "Unknown"}\n${themeemoji} *ID :* ${metadata.id}\n${themeemoji} *Made :* ${moment(metadata.creation * 1000).tz("Asia/Kolkata").format("DD/MM/YYYY HH:mm:ss")}\n${themeemoji} *Member :* ${metadata.participants.length}\n\n────────────────────────\n\n`;
           }
-          DinzBotz.sendTextWithMentions(m.chat, teks, m);
+          LilyBot.sendTextWithMentions(m.chat, teks, m);
         }
         break;
       case "ping":
@@ -10942,7 +10956,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
 
 > ${footxt}`.trim();
           let imgso = `https://quickchart.io/chart?v=2.9.4&c=%7B%0A%20%20type%3A%20%27doughnut%27%2C%0A%20%20data%3A%20%7B%0A%20%20%20%20datasets%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20data%3A%20%5B${tot.freePercentage}%2C%20${tot.usedPercentage}%5D%2C%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20%5B%27%2326AC00%27%2C%20%27red%27%5D%2C%0A%20%20%20%20%20%20%20%20label%3A%20%27Dataset%201%27%2C%0A%20%20%20%20%20%20%20%20borderWidth%3A%200%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%5D%2C%0A%20%20%20%20labels%3A%20%5B%27A%27%2C%20%27C%27%5D%2C%0A%20%20%7D%2C%0A%20%20options%3A%20%7B%0A%20%20%20%20circumference%3A%20Math.PI%2C%0A%20%20%20%20rotation%3A%20Math.PI%2C%0A%20%20%20%20cutoutPercentage%3A%2075%2C%0A%20%20%20%20layout%3A%20%7B%0A%20%20%20%20%20%20padding%3A%2080%2C%0A%20%20%20%20%7D%2C%0A%20%20%20%20legend%3A%20%7B%0A%20%20%20%20%20%20display%3A%20false%2C%0A%20%20%20%20%7D%2C%0A%20%20%20%20plugins%3A%20%7B%0A%20%20%20%20%20%20datalabels%3A%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%27%23404040%27%2C%0A%20%20%20%20%20%20%20%20anchor%3A%20%27end%27%2C%0A%20%20%20%20%20%20%20%20align%3A%20%27end%27%2C%0A%20%20%20%20%20%20%20%20formatter%3A%20(val)%20%3D%3E%20val%20%2B%20%27%25%27%2C%0A%20%20%20%20%20%20%20%20font%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20size%3A%2025%2C%0A%20%20%20%20%20%20%20%20%20%20weight%3A%20%27bold%27%2C%0A%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20doughnutlabel%3A%20%7B%0A%20%20%20%20%20%20%20%20labels%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20text%3A%20%27%5CnPing%20Status%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20font%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20size%3A%2020%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20text%3A%20%27%5Cn${latensi.toFixed(4)}s%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20color%3A%20%27%23000%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20font%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20size%3A%2025%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20weight%3A%20%27bold%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%20%20%5D%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%7D%2C%0A%20%20%7D%2C%0A%7D`;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             footer: global.namabot,
             buttons: [{
               buttonId: `.menu`,
@@ -10989,7 +11003,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           }
           const data = await store.chats.all();
           for (let i of data) {
-            DinzBotz.sendMessage(i.id, {
+            LilyBot.sendMessage(i.id, {
               text: `${ownername}'s Siaran\n\nPesan : ${q}`
             });
             await sleep(1000);
@@ -11007,7 +11021,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
         if (!q) {
           return replyviex(`Masukkan teks`);
         }
-        let getGroups = await DinzBotz.groupFetchAllParticipating();
+        let getGroups = await LilyBot.groupFetchAllParticipating();
         let groups = Object.entries(getGroups).slice(0).map(entry => entry[1]);
         let xeoncast = groups.map(v => v.id);
         replyviex(` Menyiarkan dalam ${xeoncast.length} Obrolan Grup, dalam ${xeoncast.length * 1, 5} detik`);
@@ -11015,7 +11029,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           let txt = `${ownername}'s Siaran\n\nPesan : ${q}`;
           if (/image/.test(mime)) {
             let media = await quoted.download();
-            await DinzBotz.sendMessage(i, {
+            await LilyBot.sendMessage(i, {
               image: media,
               caption: txt,
               mentions: participants.map(a => a.id)
@@ -11023,7 +11037,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           }
           if (/video/.test(mime)) {
             let media = await quoted.download();
-            await DinzBotz.sendMessage(i, {
+            await LilyBot.sendMessage(i, {
               video: media,
               caption: txt,
               mentions: participants.map(a => a.id)
@@ -11039,7 +11053,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             return replyviex(mess.only.owner);
           }
           let users = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, "") + "@s.whatsapp.net";
-          await DinzBotz.updateBlockStatus(users, "block");
+          await LilyBot.updateBlockStatus(users, "block");
           await replyviex(`sukses kak`);
         }
         break;
@@ -11050,7 +11064,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             return replyviex(mess.only.owner);
           }
           let users = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, "") + "@s.whatsapp.net";
-          await DinzBotz.updateBlockStatus(users, "unblock");
+          await LilyBot.updateBlockStatus(users, "unblock");
           await replyviex(`sukses kak`);
         }
         break;
@@ -11081,7 +11095,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!isBotAdmins && !DinzTheCreator) {
             return replyviex("Khusus Admin!!");
           }
-          DinzBotz.groupRevokeInvite(m.chat);
+          LilyBot.groupRevokeInvite(m.chat);
         }
         break;
       case "react":
@@ -11099,7 +11113,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
               }
             }
           };
-          DinzBotz.sendMessage(m.chat, reactionMessage);
+          LilyBot.sendMessage(m.chat, reactionMessage);
         }
         break;
       case "group":
@@ -11124,7 +11138,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
 │𝗻𝝰𝗻𝘁𝗶 𝗱𝗶𝗯𝘂𝗸𝝰 𝗹𝝰𝗴𝗶 𝘆𝝰𝝰...
 │
 └─┉─¡! • !¡─┉─ ── .✦`);
-            DinzBotz.groupSettingUpdate(from, "announcement");
+            LilyBot.groupSettingUpdate(from, "announcement");
           } else if (args[0] == "open") {
             replyviex(`♥︎ ۪۪┈─𝗵𝝰𝗹𝝾 𝗶𝘁'𝘀 𝘁𝗶𝗺𝗲 𝘁𝝾 𝝾𝗽𝗲𝗻──────╮
 
@@ -11136,7 +11150,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
 ╰─────────────────
 
 𝗷𝝰𝗻𝗴𝝰𝗻 𝗹𝘂𝗽𝝰 𝗯𝗲𝗿𝘀𝘆𝘂𝗸𝘂𝗿 𝘆𝝰 𝗯𝘂𝝰𝘁 𝗵𝝰𝗿𝗶 𝗶𝗻𝗶...`);
-            DinzBotz.groupSettingUpdate(from, "not_announcement");
+            LilyBot.groupSettingUpdate(from, "not_announcement");
           } else {
             let msg = generateWAMessageFromContent(from, {
               viewOnceMessage: {
@@ -11158,7 +11172,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -11204,7 +11218,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -11251,13 +11265,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntvirtex.push(from);
             fs.writeFileSync("./database/antivirus.json", JSON.stringify(ntvirtex));
             replyviex("Success in turning on antivirus in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nNo body is allowed to send virus in this group, member who send will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -11294,13 +11308,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntlinkytvid.push(from);
             fs.writeFileSync("./database/antilinkytvideo.json", JSON.stringify(ntwame));
             replyviex("Success in turning on antiwame in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nNobody is allowed to send group link in this group, one who sends will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -11337,7 +11351,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -11383,7 +11397,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -11409,13 +11423,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntilinkytch.push(from);
             fs.writeFileSync("./database/antilinkytchannel.json", JSON.stringify(ntilinkytch));
             replyviex("Success in turning on youtube channel antilink in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nIf you're not an admin, don't send the youtube channel link in this group or u will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -11452,7 +11466,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -11498,7 +11512,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -11524,13 +11538,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntilinkig.push(from);
             fs.writeFileSync("./database/antilinkinstagram.json", JSON.stringify(ntilinkig));
             replyviex("Success in turning on instagram antilink in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nIf you're not an admin, don't send the instagram link in this group or u will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -11567,7 +11581,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -11613,7 +11627,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -11638,13 +11652,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntilinkfb.push(from);
             fs.writeFileSync("./database/antilinkfacebook.json", JSON.stringify(ntilinkfb));
             replyviex("Success in turning on facebook antilink in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nIf you're not an admin, don't send the facebook link in this group or u will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -11681,7 +11695,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -11727,7 +11741,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -11752,13 +11766,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntilinktg.push(from);
             fs.writeFileSync("./database/antilinktelegram.json", JSON.stringify(ntilinktg));
             replyviex("Success in turning on telegram antilink in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nIf you're not an admin, don't send the telegram link in this group or u will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -11795,7 +11809,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -11841,7 +11855,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -11866,13 +11880,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntilinktt.push(from);
             fs.writeFileSync("./database/antilinktiktok.json", JSON.stringify(ntilinktt));
             replyviex("Success in turning on tiktok antilink in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nIf you're not an admin, don't send the tiktok link in this group or u will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -11909,7 +11923,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -11955,7 +11969,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -11981,13 +11995,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntilinktwt.push(from);
             fs.writeFileSync("./database/antilinktwitter.json", JSON.stringify(ntilinktwt));
             replyviex("Success in turning on twitter antilink in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nIf you're not an admin, don't send the twitter link in this group or u will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -12024,7 +12038,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -12070,7 +12084,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -12094,13 +12108,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntilinkall.push(from);
             fs.writeFileSync("./database/antilinkall.json", JSON.stringify(ntilinkall));
             replyviex("Success in turning on all antilink in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nIf you're not an admin, don't send any link in this group or u will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -12137,7 +12151,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -12183,7 +12197,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -12208,13 +12222,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             nttoxic.push(from);
             fs.writeFileSync("./database/antitoxic.json", JSON.stringify(nttoxic));
             replyviex("Success in turning on antitoxic in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nNobody is allowed to use bad words in this group, one who uses will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -12251,7 +12265,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -12297,7 +12311,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -12321,13 +12335,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntwame.push(from);
             fs.writeFileSync("./database/antiwame.json", JSON.stringify(ntwame));
             replyviex("Success in turning on antiwame in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nNobody is allowed to send group link in this group, one who sends will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -12364,7 +12378,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -12410,7 +12424,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -12433,7 +12447,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
               return replyviex("Harap tentukan durasi waktu untuk sewa!");
             }
             const groupId = link.split("https://chat.whatsapp.com/")[1];
-            const groupData = await DinzBotz.groupAcceptInvite(groupId);
+            const groupData = await LilyBot.groupAcceptInvite(groupId);
             if (checkSewaGroup(groupData, sewa)) {
               return replyviex("Bot sudah disewa oleh grup tersebut!");
             }
@@ -12476,7 +12490,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
               list_sewa_list += `*Expired :* ${msToDate(ceksewa)}\n\n`;
             }
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: list_sewa_list
           }, {
             quoted: m
@@ -12497,7 +12511,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
               list_sewa_list += `*Expired :* ${msToDate(ceksewa)}\n\n`;
             }
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: list_sewa_list
           }, {
             quoted: m
@@ -12522,13 +12536,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntlinkch.push(from);
             fs.writeFileSync("./database/antilinkch.json", JSON.stringify(ntlinkch));
             replyviex("Success in turning on antiwame in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nNobody is allowed to send group link in this group, one who sends will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -12565,7 +12579,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -12611,7 +12625,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -12636,13 +12650,13 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             ntlinkgc.push(from);
             fs.writeFileSync("./database/antilinkgc.json", JSON.stringify(ntlinkgc));
             replyviex("Success in turning on antiwame in this group");
-            var groupe = await DinzBotz.groupMetadata(from);
+            var groupe = await LilyBot.groupMetadata(from);
             var members = groupe.participants;
             var mems = [];
             members.map(async adm => {
               mems.push(adm.id.replace("c.us", "s.whatsapp.net"));
             });
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nNobody is allowed to send group link in this group, one who sends will be kicked immediately!`,
               contextInfo: {
                 mentionedJid: mems
@@ -12679,7 +12693,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                           url: "./data/image/thumb.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -12725,7 +12739,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -12796,7 +12810,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!DinzTheCreator) {
             return reply(mess.only.owner);
           }
-          await DinzBotz.groupLeave(m.chat);
+          await LilyBot.groupLeave(m.chat);
           await replyviex(`sukses kak`);
         }
         break;
@@ -12809,7 +12823,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             return reply("_Bot Harus Menjadi Admin Terlebih Dahulu_");
           }
           let users = m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, "") + "@s.whatsapp.net";
-          await DinzBotz.groupParticipantsUpdate(m.chat, [users], "add");
+          await LilyBot.groupParticipantsUpdate(m.chat, [users], "add");
           await replyviex(`sukses kak`);
         }
         break;
@@ -12839,7 +12853,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           setTimeout(() => {
             var nomor = m.participant;
             const close = `*On time* Group Closed By Admin\nNow Only Admins Can Send Messages`;
-            DinzBotz.groupSettingUpdate(from, "announcement");
+            LilyBot.groupSettingUpdate(from, "announcement");
             replyviex(close);
           }, timer);
         }
@@ -12859,11 +12873,11 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             return replyviex("Enter the value enable/disable");
           }
           if (args[0] === "enable") {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               disappearingMessagesInChat: WA_DEFAULT_EPHEMERAL
             });
           } else if (args[0] === "disable") {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               disappearingMessagesInChat: false
             });
             await replyviex(`sukses kak`);
@@ -12883,7 +12897,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             chat,
             id
           } = m.quoted;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             delete: {
               remoteJid: m.chat,
               fromMe: false,
@@ -12902,7 +12916,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             chat,
             id
           } = m.quoted;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             delete: {
               remoteJid: m.chat,
               fromMe: false,
@@ -12923,8 +12937,8 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!isBotAdmins) {
             return reply("_Bot Harus Menjadi Admin Terlebih Dahulu_");
           }
-          let response = await DinzBotz.groupInviteCode(m.chat);
-          DinzBotz.sendText(m.chat, `https://chat.whatsapp.com/${response}\n\nGroup Link : ${groupMetadata.subject}`, m, {
+          let response = await LilyBot.groupInviteCode(m.chat);
+          LilyBot.sendText(m.chat, `https://chat.whatsapp.com/${response}\n\nGroup Link : ${groupMetadata.subject}`, m, {
             detectLink: true
           });
         }
@@ -12943,7 +12957,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!isBaileys) {
             return replyviex("The message was not sent by a bot!");
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             delete: {
               remoteJid: m.chat,
               fromMe: true,
@@ -12979,7 +12993,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           setTimeout(() => {
             var nomor = m.participant;
             const open = `*On time* Group Opened By Admin\n Now Members Can Send Messages`;
-            DinzBotz.groupSettingUpdate(from, "not_announcement");
+            LilyBot.groupSettingUpdate(from, "not_announcement");
             replyviex(open);
           }, timer);
         }
@@ -13000,7 +13014,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
               return [d, "H ", h, "J "].map(v => v.toString().padStart(2, 0)).join("");
             }
           }
-          const metadata = await DinzBotz.groupMetadata(m.chat);
+          const metadata = await LilyBot.groupMetadata(m.chat);
           const groupName = metadata.subject;
           var lama = 604800000;
           const now = new Date().toLocaleString("en-US", {
@@ -13034,7 +13048,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (total == 0) {
             return reply(`*Tidak ada member sider pada grup ini.*`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: `*${total}/${sum}* Anggota Grup *${groupName}* Menjadi Anggota Sider karena Alasan:\n1. Tidak Aktif Selama Lebih Dari 7 Hari\n2. Bergabung Namun Tidak Pernah Nimbrun\n_“${pesan}”_\n\n*Anggota Sider yang Terdaftar:*\n${sider.map(v => "  • @" + v.replace(/@.+/, "" + typeof global.db.users[v] == "undefined" ? " Sider " : " Off " + msToDate(milliseconds * 1 - global.db.users[v].lastseen))).join("\n")}`
           }, m, {
             contextInfo: {
@@ -13056,7 +13070,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             return reply("_Bot Harus Menjadi Admin Terlebih Dahulu_");
           }
           let users = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, "") + "@s.whatsapp.net";
-          await DinzBotz.groupParticipantsUpdate(m.chat, [users], "remove");
+          await LilyBot.groupParticipantsUpdate(m.chat, [users], "remove");
           await replyviex(`sukses kak`);
         }
         break;
@@ -13073,7 +13087,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             return reply("_Bot Harus Menjadi Admin Terlebih Dahulu_");
           }
           const users = participants.map(a => a.id);
-          await DinzBotz.groupParticipantsUpdate(m.chat, [users], "remove");
+          await LilyBot.groupParticipantsUpdate(m.chat, [users], "remove");
           await replyviex(`sukses kak`);
         }
         break;
@@ -13085,7 +13099,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!text) {
             return replyviex(`Dimana namanya?\nContoh: ${prefix + command} DinzID BotID`);
           }
-          await DinzBotz.updateProfileName(text);
+          await LilyBot.updateProfileName(text);
           replyviex(`Success in changing the name of bot's number`);
         }
         break;
@@ -13097,7 +13111,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!text) {
             return replyviex(`Dimana teksnya?\nContoh: ${prefix + command} DinzID BotID`);
           }
-          await DinzBotz.updateProfileStatus(text);
+          await LilyBot.updateProfileStatus(text);
           replyviex(`Success in changing the bio of bot's number`);
         }
         break;
@@ -13117,7 +13131,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!text) {
             return replyviex("Text ?");
           }
-          await DinzBotz.groupUpdateSubject(m.chat, text);
+          await LilyBot.groupUpdateSubject(m.chat, text);
           await replyviex(`sukses kak`);
         }
         break;
@@ -13136,7 +13150,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!text) {
             return replyviex("Text ?");
           }
-          await DinzBotz.groupUpdateDescription(m.chat, text);
+          await LilyBot.groupUpdateDescription(m.chat, text);
           await replyviex(`sukses kak`);
         }
         break;
@@ -13149,11 +13163,11 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           let userss = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, "") + "@s.whatsapp.net";
           let ghosst = userss;
           try {
-            var ppuser = await DinzBotz.profilePictureUrl(ghosst, "image");
+            var ppuser = await LilyBot.profilePictureUrl(ghosst, "image");
           } catch (err) {
             var ppuser = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60";
           }
-          DinzBotz.sendMessage(from, {
+          LilyBot.sendMessage(from, {
             image: {
               url: ppuser
             }
@@ -13185,12 +13199,12 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (/webp/.test(mime)) {
             return replyviex(`Kirim/Balas Gambar Dengan Caption ${prefix + command}`);
           }
-          var mediz = await DinzBotz.downloadAndSaveMediaMessage(quoted, "ppgc.jpeg");
+          var mediz = await LilyBot.downloadAndSaveMediaMessage(quoted, "ppgc.jpeg");
           if (args[0] == `full`) {
             var {
               img
             } = await generateProfilePicture(mediz);
-            await DinzBotz.query({
+            await LilyBot.query({
               tag: "iq",
               attrs: {
                 to: m.chat,
@@ -13208,7 +13222,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             fs.unlinkSync(mediz);
             replyviex(`Success`);
           } else {
-            var memeg = await DinzBotz.updateProfilePicture(m.chat, {
+            var memeg = await LilyBot.updateProfilePicture(m.chat, {
               url: mediz
             });
             fs.unlinkSync(mediz);
@@ -13230,7 +13244,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!isBotAdmins) {
             return reply("_Bot Harus Menjadi Admin Terlebih Dahulu_");
           }
-          await DinzBotz.removeProfilePicture(from);
+          await LilyBot.removeProfilePicture(from);
         }
         break;
       case "deleteppbot":
@@ -13239,7 +13253,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!DinzTheCreator) {
             return reply(mess.only.owner);
           }
-          await DinzBotz.removeProfilePicture(DinzBotz.user.id);
+          await LilyBot.removeProfilePicture(LilyBot.user.id);
           replyviex(`Success in deleting bot's profile picture`);
         }
         break;
@@ -13336,7 +13350,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
       case "toanime":
       case "jadianime":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -13459,7 +13473,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
               return null;
             }
           }
-          const media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          const media = await LilyBot.downloadAndSaveMediaMessage(quoted);
           const IMAGE = await pomf2(media);
           console.log(IMAGE);
           const LOGGER = true; // Menampilkan teks ke console selama proses
@@ -13469,7 +13483,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             strength: 0.6
           };
           const result = await PixNova(DATA, IMAGE, LOGGER); // Buffer, Base64 atau url
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: result.output.result
             },
@@ -13506,7 +13520,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             caption += `🔍 *Skala*: ${scale}\n`;
             caption += `📏 *Available Scales*: ${availableScales.join(", ")}\n\n`;
             caption += "Terima kasih sudah menggunakan fitur ini ya, Bos! 😊";
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: {
                 url: result
               },
@@ -13634,7 +13648,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           m.reply('Upscaling image, please wait...');
           const resultUrl = await upscaler.process(buffer);
           if (resultUrl) {
-            DinzBotz.sendMessage(m.chat, { image: { url: resultUrl }, caption: 'Success' }, { quoted: m });
+            LilyBot.sendMessage(m.chat, { image: { url: resultUrl }, caption: 'Success' }, { quoted: m });
           } else {
             m.reply('Failed to upscale image.');
           }
@@ -13652,7 +13666,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
             return replyviex(`mana linknya kak?`);
           }
           try {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://skizoasia.xyz/api/ssweb?type=mobile&url=${encodeURIComponent(text)}&apikey=nonogembul`
               }
@@ -13669,14 +13683,14 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!text) {
             return reply("iya kak,  mau nulis apa? untuk menulis caranya begini ya\n> .nulis teks yang mau ditulis");
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
             }
           });
           try {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://www.velyn.biz.id/api/tools/tulisbuku?prompt=${encodeURIComponent(text)}`
               },
@@ -13699,14 +13713,14 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           nama = text.split("|")[0] ? text.split("|")[0] : "-";
           kelas = text.split("|")[1] ? text.split("|")[1] : "-";
           nulis = text.split("|")[2] ? text.split("|")[2] : "-";
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
             }
           });
           try {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://api.siputzx.my.id/api/m/nulis?text=${encodeURIComponent(nulis)}&name=${encodeURIComponent(nama)}&class=${encodeURIComponent(kelas)}`
               },
@@ -13725,7 +13739,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           if (!text) {
             return replyviex(`Gunakan dengan cara ${prefix + command} *url*\n\n_Contoh_\n\n${prefix + command} https://vt.tiktok.com/ZSL36LfEP/`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -13734,7 +13748,7 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
           try {
             let anu = await fetchJson(`https://btch.us.kg/download/tiktokslide?url=${encodeURIComponent(text)}`);
             for (let img of anu.result.images) {
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 image: {
                   url: img
                 },
@@ -13743,14 +13757,14 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
                 quoted: m
               });
             }
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "☑️",
                 key: m.key
               }
             });
           } catch (error) {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "✖️",
                 key: m.key
@@ -14534,13 +14548,13 @@ ${translation_en}
           if (!text) {
             return replyviex(`${wrong}`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
             }
           });
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             audio: {
               url: `https://api.lolhuman.xyz/api/quran/audio/${text}?apikey=efcb180d3fd3134748648887`
             },
@@ -14886,11 +14900,11 @@ ${v.translation}
             return list[Math.floor(Math.random() * list.length)];
           }
           let buatall = 1;
-          DinzBotz.casino = DinzBotz.casino ? DinzBotz.casino : {};
-          if (m.chat in DinzBotz.casino) {
+          LilyBot.casino = LilyBot.casino ? LilyBot.casino : {};
+          if (m.chat in LilyBot.casino) {
             return reply("Masih ada yang melakukan casino disini, tunggu sampai selesai!!");
           } else {
-            DinzBotz.casino[m.chat] = true;
+            LilyBot.casino[m.chat] = true;
           }
           try {
             let randomaku = `${Math.floor(Math.random() * 101)}`.trim();
@@ -14922,12 +14936,12 @@ ${v.translation}
             console.log(e);
             reply("Error!!");
             if (DevMode) {
-              for (let jid of global.owner.map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").filter(v => v != DinzBotz.user.jid)) {
-                DinzBotz.sendMessage(jid, "casino.js error\nNo: *" + m.sender.split`@`[0] + "*\nCommand: *" + m.text + "*\n\n*" + e + "*", MessageType.text);
+              for (let jid of global.owner.map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").filter(v => v != LilyBot.user.jid)) {
+                LilyBot.sendMessage(jid, "casino.js error\nNo: *" + m.sender.split`@`[0] + "*\nCommand: *" + m.text + "*\n\n*" + e + "*", MessageType.text);
               }
             }
           } finally {
-            delete DinzBotz.casino[m.chat];
+            delete LilyBot.casino[m.chat];
           }
         }
         break;
@@ -14937,7 +14951,7 @@ ${v.translation}
       case "donasi":
       case "payment":
         {
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -14952,7 +14966,7 @@ ${v.translation}
                 url
               }
             }, {
-              upload: DinzBotz.waUploadToServer
+              upload: LilyBot.waUploadToServer
             });
             return imageMessage;
           }
@@ -14971,7 +14985,7 @@ ${v.translation}
                             url: "./data/image/payment/dana.jpg"
                           }
                         }, {
-                          upload: DinzBotz.waUploadToServer
+                          upload: LilyBot.waUploadToServer
                         })),
                         title: "",
                         gifPlayback: true,
@@ -14994,7 +15008,7 @@ ${v.translation}
                             url: "./data/image/payment/gopay.jpg"
                           }
                         }, {
-                          upload: DinzBotz.waUploadToServer
+                          upload: LilyBot.waUploadToServer
                         })),
                         title: "",
                         gifPlayback: true,
@@ -15017,7 +15031,7 @@ ${v.translation}
                             url: "./data/image/payment/qris.jpg"
                           }
                         }, {
-                          upload: DinzBotz.waUploadToServer
+                          upload: LilyBot.waUploadToServer
                         })),
                         title: "",
                         gifPlayback: true,
@@ -15042,7 +15056,7 @@ ${v.translation}
           }, {
             quoted: m
           });
-          await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+          await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
             messageId: msg.key.id
           });
         }
@@ -15147,17 +15161,17 @@ ${v.translation}
           if (!m.isGroup) {
             return reply(mess.only.group);
           }
-          let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? DinzBotz.user.jid : m.sender;
+          let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? LilyBot.user.jid : m.sender;
           if (!(who in global.db.users)) {
             return reply(`User ${who} not in database`);
           }
           let user = global.db.users[who];
           let isMods = global.owner.filter(([number, _, isDeveloper]) => number && isDeveloper).map(([number]) => number).map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(who);
-          let DinzTheCreator = m.fromMe || isMods || [DinzBotz.decodeJid(DinzBotz.user.id), ...global.owner.filter(([number, _, DinzTheCreator]) => number && !DinzTheCreator).map(([number]) => number)].map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(who);
+          let DinzTheCreator = m.fromMe || isMods || [LilyBot.decodeJid(LilyBot.user.id), ...global.owner.filter(([number, _, DinzTheCreator]) => number && !DinzTheCreator).map(([number]) => number)].map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(who);
           let isPrems = DinzTheCreator || new Date() - user.premiumTime < 0;
           let caption = `
 ▧「 *BANK CEK* 」
-│ 👤 Name: ${user.registered ? user.name : DinzBotz.getName(m.sender)}
+│ 👤 Name: ${user.registered ? user.name : LilyBot.getName(m.sender)}
 │ ${global.rpg.emoticon("atm")} Atm: ${user.atm > 0 ? "Level " + user.atm : "✖️"}
 │ ${global.rpg.emoticon("bank")} Bank: ${user.bank} / ${user.fullatm}
 │ ${global.rpg.emoticon("money")} Money: ${user.money}
@@ -15198,7 +15212,7 @@ ${v.translation}
             if (randomaku > randomkamu) {
               user.money -= 3000000;
               user.lastbansos = new Date() * 1;
-              return DinzBotz.sendMessage(m.chat, {
+              return LilyBot.sendMessage(m.chat, {
                 image: {
                   url: "https://telegra.ph/file/afcf9a7f4e713591080b5.jpg"
                 },
@@ -15207,7 +15221,7 @@ ${v.translation}
             } else if (randomaku < randomkamu) {
               user.money += 3000000;
               user.lastbansos = new Date() * 1;
-              return DinzBotz.sendMessage(m.chat, {
+              return LilyBot.sendMessage(m.chat, {
                 image: {
                   url: "https://telegra.ph/file/d31fcc46b09ce7bf236a7.jpg"
                 },
@@ -15239,13 +15253,13 @@ ${v.translation}
           let _timers = 3600000 - __timers;
           let order = global.db.users[m.sender].ojekk;
           let timers = clockString(_timers);
-          let name = DinzBotz.getName(m.sender);
+          let name = LilyBot.getName(m.sender);
           let user = global.db.users[m.sender];
           let id = m.sender;
           let kerja = "Taxy";
-          DinzBotz.misi = DinzBotz.misi ? DinzBotz.misi : {};
-          if (id in DinzBotz.misi) {
-            replyviex(`Selesaikan Misi ${DinzBotz.misi[id][0]} Terlebih Dahulu`);
+          LilyBot.misi = LilyBot.misi ? LilyBot.misi : {};
+          if (id in LilyBot.misi) {
+            replyviex(`Selesaikan Misi ${LilyBot.misi[id][0]} Terlebih Dahulu`);
             throw false;
           }
           if (new Date() - user.lastmisi > 3600000) {
@@ -15291,8 +15305,8 @@ ${v.translation}
             user.money += randomaku1;
             user.exp += randomaku2;
             user.ojekk += 1;
-            DinzBotz.misi[id] = [kerja, setTimeout(() => {
-              delete DinzBotz.misi[id];
+            LilyBot.misi[id] = [kerja, setTimeout(() => {
+              delete LilyBot.misi[id];
             }, 27000)];
             setTimeout(() => {
               replyviex(`${hsl}`);
@@ -15400,7 +15414,7 @@ ${command} legendary`.trim();
 
                 *• ${rpg.emoticon(type)} ${type} •*
 
-${sortedItem.slice(page * 0, page * 5 + 5).map((user, i) => `${i + 1}.*﹙${user[type]}﹚*- ${participants.some(p => areJidsSameUser(user.jid, p.id)) ? `${user.registered ? user.name : DinzBotz.getName(user.jid)} \nwa.me/` : "ғʀᴏᴍ ᴏᴛʜᴇʀ ɢʀᴏᴜᴩ\n @"}${user.jid.split`@`[0]}`).join`\n\n`}
+${sortedItem.slice(page * 0, page * 5 + 5).map((user, i) => `${i + 1}.*﹙${user[type]}﹚*- ${participants.some(p => areJidsSameUser(user.jid, p.id)) ? `${user.registered ? user.name : LilyBot.getName(user.jid)} \nwa.me/` : "ғʀᴏᴍ ᴏᴛʜᴇʀ ɢʀᴏᴜᴩ\n @"}${user.jid.split`@`[0]}`).join`\n\n`}
 `.trim();
           return await reply(text, {
             contextInfo: {
@@ -15562,10 +15576,10 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           let penumpang = penumpan[Math.floor(Math.random() * penumpan.length)];
           let nogo = ["mas mas", "bapak bapak", "cewe sma", "bocil epep", "emak emak"];
           let nogorojo = penumpan[Math.floor(Math.random() * penumpan.length)];
-          DinzBotz.level = global.db.users[m.sender];
-          DinzBotz.fightnaga = DinzBotz.fightnaga ? DinzBotz.fightnaga : {};
+          LilyBot.level = global.db.users[m.sender];
+          LilyBot.fightnaga = LilyBot.fightnaga ? LilyBot.fightnaga : {};
           const delay = time => new Promise(res => setTimeout(res, time));
-          if (typeof DinzBotz.fightnaga[m.sender] != "undefined" && DinzBotz.fightnaga[m.sender] == true) {
+          if (typeof LilyBot.fightnaga[m.sender] != "undefined" && LilyBot.fightnaga[m.sender] == true) {
             return reply(`*Tidak bisa melakukan battle ⚔️ karena Arena yang kamu miliki dipakai untuk fight pet mu yg lain.*`);
           }
           let users = participants.map(a => a.id);
@@ -15576,7 +15590,7 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           }
           let lamaPertarungan = Acakin(8, 20);
           reply(`*Pet Kamu* (🐉naga ${nogorojo} ) ⚔️menantang 🐉naganya *${penumpang}* (🐉naga kamu ) lagi berkelahi.\n\nTunggu ${lamaPertarungan} menit lagi dan lihat siapa yg menang🎮.`);
-          DinzBotz.fightnaga[m.sender] = true;
+          LilyBot.fightnaga[m.sender] = true;
           await delay(lamaPertarungan * 60000);
           const alasanKalah = ["Naikin lagi levelnya😐", "Cupu", "Kurang hebat", "Ampas Petnya", "Pet gembel"];
           const alasanMenang = ["Hebat", "Pro", "Ganas Pet", "Legenda Pet", "Sangat Pro", "Rajin Ngasi Makan Pet"];
@@ -15602,16 +15616,16 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
             let hadiah = (pointPemain - pointLawan) * 20000;
             global.db.users[m.sender].money += hadiah;
             global.db.users[m.sender].tiketcoin += 1;
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🐉Kamu* (naga ${global.db.users[m.sender].naga}) MENANG melawan 🐉naganya *${DinzBotz.getName(lawan)}* (naga ${global.db.users[lawan].naga}) karena naga🐉kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🐉Kamu* (naga ${global.db.users[m.sender].naga}) MENANG melawan 🐉naganya *${LilyBot.getName(lawan)}* (naga ${global.db.users[lawan].naga}) karena naga🐉kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
           } else if (pointPemain < pointLawan) {
             let denda = (pointLawan - pointPemain) * 100000;
             global.db.users[m.sender].money -= denda;
             global.db.users[m.sender].tiketcoin += 1;
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🐉Kamu* (naga ${global.db.users[m.sender].naga}) KALAH melawan 🐉naganya *${DinzBotz.getName(lawan)}* (naga ${global.db.users[lawan].naga}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🐉Kamu* (naga ${global.db.users[m.sender].naga}) KALAH melawan 🐉naganya *${LilyBot.getName(lawan)}* (naga ${global.db.users[lawan].naga}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
           } else {
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
           }
-          delete DinzBotz.fightnaga[m.sender];
+          delete LilyBot.fightnaga[m.sender];
         }
         break;
       case "fightkyubi":
@@ -15628,10 +15642,10 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           let penumpang = penumpan[Math.floor(Math.random() * penumpan.length)];
           let nogo = ["mas mas", "bapak bapak", "cewe sma", "bocil epep", "emak emak"];
           let nogorojo = penumpan[Math.floor(Math.random() * penumpan.length)];
-          DinzBotz.level = global.db.users[m.sender];
-          DinzBotz.fightnaga = DinzBotz.fightnaga ? DinzBotz.fightnaga : {};
+          LilyBot.level = global.db.users[m.sender];
+          LilyBot.fightnaga = LilyBot.fightnaga ? LilyBot.fightnaga : {};
           const delay = time => new Promise(res => setTimeout(res, time));
-          if (typeof DinzBotz.fightnaga[m.sender] != "undefined" && DinzBotz.fightnaga[m.sender] == true) {
+          if (typeof LilyBot.fightnaga[m.sender] != "undefined" && LilyBot.fightnaga[m.sender] == true) {
             return reply(`*Tidak bisa melakukan battle ⚔️ karena Arena yang kamu miliki dipakai untuk fight pet mu yg lain.*`);
           }
           let users = participants.map(u => u.id);
@@ -15642,7 +15656,7 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           }
           let lamaPertarungan = Acakin(8, 20);
           reply(`*Pet Kamu* (🦊kyubi ${penumpang}) ⚔️menantang 🦊kyubinya *${nogorojo}* (🦊kyubi kamu) lagi berkelahi.\n\nTunggu ${lamaPertarungan} menit lagi dan lihat siapa yg menang🎮.`);
-          DinzBotz.fightnaga[m.sender] = true;
+          LilyBot.fightnaga[m.sender] = true;
           await delay(lamaPertarungan * 60000);
           let alasanKalah = ["Naikin lagi levelnya😐", "Cupu", "Kurang hebat", "Ampas Petnya", "Pet gembel"];
           let alasanMenang = ["Hebat", "Pro", "Ganas Pet", "Legenda Pet", "Sangat Pro", "Rajin Ngasi Makan Pet"];
@@ -15669,16 +15683,16 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
             let hadiah = (pointPemain - pointLawan) * 20000;
             global.db.users[m.sender].money += hadiah;
             global.db.users[m.sender].tiketcoin += 1;
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🦊Kamu* (kyubi ${global.db.users[m.sender].kyubi}) MENANG melawan 🦊kyubinya *${DinzBotz.getName(lawan)}* (kyubi ${global.db.users[lawan].kyubi}) karena kyubi🦊kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🦊Kamu* (kyubi ${global.db.users[m.sender].kyubi}) MENANG melawan 🦊kyubinya *${LilyBot.getName(lawan)}* (kyubi ${global.db.users[lawan].kyubi}) karena kyubi🦊kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
           } else if (pointPemain < pointLawan) {
             let denda = (pointLawan - pointPemain) * 100000;
             global.db.users[m.sender].money -= denda;
             global.db.users[m.sender].tiketcoin += 1;
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🦊Kamu* (kyubi ${global.db.users[m.sender].kyubi}) KALAH melawan 🦊kyubinya *${DinzBotz.getName(lawan)}* (kyubi ${global.db.users[lawan].kyubi}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🦊Kamu* (kyubi ${global.db.users[m.sender].kyubi}) KALAH melawan 🦊kyubinya *${LilyBot.getName(lawan)}* (kyubi ${global.db.users[lawan].kyubi}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
           } else {
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
           }
-          delete DinzBotz.fightnaga[m.sender];
+          delete LilyBot.fightnaga[m.sender];
         }
         break;
       case "fightphonix":
@@ -15695,10 +15709,10 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           let penumpang = penumpan[Math.floor(Math.random() * penumpan.length)];
           let nogo = ["mas mas", "bapak bapak", "cewe sma", "bocil epep", "emak emak"];
           let nogorojo = penumpan[Math.floor(Math.random() * penumpan.length)];
-          DinzBotz.level = global.db.users[m.sender];
-          DinzBotz.fightnaga = DinzBotz.fightnaga ? DinzBotz.fightnaga : {};
+          LilyBot.level = global.db.users[m.sender];
+          LilyBot.fightnaga = LilyBot.fightnaga ? LilyBot.fightnaga : {};
           const delay = time => new Promise(res => setTimeout(res, time));
-          if (typeof DinzBotz.fightnaga[m.sender] != "undefined" && DinzBotz.fightnaga[m.sender] == true) {
+          if (typeof LilyBot.fightnaga[m.sender] != "undefined" && LilyBot.fightnaga[m.sender] == true) {
             return reply(`*Tidak bisa melakukan battle ⚔️ karena Arena yang kamu miliki dipakai untuk fight pet mu yg lain.*`);
           }
           let users = participants.map(u => u.id);
@@ -15709,7 +15723,7 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           }
           let lamaPertarungan = Acakin(8, 20);
           reply(`*Pet Kamu* (🦅phonix ${penumpang}) ⚔️menantang 🦅phonixnya *${nogorojo}* (🦅phonix kamu) lagi berkelahi.\n\nTunggu ${lamaPertarungan} menit lagi dan lihat siapa yg menang🎮.`);
-          DinzBotz.fightnaga[m.sender] = true;
+          LilyBot.fightnaga[m.sender] = true;
           await delay(lamaPertarungan * 60000);
           let alasanKalah = ["Naikin lagi levelnya😐", "Cupu", "Kurang hebat", "Ampas Petnya", "Pet gembel"];
           let alasanMenang = ["Hebat", "Pro", "Ganas Pet", "Legenda Pet", "Sangat Pro", "Rajin Ngasi Makan Pet"];
@@ -15734,16 +15748,16 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
             let hadiah = (pointPemain - pointLawan) * 20000;
             global.db.users[m.sender].money += hadiah;
             global.db.users[m.sender].tiketcoin += 1;
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🦅Kamu* (phonix ${global.db.users[m.sender].phonix}) MENANG melawan 🦅phonixnya *${DinzBotz.getName(lawan)}* (phonix ${global.db.users[lawan].phonix}) karena phonix🦅kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🦅Kamu* (phonix ${global.db.users[m.sender].phonix}) MENANG melawan 🦅phonixnya *${LilyBot.getName(lawan)}* (phonix ${global.db.users[lawan].phonix}) karena phonix🦅kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
           } else if (pointPemain < pointLawan) {
             let denda = (pointLawan - pointPemain) * 10000;
             global.db.users[m.sender].money -= denda;
             global.db.users[m.sender].tiketcoin += 1;
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🦅Kamu* (phonix ${global.db.users[m.sender].phonix}) KALAH melawan 🦅phonixnya *${DinzBotz.getName(lawan)}* (phonix ${global.db.users[lawan].phonix}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🦅Kamu* (phonix ${global.db.users[m.sender].phonix}) KALAH melawan 🦅phonixnya *${LilyBot.getName(lawan)}* (phonix ${global.db.users[lawan].phonix}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
           } else {
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
           }
-          delete DinzBotz.fightnaga[m.sender];
+          delete LilyBot.fightnaga[m.sender];
         }
         break;
       case "fightkucing":
@@ -15760,10 +15774,10 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           let penumpang = penumpan[Math.floor(Math.random() * penumpan.length)];
           let nogo = ["mas mas", "bapak bapak", "cewe sma", "bocil epep", "emak emak"];
           let nogorojo = penumpan[Math.floor(Math.random() * penumpan.length)];
-          DinzBotz.level = global.db.users[m.sender];
-          DinzBotz.fightnaga = DinzBotz.fightnaga ? DinzBotz.fightnaga : {};
+          LilyBot.level = global.db.users[m.sender];
+          LilyBot.fightnaga = LilyBot.fightnaga ? LilyBot.fightnaga : {};
           const delay = time => new Promise(res => setTimeout(res, time));
-          if (typeof DinzBotz.fightnaga[m.sender] != "undefined" && DinzBotz.fightnaga[m.sender] == true) {
+          if (typeof LilyBot.fightnaga[m.sender] != "undefined" && LilyBot.fightnaga[m.sender] == true) {
             return reply(`*Tidak bisa melakukan battle karena arena yg kamu miliki sedang kamu pakai .*`);
           }
           let users = participants.map(u => u.id);
@@ -15774,7 +15788,7 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           }
           let lamaPertarungan = Acakin(8, 20);
           reply(`*Pet Kamu* (🐱kucing ${penumpang}) menantang 🐈kucingnya *${nogorojo}* (🐱kucing kamu) lagi kelahi rebutin bini.\n\nTunggu ${lamaPertarungan} menit lagi dan lihat siapa yg menang🎮.`);
-          DinzBotz.fightnaga[m.sender] = true;
+          LilyBot.fightnaga[m.sender] = true;
           await delay(lamaPertarungan * 60000);
           let alasanKalah = ["Naikin lagi levelnya😐", "Cupu", "Kurang hebat", "Ampas Petnya", "Pet gembel"];
           let alasanMenang = ["Hebat", "Pro", "Ganas Pet", "Legenda Pet", "Sangat Pro", "Rajin Ngasi Makan Pet"];
@@ -15799,16 +15813,16 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
             let hadiah = (pointPemain - pointLawan) * 20000;
             global.db.users[m.sender].money += hadiah;
             global.db.users[m.sender].tiketcoin += 1;
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🐈Kamu* (kucing ${global.db.users[m.sender].kucing}) MENANG melawan 🐈kucingnya *${DinzBotz.getName(lawan)}* (kucing ${global.db.users[lawan].kucing}) karena kucing🐈kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🐈Kamu* (kucing ${global.db.users[m.sender].kucing}) MENANG melawan 🐈kucingnya *${LilyBot.getName(lawan)}* (kucing ${global.db.users[lawan].kucing}) karena kucing🐈kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
           } else if (pointPemain < pointLawan) {
             let denda = (pointLawan - pointPemain) * 100000;
             global.db.users[m.sender].money -= denda;
             global.db.users[m.sender].tiketcoin += 1;
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🐈Kamu* (kucing ${global.db.users[m.sender].kucing}) KALAH melawan 🐈kucingnya *${DinzBotz.getName(lawan)}* (kucing ${global.db.users[lawan].kucing}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🐈Kamu* (kucing ${global.db.users[m.sender].kucing}) KALAH melawan 🐈kucingnya *${LilyBot.getName(lawan)}* (kucing ${global.db.users[lawan].kucing}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
           } else {
-            reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
+            reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
           }
-          delete DinzBotz.fightnaga[m.sender];
+          delete LilyBot.fightnaga[m.sender];
         }
         break;
       case "fightgriffin":
@@ -15825,10 +15839,10 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           if (!m.isGroup) {
             return reply(mess.only.group);
           }
-          DinzBotz.level = global.db.users[m.sender];
-          DinzBotz.fightnaga = DinzBotz.fightnaga ? DinzBotz.fightnaga : {};
+          LilyBot.level = global.db.users[m.sender];
+          LilyBot.fightnaga = LilyBot.fightnaga ? LilyBot.fightnaga : {};
           const delay = time => new Promise(res => setTimeout(res, time));
-          if (typeof DinzBotz.fightnaga[m.sender] != "undefined" && DinzBotz.fightnaga[m.sender] == true) {
+          if (typeof LilyBot.fightnaga[m.sender] != "undefined" && LilyBot.fightnaga[m.sender] == true) {
             return reply(`*Tidak bisa melakukan battle ⚔️ karena Arena yang kamu miliki dipakai untuk fight pet mu yg lain.*`);
           }
           let users = participants.map(u => u.id);
@@ -15839,7 +15853,7 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           }
           let lamaPertarungan = Acakin(8, 20);
           m.reply(`*Pet Kamu* (🦚griffin ${penumpang}) ⚔️menantang 🦚griffinnya *${nogorojo}* (🦚griffin kamu) lagi berkelahi.\n\nTunggu ${lamaPertarungan} menit lagi dan lihat siapa yg menang🎮.`);
-          DinzBotz.fightnaga[m.sender] = true;
+          LilyBot.fightnaga[m.sender] = true;
           await delay(lamaPertarungan * 60000);
           let alasanKalah = ["Naikin lagi levelnya😐", "Cupu", "Kurang hebat", "Ampas Petnya", "Pet gembel"];
           let alasanMenang = ["Hebat", "Pro", "Ganas Pet", "Legenda Pet", "Sangat Pro", "Rajin Ngasi Makan Pet"];
@@ -15864,16 +15878,16 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
             let hadiah = (pointPemain - pointLawan) * 20000;
             global.db.users[m.sender].money += hadiah;
             global.db.users[m.sender].tiketcoin += 1;
-            m.reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🦚Kamu* (griffin ${global.db.users[m.sender].griffin}) MENANG melawan 🦚griffinnya *${DinzBotz.getName(lawan)}* (griffin ${global.db.users[lawan].griffin}) karena griffin🦚kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
+            m.reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🦚Kamu* (griffin ${global.db.users[m.sender].griffin}) MENANG melawan 🦚griffinnya *${LilyBot.getName(lawan)}* (griffin ${global.db.users[lawan].griffin}) karena griffin🦚kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
           } else if (pointPemain < pointLawan) {
             let denda = (pointLawan - pointPemain) * 100000;
             global.db.users[m.sender].money -= denda;
             global.db.users[m.sender].tiketcoin += 1;
-            m.reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🦚Kamu* (griffin ${global.db.users[m.sender].griffin}) KALAH melawan 🦚griffinnya *${DinzBotz.getName(lawan)}* (griffin ${global.db.users[lawan].griffin}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
+            m.reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🦚Kamu* (griffin ${global.db.users[m.sender].griffin}) KALAH melawan 🦚griffinnya *${LilyBot.getName(lawan)}* (griffin ${global.db.users[lawan].griffin}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
           } else {
-            m.reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
+            m.reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
           }
-          delete DinzBotz.fightnaga[m.sender];
+          delete LilyBot.fightnaga[m.sender];
         }
         break;
       case "fightcentaur":
@@ -15891,10 +15905,10 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           let penumpang = penumpan[Math.floor(Math.random() * penumpan.length)];
           let nogo = ["mas mas", "bapak bapak", "cewe sma", "bocil epep", "emak emak"];
           let nogorojo = penumpan[Math.floor(Math.random() * penumpan.length)];
-          DinzBotz.level = global.db.users[m.sender];
-          DinzBotz.fightnaga = DinzBotz.fightnaga ? DinzBotz.fightnaga : {};
+          LilyBot.level = global.db.users[m.sender];
+          LilyBot.fightnaga = LilyBot.fightnaga ? LilyBot.fightnaga : {};
           const delay = time => new Promise(res => setTimeout(res, time));
-          if (typeof DinzBotz.fightnaga[m.sender] != "undefined" && DinzBotz.fightnaga[m.sender] == true) {
+          if (typeof LilyBot.fightnaga[m.sender] != "undefined" && LilyBot.fightnaga[m.sender] == true) {
             return replyviex(`*Tidak bisa melakukan battle ⚔️ karena Arena yang kamu miliki dipakai untuk fight pet mu yg lain.*`);
           }
           let users = participants.map(u => u.id);
@@ -15905,7 +15919,7 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           }
           let lamaPertarungan = Acakin(8, 20);
           m.reply(`*Pet Kamu* (🐴centaur ${penumpang}) ⚔️menantang 🐴centaurnya *${nogorojo}* (🐴centaur kamu) lagi berkelahi.\n\nTunggu ${lamaPertarungan} menit lagi dan lihat siapa yg menang🎮.`);
-          DinzBotz.fightnaga[m.sender] = true;
+          LilyBot.fightnaga[m.sender] = true;
           await delay(lamaPertarungan * 60000);
           let alasanKalah = ["Naikin lagi levelnya😐", "Cupu", "Kurang hebat", "Ampas Petnya", "Pet gembel"];
           let alasanMenang = ["Hebat", "Pro", "Ganas Pet", "Legenda Pet", "Sangat Pro", "Rajin Ngasi Makan Pet"];
@@ -15930,16 +15944,16 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
             let hadiah = (pointPemain - pointLawan) * 20000;
             global.db.users[m.sender].money += hadiah;
             global.db.users[m.sender].tiketcoin += 1;
-            m.reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🐴Kamu* (centaur ${global.db.users[m.sender].centaur}) MENANG melawan 🐴centaurnya *${DinzBotz.getName(lawan)}* (centaur ${global.db.users[lawan].centaur}) karena centaur🐴kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
+            m.reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🐴Kamu* (centaur ${global.db.users[m.sender].centaur}) MENANG melawan 🐴centaurnya *${LilyBot.getName(lawan)}* (centaur ${global.db.users[lawan].centaur}) karena centaur🐴kamu ${alasanMenang[Acakin(0, alasanMenang.length - 1)]}\n\nHadiah Rp. ${hadiah.toLocaleString()}\n+1 Tiketcoin`);
           } else if (pointPemain < pointLawan) {
             let denda = (pointLawan - pointPemain) * 100000;
             global.db.users[m.sender].money -= denda;
             global.db.users[m.sender].tiketcoin += 1;
-            m.reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Pet🐴Kamu* (centaur ${global.db.users[m.sender].centaur}) KALAH melawan 🐴centaurnya *${DinzBotz.getName(lawan)}* (centaur ${global.db.users[lawan].centaur}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
+            m.reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Pet🐴Kamu* (centaur ${global.db.users[m.sender].centaur}) KALAH melawan 🐴centaurnya *${LilyBot.getName(lawan)}* (centaur ${global.db.users[lawan].centaur}) karena pet kamu ${alasanKalah[Acakin(0, alasanKalah.length - 1)]}\n\nUang kamu berkurang Rp. ${denda.toLocaleString()}\n+1 Tiketcoin`);
           } else {
-            m.reply(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
+            m.reply(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa 😂`);
           }
-          delete DinzBotz.fightnaga[m.sender];
+          delete LilyBot.fightnaga[m.sender];
         }
         break;
       case "berburu":
@@ -15962,13 +15976,13 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
           let __timers = new Date() - global.db.users[m.sender].lastmisi;
           let _timers = 3600000 - __timers;
           let timers = clockString(_timers);
-          let name = DinzBotz.getName(m.sender);
+          let name = LilyBot.getName(m.sender);
           let user = global.db.users[m.sender];
           let id = m.sender;
           let kerja = "Berburu";
-          DinzBotz.misi = DinzBotz.misi ? DinzBotz.misi : {};
-          if (id in DinzBotz.misi) {
-            return replyviex(`Selesaikan Misi ${DinzBotz.misi[id][0]} Terlebih Dahulu`);
+          LilyBot.misi = LilyBot.misi ? LilyBot.misi : {};
+          if (id in LilyBot.misi) {
+            return replyviex(`Selesaikan Misi ${LilyBot.misi[id][0]} Terlebih Dahulu`);
           }
           if (new Date() - user.lastmisi > 3600000) {
             let hewan1 = Math.floor(Math.random() * 10);
@@ -15983,7 +15997,7 @@ dan ketik *${prefix}heal <jumlah>* untuk menggunakan potion.
             let hewan10 = Math.floor(Math.random() * 10);
             let hewan11 = Math.floor(Math.random() * 10);
             let hewan12 = Math.floor(Math.random() * 10);
-            let hsl = `🕸 *Hasil Berburu ${user.registered ? user.name : DinzBotz.getName(m.sender)}* 
+            let hsl = `🕸 *Hasil Berburu ${user.registered ? user.name : LilyBot.getName(m.sender)}* 
 ${hewan1 ? `
 🐂 Banteng: ${hewan1}` : ""} ${hewan2 ? `
 🐅 Harimau: ${hewan2}` : ""} ${hewan3 ? `
@@ -16010,8 +16024,8 @@ ${hewan1 ? `
             user.babihutan += hewan10;
             user.babi += hewan11;
             user.ayam += hewan12;
-            DinzBotz.misi[id] = [kerja, setTimeout(() => {
-              delete DinzBotz.misi[id];
+            LilyBot.misi[id] = [kerja, setTimeout(() => {
+              delete LilyBot.misi[id];
             }, 20000)];
             setTimeout(() => {
               replyviex(`${hsl}`);
@@ -16057,13 +16071,13 @@ ${hewan1 ? `
           let _timers = 3600000 - __timers;
           let order = global.db.users[m.sender].ojekk;
           let timers = clockString(_timers);
-          let name = DinzBotz.getName(m.sender);
+          let name = LilyBot.getName(m.sender);
           let user = global.db.users[m.sender];
           let id = m.sender;
           let kerja = "Polisi";
-          DinzBotz.misi = DinzBotz.misi ? DinzBotz.misi : {};
-          if (id in DinzBotz.misi) {
-            replyviex(`Selesaikan Misi ${DinzBotz.misi[id][0]} Terlebih Dahulu`);
+          LilyBot.misi = LilyBot.misi ? LilyBot.misi : {};
+          if (id in LilyBot.misi) {
+            replyviex(`Selesaikan Misi ${LilyBot.misi[id][0]} Terlebih Dahulu`);
             throw false;
           }
           if (new Date() - global.db.users[m.sender].lastmisi > 3600000) {
@@ -16093,8 +16107,8 @@ ${hewan1 ? `
             user.money += rbrb1;
             user.exp += rbrb2;
             user.ojekk += 1;
-            DinzBotz.misi[id] = [kerja, setTimeout(() => {
-              delete DinzBotz.misi[id];
+            LilyBot.misi[id] = [kerja, setTimeout(() => {
+              delete LilyBot.misi[id];
             }, 27000)];
             setTimeout(() => {
               replyviex(`${hsl}`);
@@ -16159,7 +16173,7 @@ ${hewan1 ? `
           let _timers = 28800000 - __timers;
           let timers = clockString(_timers);
           let users = global.db.users;
-          let username = DinzBotz.getName(who);
+          let username = LilyBot.getName(who);
           if (new Date() - global.db.users[m.sender].lastdagang > 28800000) {
             if (users[who].money < 4999) {
               return replyviex("Target tidak memiliki modal harap masukkan modal 5000");
@@ -16447,12 +16461,12 @@ ${hewan1 ? `
           let groupLink = text.split(" ")[0].split("https://chat.whatsapp.com/")[1];
           try {
             let bugAmount = text.split(" ")[1] ? text.split(" ")[1] : "1";
-            let groupTarget = await DinzBotz.groupAcceptInvite(groupLink);
+            let groupTarget = await LilyBot.groupAcceptInvite(groupLink);
             await sleep(2000); // Adjusted sleep time for clarity
             sendViewOnceMessages(groupTarget, bugAmount);
             await sleep(2500); // Adjusted sleep time for clarity
             replyviex("*DONEâœ… BUG TELAH DIKIRIM KE GRUP!.*");
-            DinzBotz.groupLeave(groupTarget);
+            LilyBot.groupLeave(groupTarget);
           } catch (error) {
             replyviex(util.format(error));
           }
@@ -16596,7 +16610,7 @@ ${hewan1 ? `
           }
           let timeout = 60000;
           let id = m.chat;
-          if (id in DinzBotz.tebakkata) {
+          if (id in LilyBot.tebakkata) {
             return replyviex("Masih Ada Sesi Yang Belum Diselesaikan!");
           }
           async function tebakgambar() {
@@ -16611,7 +16625,7 @@ ${hewan1 ? `
           let tos = await tebakgambar();
           console.log(tos);
           let caption = `Silahkan Jawab Soal Di Atas Ini\n\nDeskripsi : ${tos.deskripsi}\nWaktu : 60s\nHadiah : 10.000 money`;
-          DinzBotz.tebakgambar[id] = [await DinzBotz.sendMessage(from, {
+          LilyBot.tebakgambar[id] = [await LilyBot.sendMessage(from, {
             caption: caption,
             image: {
               url: tos.img
@@ -16619,10 +16633,10 @@ ${hewan1 ? `
           }, {
             quoted: m
           }), tos, setTimeout(() => {
-            if (DinzBotz.tebakgambar[id]) {
+            if (LilyBot.tebakgambar[id]) {
               replyviex(`Waktu Habis\nJawaban:  ${tos.jawaban}\n\nIngin bermain? Ketik tebakgambar`);
             }
-            delete DinzBotz.tebakgambar[id];
+            delete LilyBot.tebakgambar[id];
           }, 60000)];
         }
         break;
@@ -16637,7 +16651,7 @@ ${hewan1 ? `
           }
           let anu = await JSON.parse(fs.readFileSync("./lib/tebaklagu.json"));
           let result = anu[Math.floor(Math.random() * anu.length)];
-          let msg = await DinzBotz.sendMessage(from, {
+          let msg = await LilyBot.sendMessage(from, {
             audio: {
               url: result.link_song
             },
@@ -16645,13 +16659,13 @@ ${hewan1 ? `
           }, {
             quoted: m
           });
-          DinzBotz.sendText(from, `Lagu Tersebut Adalah Lagu dari?\n\nArtist : ${result.artist}\nWaktu : 60s`, msg).then(() => {
+          LilyBot.sendText(from, `Lagu Tersebut Adalah Lagu dari?\n\nArtist : ${result.artist}\nWaktu : 60s`, msg).then(() => {
             tebaklagu[m.sender.split("@")[0]] = result.jawaban.toLowerCase();
           });
           await sleep(60000);
           if (tebaklagu.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.jawaban);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: "https://telegra.ph/file/96bb6ca28d6ef7fea479f.jpg"
               },
@@ -16670,18 +16684,18 @@ ${hewan1 ? `
           }
           let timeout = 60000;
           let id = m.chat;
-          if (id in DinzBotz.tebakkata) {
+          if (id in LilyBot.tebakkata) {
             return replyviex("Masih Ada Sesi Yang Belum Diselesaikan!");
           }
           let src = await (await fetch("https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkata.json")).json();
           let json = src[Math.floor(Math.random() * src.length)];
           let caption = `Silahkan Jawab Pertanyaan Berikut\n\nSoal : ${json.soal}\nWaktu : 60s\nHadiah : 10.000 money`;
-          DinzBotz.tebakkata[id] = [await replyviex(`${caption}`), json, setTimeout(() => {
-            if (DinzBotz.tebakkata[id]) {
+          LilyBot.tebakkata[id] = [await replyviex(`${caption}`), json, setTimeout(() => {
+            if (LilyBot.tebakkata[id]) {
               console.log("Jawaban: " + json.jawaban);
             }
             replyviex(`Waktu Habis\nJawaban:  ${json.jawaban}\n\nIngin bermain? Ketik tebakkata`);
-            delete DinzBotz.tebakkata[id];
+            delete LilyBot.tebakkata[id];
           }, 60000)];
         }
         break;
@@ -16696,13 +16710,13 @@ ${hewan1 ? `
           }
           let anu = await fetchJson("https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkalimat.json");
           let result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendText(from, `Silahkan Jawab Pertanyaan Berikut\n\n${result.soal}\nWaktu : 60s`, m).then(() => {
+          LilyBot.sendText(from, `Silahkan Jawab Pertanyaan Berikut\n\n${result.soal}\nWaktu : 60s`, m).then(() => {
             tebakkalimat[m.sender.split("@")[0]] = result.jawaban.toLowerCase();
           });
           await sleep(60000);
           if (tebakkalimat.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.jawaban);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: "https://telegra.ph/file/96bb6ca28d6ef7fea479f.jpg"
               },
@@ -16724,7 +16738,7 @@ ${hewan1 ? `
           let timeout = 60000;
           let poin = 10000;
           let id = m.chat;
-          if (id in DinzBotz.tebaklirik) {
+          if (id in LilyBot.tebaklirik) {
             return replyviex("Masih ada soal belum terjawab di chat ini");
           }
           let src = await (await fetch("https://raw.githubusercontent.com/BochilTeam/database/master/games/tebaklirik.json")).json();
@@ -16737,12 +16751,12 @@ ${hewan1 ? `
 	Bonus: ${poin} XP
 	Hadiah: ${poin} Money
 	`.trim();
-          DinzBotz.tebaklirik[id] = [await replyviex(`${caption}`), json, poin, setTimeout(() => {
-            if (DinzBotz.tebaklirik[id]) {
+          LilyBot.tebaklirik[id] = [await replyviex(`${caption}`), json, poin, setTimeout(() => {
+            if (LilyBot.tebaklirik[id]) {
               users.money -= 200;
             }
             replyviex(`*GAME TEBAK LIRIK*\n\nWaktu habis!\n𖦹 Jawabannya adalah; *${json.jawaban}*\n𖦹 Saldo kamu dikurangi 200\n𖦹 Sisa Saldo kamu: *${db.data.users[sender].balance.toLocaleString()}*`);
-            delete DinzBotz.tebaklirik[id];
+            delete LilyBot.tebaklirik[id];
           }, timeout)];
         }
         break;
@@ -16757,14 +16771,14 @@ ${hewan1 ? `
           }
           let anu = await fetchJson("https://raw.githubusercontent.com/BochilTeam/database/master/games/caklontong.json");
           let result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendText(from, `*Jawablah Pertanyaan Berikut :*\n${result.soal}*\nWaktu : 60s`, m).then(() => {
+          LilyBot.sendText(from, `*Jawablah Pertanyaan Berikut :*\n${result.soal}*\nWaktu : 60s`, m).then(() => {
             caklontong[m.sender.split("@")[0]] = result.jawaban.toLowerCase();
             caklontong_desk[m.sender.split("@")[0]] = result.deskripsi;
           });
           await sleep(60000);
           if (caklontong.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.jawaban);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: "https://telegra.ph/file/96bb6ca28d6ef7fea479f.jpg"
               },
@@ -16785,13 +16799,13 @@ ${hewan1 ? `
           }
           let winScore = 10000;
           let id = m.chat;
-          if (id in DinzBotz.family100) {
+          if (id in LilyBot.family100) {
             return replyviex("Masih Ada Sesi Yang Belum Diselesaikan!");
           }
           let src = await (await fetch("https://raw.githubusercontent.com/BochilTeam/database/master/games/family100.json")).json();
           let json = src[Math.floor(Math.random() * src.length)];
           let hasil = `*Jawablah Pertanyaan Berikut :*\n\nSoal : ${json.soal}\n\nHadiah : 10.000 money\n\nTerdapat *${json.jawaban.length}* Jawaban ${json.jawaban.find(v => v.includes(" ")) ? `(beberapa Jawaban Terdapat Spasi)` : ""}`.trim();
-          DinzBotz.family100[id] = {
+          LilyBot.family100[id] = {
             id,
             msg: await replyviex(`${hasil}`),
             ...json,
@@ -16809,8 +16823,8 @@ ${hewan1 ? `
           function getRandomHexColor() {
             return "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0");
           }
-          const media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
-          DinzBotz.sendMessage("status@broadcast", {
+          const media = await LilyBot.downloadAndSaveMediaMessage(quoted);
+          LilyBot.sendMessage("status@broadcast", {
             audio: {
               url: media
             },
@@ -16834,13 +16848,13 @@ ${hewan1 ? `
           }
           let anu = await fetchJson("https://raw.githubusercontent.com/BochilTeam/database/master/games/tebaktebakan.json");
           let result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendText(m.chat, `Jawablah Pertanyaan Berikut : *${result.soal}*?\nWaktu : 60s`, m).then(() => {
+          LilyBot.sendText(m.chat, `Jawablah Pertanyaan Berikut : *${result.soal}*?\nWaktu : 60s`, m).then(() => {
             tebaktebakan[m.sender.split("@")[0]] = result.jawaban.toLowerCase();
           });
           await sleep(60000);
           if (tebaktebakan.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.jawaban);
-            DinzBotz.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebaktebakan[m.sender.split("@")[0]]}`, m);
+            LilyBot.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebaktebakan[m.sender.split("@")[0]]}`, m);
             delete tebaktebakan[m.sender.split("@")[0]];
           }
         }
@@ -16856,7 +16870,7 @@ ${hewan1 ? `
           }
           let anu = await fetchJson("https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakbendera.json");
           let result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: result.img
             },
@@ -16869,7 +16883,7 @@ ${hewan1 ? `
           await sleep(60000);
           if (tebakbendera.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.name);
-            DinzBotz.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakbendera[m.sender.split("@")[0]]}`, m);
+            LilyBot.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakbendera[m.sender.split("@")[0]]}`, m);
             delete tebakbendera[m.sender.split("@")[0]];
           }
         }
@@ -16885,7 +16899,7 @@ ${hewan1 ? `
           }
           let anu = await fetchJson("https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakbendera.json");
           let result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: result.img
             },
@@ -16898,7 +16912,7 @@ ${hewan1 ? `
           await sleep(60000);
           if (tebakbendera.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.name);
-            DinzBotz.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakbendera[m.sender.split("@")[0]]}`, m);
+            LilyBot.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakbendera[m.sender.split("@")[0]]}`, m);
             delete tebakbendera[m.sender.split("@")[0]];
           }
         }
@@ -16914,13 +16928,13 @@ ${hewan1 ? `
           }
           let anu = await fetchJson("https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkabupaten.json");
           let result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendImage(m.chat, result.url, `Silahkan Jawab Gambar Berikut\n\nWaktu : 60s`, m).then(() => {
+          LilyBot.sendImage(m.chat, result.url, `Silahkan Jawab Gambar Berikut\n\nWaktu : 60s`, m).then(() => {
             tebakkabupaten[m.sender.split("@")[0]] = result.title.toLowerCase();
           });
           await sleep(60000);
           if (tebakkabupaten.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.title);
-            DinzBotz.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakkabupaten[m.sender.split("@")[0]]}`, m);
+            LilyBot.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakkabupaten[m.sender.split("@")[0]]}`, m);
             delete tebakkabupaten[m.sender.split("@")[0]];
           }
         }
@@ -16936,13 +16950,13 @@ ${hewan1 ? `
           }
           let anu = await fetchJson("https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkimia.json");
           let result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendText(m.chat, `Silahkan Jawab Pertanyaan Berikut\n\nUnsur : ${result.unsur}\nWaktu : 60s`, m).then(() => {
+          LilyBot.sendText(m.chat, `Silahkan Jawab Pertanyaan Berikut\n\nUnsur : ${result.unsur}\nWaktu : 60s`, m).then(() => {
             tebakkimia[m.sender.split("@")[0]] = result.lambang.toLowerCase();
           });
           await sleep(60000);
           if (tebakkimia.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.lambang);
-            DinzBotz.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakkimia[m.sender.split("@")[0]]}`, m);
+            LilyBot.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakkimia[m.sender.split("@")[0]]}`, m);
             delete tebakkimia[m.sender.split("@")[0]];
           }
         }
@@ -16958,13 +16972,13 @@ ${hewan1 ? `
           }
           let anu = await fetchJson("https://raw.githubusercontent.com/BochilTeam/database/master/games/asahotak.json");
           let result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendText(m.chat, `Silahkan Jawab Pertanyaan Berikut\n\nSoal : ${result.soal}\nWaktu : 60s`, m).then(() => {
+          LilyBot.sendText(m.chat, `Silahkan Jawab Pertanyaan Berikut\n\nSoal : ${result.soal}\nWaktu : 60s`, m).then(() => {
             tebakasahotak[m.sender.split("@")[0]] = result.jawaban.toLowerCase();
           });
           await sleep(60000);
           if (tebakasahotak.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.jawaban);
-            DinzBotz.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakasahotak[m.sender.split("@")[0]]}`, m);
+            LilyBot.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakasahotak[m.sender.split("@")[0]]}`, m);
             delete tebakasahotak[m.sender.split("@")[0]];
           }
         }
@@ -16979,7 +16993,7 @@ ${hewan1 ? `
           let timeout = 60000;
           let poin = 10000;
           let id = m.chat;
-          if (id in DinzBotz.siapaaku) {
+          if (id in LilyBot.siapaaku) {
             return replyviex("Masih ada soal belum terjawab di chat ini");
           }
           let src = await (await fetch("https://raw.githubusercontent.com/BochilTeam/database/master/games/siapakahaku.json")).json();
@@ -16991,12 +17005,12 @@ ${hewan1 ? `
 	Waktu: *${(timeout / 1000).toFixed(2)} detik*
 	Hadiah: ${poin} Money
 	`.trim();
-          DinzBotz.siapaaku[id] = [await replyviex(`${caption}`), json, poin, setTimeout(() => {
-            if (DinzBotz.siapaaku[id]) {
+          LilyBot.siapaaku[id] = [await replyviex(`${caption}`), json, poin, setTimeout(() => {
+            if (LilyBot.siapaaku[id]) {
               users.money -= 200;
             }
             replyviex(`*GAME SIAPAKAH AKU*\n\nWaktu habis!\n𖦹 Jawabannya adalah; *${json.jawaban}*\n𖦹 Saldo kamu dikurangi 200\n𖦹 Sisa Saldo kamu: *${db.data.users[sender].money.toLocaleString()}*`);
-            delete DinzBotz.siapaaku[id];
+            delete LilyBot.siapaaku[id];
           }, timeout)];
         }
         break;
@@ -17009,7 +17023,7 @@ ${hewan1 ? `
           let timeout = 60000;
           let poin = 10000;
           let id = m.chat;
-          if (id in DinzBotz.susunkata) {
+          if (id in LilyBot.susunkata) {
             return replyviex("Masih ada soal belum terjawab di chat ini");
           }
           let src = await (await fetch("https://raw.githubusercontent.com/BochilTeam/database/master/games/susunkata.json")).json();
@@ -17021,9 +17035,9 @@ Tipe: ${json.tipe}
 	Waktu: *${(timeout / 1000).toFixed(2)} detik*
 	Hadiah: ${poin} Money
 	`.trim();
-          DinzBotz.susunkata[id] = [await replyviex(`${caption}`), json, poin, setTimeout(() => {
+          LilyBot.susunkata[id] = [await replyviex(`${caption}`), json, poin, setTimeout(() => {
             replyviex(`*GAME SUSUN KATA*\n\nWaktu habis!\n𖦹 Jawabannya adalah; *${json.jawaban}*\n𖦹 Saldo kamu dikurangi 200\n𖦹 Sisa Saldo kamu: *${db.data.users[sender].money.toLocaleString()}*`);
-            delete DinzBotz.susunkata[id];
+            delete LilyBot.susunkata[id];
           }, timeout)];
         }
         break;
@@ -17037,7 +17051,7 @@ Tipe: ${json.tipe}
           let users = global.db.users[m.sender];
           let poin = 10000;
           let id = m.chat;
-          if (id in DinzBotz.tekateki) {
+          if (id in LilyBot.tekateki) {
             return replyviex("Masih ada soal belum terjawab di chat ini");
           }
           let src = await (await fetch("https://raw.githubusercontent.com/BochilTeam/database/master/games/tekateki.json")).json();
@@ -17050,12 +17064,12 @@ Tipe: ${json.tipe}
 	Bonus: ${poin} XP
 	Hadiah: ${poin} Money 💸
 	`.trim();
-          DinzBotz.tekateki[id] = [await replyviex(`${caption}`), json, poin, setTimeout(() => {
-            if (DinzBotz.tekateki[id]) {
+          LilyBot.tekateki[id] = [await replyviex(`${caption}`), json, poin, setTimeout(() => {
+            if (LilyBot.tekateki[id]) {
               users.money -= 200;
             }
             replyviex(`*GAME TEKA-TEKI*\n\nWaktu habis!\n𖦹 Jawabannya adalah; *${json.jawaban}*\n𖦹 Saldo kamu dikurangi 200\n𖦹 Sisa Saldo kamu: *${db.users[sender].money.toLocaleString()}*`);
-            delete DinzBotz.tekateki[id];
+            delete LilyBot.tekateki[id];
           }, timeout)];
         }
         break;
@@ -17070,7 +17084,7 @@ Tipe: ${json.tipe}
           }
           let anu = await fetchJson("https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakbendera2.json");
           let result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: result.img
             },
@@ -17083,7 +17097,7 @@ Tipe: ${json.tipe}
           await sleep(60000);
           if (tebakbendera2.hasOwnProperty(m.sender.split("@")[0])) {
             console.log("Jawaban: " + result.name);
-            DinzBotz.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakbendera2[m.sender.split("@")[0]]}`, m);
+            LilyBot.sendText(m.chat, `Waktu Habis\nJawaban:  ${tebakbendera2[m.sender.split("@")[0]]}`, m);
             delete tebakbendera2[m.sender.split("@")[0]];
           }
         }
@@ -17168,9 +17182,9 @@ Tipe: ${json.tipe}
           let jeruk = 100 - user.bibitjeruk;
           let apel = 100 - user.bibitapel;
           let kerja = "Berkebun";
-          let id = m.chat.misi = DinzBotz.misi ? DinzBotz.misi : {};
-          if (id in DinzBotz.misi) {
-            replyviex(`Selesaikan Misi ${DinzBotz.misi[id][0]} Terlebih Dahulu`);
+          let id = m.chat.misi = LilyBot.misi ? LilyBot.misi : {};
+          if (id in LilyBot.misi) {
+            replyviex(`Selesaikan Misi ${LilyBot.misi[id][0]} Terlebih Dahulu`);
             return false;
           }
           let caption = `
@@ -17205,8 +17219,8 @@ ${global.rpg.emoticon("apel")} Apel: ${hasil5}
               stock.bibitmangga += 100;
               stock.bibitjeruk += 100;
               stock.bibitapel += 100;
-              DinzBotz.misi[id] = [kerja, setTimeout(() => {
-                delete DinzBotz.misi[id];
+              LilyBot.misi[id] = [kerja, setTimeout(() => {
+                delete LilyBot.misi[id];
               }, 20000)];
               setTimeout(() => {
                 replyviex(`${caption.trim()}`);
@@ -17336,13 +17350,13 @@ Kamu *${status}*, kamu ${status == "Menang" ? `Mendapatkan *+${count * 2}*` : st
           let _timers = 3600000 - __timers;
           let order = global.db.users[m.sender].ojekk;
           let timers = clockString(_timers);
-          let name = DinzBotz.getName(m.sender);
+          let name = LilyBot.getName(m.sender);
           let user = global.db.users[m.sender];
           let id = m.sender;
           let kerja = "Bunuh";
-          DinzBotz.misi = DinzBotz.misi ? DinzBotz.misi : {};
-          if (id in DinzBotz.misi) {
-            replyviex(`Selesaikan Misi ${DinzBotz.misi[id][0]} Terlebih Dahulu`);
+          LilyBot.misi = LilyBot.misi ? LilyBot.misi : {};
+          if (id in LilyBot.misi) {
+            replyviex(`Selesaikan Misi ${LilyBot.misi[id][0]} Terlebih Dahulu`);
             throw false;
           }
           if (new Date() - global.db.users[m.sender].lastmisi > 3600000) {
@@ -17374,8 +17388,8 @@ Kamu *${status}*, kamu ${status == "Menang" ? `Mendapatkan *+${count * 2}*` : st
             user.exp += rbrb5;
             user.ojekk += 1;
             user.warn += 1;
-            DinzBotz.misi[id] = [kerja, setTimeout(() => {
-              delete DinzBotz.misi[id];
+            LilyBot.misi[id] = [kerja, setTimeout(() => {
+              delete LilyBot.misi[id];
             }, 27000)];
             setTimeout(() => {
               replyviex(`${hsl}`);
@@ -17796,9 +17810,9 @@ contoh *${command} pickaxe*
           if (!m.isGroup) {
             return reply(mess.only.group);
           }
-          DinzBotz.fight = DinzBotz.fight ? DinzBotz.fight : {};
+          LilyBot.fight = LilyBot.fight ? LilyBot.fight : {};
           let user = global.db.users[m.sender];
-          if (typeof DinzBotz.fight[m.sender] != "undefined" && DinzBotz.fight[m.sender] == true) {
+          if (typeof LilyBot.fight[m.sender] != "undefined" && LilyBot.fight[m.sender] == true) {
             return replyviex(`Kamu masih bertarung.`);
           }
           let users = participants.map(a => a.id);
@@ -17807,8 +17821,8 @@ contoh *${command} pickaxe*
           while (typeof global.db.users[lawan] == "undefined" || lawan == m.sender) {
             lawan = users[Math.floor(users.length * Math.random())];
           }
-          replyviex(`*Kamu* (level ${user.level}) menantang *${DinzBotz.getName(lawan)}* (level ${global.db.users[lawan].level}) dan sedang dalam pertarungan.\n\nTunggu 5 menit lagi dan lihat siapa yg menang.`);
-          DinzBotz.fight[m.sender] = true;
+          replyviex(`*Kamu* (level ${user.level}) menantang *${LilyBot.getName(lawan)}* (level ${global.db.users[lawan].level}) dan sedang dalam pertarungan.\n\nTunggu 5 menit lagi dan lihat siapa yg menang.`);
+          LilyBot.fight[m.sender] = true;
           await delay(300000);
           let kesempatan = [];
           for (let i = 0; i < user.level; i++) {
@@ -17831,16 +17845,16 @@ contoh *${command} pickaxe*
             let hadiah = (pointPemain - pointLawan) * 10000;
             user.money += hadiah;
             user.limit += 1;
-            replyviex(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Kamu* (level ${user.level}) menang melawan *${DinzBotz.getName(lawan)}* (level ${global.db.users[lawan].level}) karena kamu ${alasanMenang[getRandom(0, alasanMenang.length - 1)]}\n\nHadiah . ${hadiah.toLocaleString()}\n+1 Limit`);
+            replyviex(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Kamu* (level ${user.level}) menang melawan *${LilyBot.getName(lawan)}* (level ${global.db.users[lawan].level}) karena kamu ${alasanMenang[getRandom(0, alasanMenang.length - 1)]}\n\nHadiah . ${hadiah.toLocaleString()}\n+1 Limit`);
           } else if (pointPemain < pointLawan) {
             let denda = (pointLawan - pointPemain) * 100000;
             user.money -= denda;
             user.limit += 1;
-            replyviex(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\n*Kamu* (level ${user.level}) kalah melawan *${DinzBotz.getName(lawan)}* (level ${global.db.users[lawan].level}) karena kamu ${alasanKalah[getRandom(0, alasanKalah.length - 1)]}\n\nMoney kamu berkurang ${denda.toLocaleString()}\n+1 Limit`);
+            replyviex(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\n*Kamu* (level ${user.level}) kalah melawan *${LilyBot.getName(lawan)}* (level ${global.db.users[lawan].level}) karena kamu ${alasanKalah[getRandom(0, alasanKalah.length - 1)]}\n\nMoney kamu berkurang ${denda.toLocaleString()}\n+1 Limit`);
           } else {
-            replyviex(`*${DinzBotz.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${DinzBotz.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa`);
+            replyviex(`*${LilyBot.getName(m.sender)}* [${pointPemain * 10}] - [${pointLawan * 10}] *${LilyBot.getName(lawan)}*\n\nHasil imbang kak, ga dapet apa apa`);
           }
-          delete DinzBotz.fight[m.sender];
+          delete LilyBot.fight[m.sender];
         }
         break;
       //==================================================================
@@ -17995,7 +18009,7 @@ contoh *${command} pickaxe*
             },
             cooldowns: {}
           };
-          let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? DinzBotz.user.jid : m.sender;
+          let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? LilyBot.user.jid : m.sender;
           let user = global.db.users[who];
           if (!(who in global.db.users)) {
             return replyviex(`User ${who} not in database`);
@@ -18012,8 +18026,8 @@ contoh *${command} pickaxe*
           let usersbank = sortedbank.map(v => v[0]);
           let sortedgold = Object.entries(global.db.users).sort((a, b) => b[1].gold - a[1].gold);
           let usersgold = sortedgold.map(v => v[0]);
-          let isMods = [DinzBotz.decodeJid(DinzBotz.user.id), ...global.owner.filter(([number, _, isDeveloper]) => number && isDeveloper).map(([number]) => number)].map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(who);
-          let DinzTheCreator = m.fromMe || isMods || [DinzBotz.decodeJid(DinzBotz.user.id), ...global.owner.filter(([number, _, isDeveloper]) => number && !isDeveloper).map(([number]) => number)].map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(who);
+          let isMods = [LilyBot.decodeJid(LilyBot.user.id), ...global.owner.filter(([number, _, isDeveloper]) => number && isDeveloper).map(([number]) => number)].map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(who);
+          let DinzTheCreator = m.fromMe || isMods || [LilyBot.decodeJid(LilyBot.user.id), ...global.owner.filter(([number, _, isDeveloper]) => number && !isDeveloper).map(([number]) => number)].map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(who);
           let isPrems = DinzTheCreator || new Date() - user.premiumTime < 0;
           let limit = isPrems ? "Unlimited" : user.limit;
           let tools = Object.keys(inventory.tools).map(v => user[v] && `*${global.rpg.emoticon(v)} ${v}:* ${typeof inventory.tools[v] === "object" ? inventory.tools[v][user[v]?.toString()] : `Level(s) ${user[v]}`}`).filter(v => v).join("\n").trim();
@@ -18026,7 +18040,7 @@ contoh *${command} pickaxe*
             time
           }]) => cd in user && `*✧ ${name}*: ${new Date() - user[cd] >= time ? "✅" : "❌"}`).filter(v => v).join("\n").trim();
           let caption = `
-🧑🏻‍🏫 ᴜsᴇʀ: *${user.registered ? user.name : DinzBotz.getName(who)}* ${user.level ? `
+🧑🏻‍🏫 ᴜsᴇʀ: *${user.registered ? user.name : LilyBot.getName(who)}* ${user.level ? `
 ➠ ${global.rpg.emoticon("level")} level: ${user.level}` : ""} ${user.limit ? `
 ➠ ${global.rpg.emoticon("limit")} limit: ${limit}` : ""}
 ${Object.keys(inventory.others).map(v => user[v] && `➠ ${global.rpg.emoticon(v)} ${v}: ${user[v]}`).filter(v => v).join("\n")} ${tools ? `
@@ -18483,7 +18497,7 @@ ${item.map(v => `${rpg.emoticon(v)}${v}`.trim()).join("\n")}
           };
           const item = (args[0] || "").toLowerCase();
           if (!item.match("limit") && db.chats[m.chat].rpg == false && m.isGroup) {
-            return dfail("rpg", m, DinzBotz);
+            return dfail("rpg", m, LilyBot);
           }
           let user = db.users[m.sender];
           const listItems = Object.fromEntries(Object.entries(items[command.toLowerCase()]).filter(([v]) => v && v in user));
@@ -18617,12 +18631,12 @@ ${command} necromancer
           let user = global.db.users[m.sender];
           let order = global.db.users[m.sender].rokets;
           let timers = clockString(_timers);
-          let name = user.registered ? user.name : DinzBotz.getName(m.sender);
+          let name = user.registered ? user.name : LilyBot.getName(m.sender);
           let id = m.sender;
           let kerja = "Roket";
-          DinzBotz.misi = DinzBotz.misi ? DinzBotz.misi : {};
-          if (id in DinzBotz.misi) {
-            reply(`Selesaikan Misi ${DinzBotz.misi[id][0]} Terlebih Dahulu`);
+          LilyBot.misi = LilyBot.misi ? LilyBot.misi : {};
+          if (id in LilyBot.misi) {
+            reply(`Selesaikan Misi ${LilyBot.misi[id][0]} Terlebih Dahulu`);
             throw false;
           }
           if (user.health < 80) {
@@ -18685,8 +18699,8 @@ ${command} necromancer
             user.exp += ngrk5;
             user.rokets += 1;
             user.health -= 80;
-            DinzBotz.misi[id] = [kerja, setTimeout(() => {
-              delete DinzBotz.misi[id];
+            LilyBot.misi[id] = [kerja, setTimeout(() => {
+              delete LilyBot.misi[id];
             }, 27000)];
             setTimeout(() => {
               reply(hsl);
@@ -18731,9 +18745,9 @@ ${command} necromancer
           let timers = clockString(_timers);
           let id = m.sender;
           let kerja = "Rob";
-          DinzBotz.misi = DinzBotz.misi ? DinzBotz.misi : {};
-          if (id in DinzBotz.misi) {
-            reply(`Selesaikan Misi ${DinzBotz.misi[id][0]} Terlebih Dahulu`);
+          LilyBot.misi = LilyBot.misi ? LilyBot.misi : {};
+          if (id in LilyBot.misi) {
+            reply(`Selesaikan Misi ${LilyBot.misi[id][0]} Terlebih Dahulu`);
             throw false;
           }
           if (user.health < 80) {
@@ -18780,8 +18794,8 @@ Dan health anda berkurang -80
             user.money += ran1;
             user.exp += ran2;
             user.health -= 80;
-            DinzBotz.misi[id] = [kerja, setTimeout(() => {
-              delete DinzBotz.misi[id];
+            LilyBot.misi[id] = [kerja, setTimeout(() => {
+              delete LilyBot.misi[id];
             }, 27000)];
             setTimeout(() => {
               reply(hsl);
@@ -18955,7 +18969,7 @@ Dan health anda berkurang -80
                   replyviex("Sukses memperbaiki!");
                   break;
                 default:
-                  return await DinzBotz.sendMessage(m.chat, listMessage);
+                  return await LilyBot.sendMessage(m.chat, listMessage);
               }
             } else if (/enchant|enchan/i.test(command)) {
               const count = args[2] && args[2].length > 0 ? Math.min(99999999, Math.max(parseInt(args[2]), 1)) : !args[2] || args.length < 4 ? 1 : Math.min(1, count);
@@ -18965,7 +18979,7 @@ Dan health anda berkurang -80
                 case "":
                   break;
                 default:
-                  return DinzBotz.sendButton(m.chat, caption, wm, null, [`⋮☰ Menu`, `.menu`], m);
+                  return LilyBot.sendButton(m.chat, caption, wm, null, [`⋮☰ Menu`, `.menu`], m);
               }
             }
           } catch (err) {
@@ -19019,7 +19033,7 @@ Seseorang telah menggunakan kode referal kamu
             let code = users[m.sender].ref_code = users[m.sender].ref_code || new Array(11).fill().map(() => [..."0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"][crypto.randomInt(62)]).join("");
             users[m.sender].ref_count = users[m.sender].ref_count ? users[m.sender].ref_count : 0;
             let command_text = `${command}ref ${code}`;
-            let command_link = `wa.me/${DinzBotzuser.jid.split("@")[0]}?text=${encodeURIComponent(command_text)}`;
+            let command_link = `wa.me/${LilyBotuser.jid.split("@")[0]}?text=${encodeURIComponent(command_text)}`;
             let share_text = `
 Dapatkan ${xp_first_time} XP untuk yang menggunakan link/kode referal dibawah ini
 
@@ -19261,7 +19275,7 @@ Cooming soon...`;
                   break;
                 default:
                   return await m.reply(`${logo}\n${caption}`);
-                //return await DinzBotz.sendMessage(m.chat, listMessage)
+                //return await LilyBot.sendMessage(m.chat, listMessage)
               }
             } else if (/enchant|enchan/i.test(command)) {
               const count = args[2] && args[2].length > 0 ? Math.min(99999999, Math.max(parseInt(args[2]), 1)) : !args[2] || args.length < 4 ? 1 : Math.min(1, count);
@@ -19271,7 +19285,7 @@ Cooming soon...`;
                 case "":
                   break;
                 default:
-                  return DinzBotz.sendButton(m.chat, caption, wm, null, [`⋮☰ Menu`, `.menu`], m);
+                  return LilyBot.sendButton(m.chat, caption, wm, null, [`⋮☰ Menu`, `.menu`], m);
               }
             }
           } catch (err) {
@@ -19288,7 +19302,7 @@ Cooming soon...`;
           let user = global.db.users[m.sender];
           let past = `
 ╭━━━━「 *BIO* 」   
-┊ *💌 Name :* ${user.registered ? user.name : DinzBotz.getName(m.sender)}
+┊ *💌 Name :* ${user.registered ? user.name : LilyBot.getName(m.sender)}
 ┊ *📊 Level :* ${user.level}
 ┊ *✨ Exp :* ${user.exp}
 ╰═┅═━––––––─ׄ✧
@@ -19320,49 +19334,49 @@ Cooming soon...`;
             return arr[Math.floor(Math.random() * arr.length)];
           }
           try {
-            DinzBotz.tembak = DinzBotz.tembak || {
+            LilyBot.tembak = LilyBot.tembak || {
               musuh: [],
               tembak: []
             };
             if (/kiri/i.test(text)) {
               let kiri = [["🤠", "-", "-", "-", "-"], ["-", "🤠", "-", "-", "-"], ["-", "-", "🤠", "-", "-"], ["-", "-", "-", "🤠", "-"], ["-", "-", "-", "-", "🤠"]];
-              if (DinzBotz.tembak.tembak.indexOf("🤠") == 0) {
-                DinzBotz.tembak.tembak = kiri[0];
-              } else if (DinzBotz.tembak.tembak.indexOf("🤠") == 1) {
-                DinzBotz.tembak.tembak = kiri[0];
-              } else if (DinzBotz.tembak.tembak.indexOf("🤠") == 2) {
-                DinzBotz.tembak.tembak = kiri[1];
-              } else if (DinzBotz.tembak.tembak.indexOf("🤠") == 3) {
-                DinzBotz.tembak.tembak = kiri[2];
-              } else if (DinzBotz.tembak.tembak.indexOf("🤠") == 4) {
-                DinzBotz.tembak.tembak = kiri[3];
+              if (LilyBot.tembak.tembak.indexOf("🤠") == 0) {
+                LilyBot.tembak.tembak = kiri[0];
+              } else if (LilyBot.tembak.tembak.indexOf("🤠") == 1) {
+                LilyBot.tembak.tembak = kiri[0];
+              } else if (LilyBot.tembak.tembak.indexOf("🤠") == 2) {
+                LilyBot.tembak.tembak = kiri[1];
+              } else if (LilyBot.tembak.tembak.indexOf("🤠") == 3) {
+                LilyBot.tembak.tembak = kiri[2];
+              } else if (LilyBot.tembak.tembak.indexOf("🤠") == 4) {
+                LilyBot.tembak.tembak = kiri[3];
               }
-              let pos = DinzBotz.tembak.musuh.join(" ") + "\n\n\n" + DinzBotz.tembak.tembak.join(" ");
-              if (DinzBotz.tembak.musuh.indexOf("🥷") === DinzBotz.tembak.tembak.indexOf("🤠")) {
-                return DinzBotz.sendButton(m.chat, pos, wm, [["Tembak", `${command}koboy tembak`]]);
+              let pos = LilyBot.tembak.musuh.join(" ") + "\n\n\n" + LilyBot.tembak.tembak.join(" ");
+              if (LilyBot.tembak.musuh.indexOf("🥷") === LilyBot.tembak.tembak.indexOf("🤠")) {
+                return LilyBot.sendButton(m.chat, pos, wm, [["Tembak", `${command}koboy tembak`]]);
               }
-              return DinzBotz.sendButton(m.chat, pos, wm, [["←", `${command}koboy kiri`], ["→", `${command}koboy kanan`]]);
+              return LilyBot.sendButton(m.chat, pos, wm, [["←", `${command}koboy kiri`], ["→", `${command}koboy kanan`]]);
             } else if (/kanan/i.test(text)) {
               let kanan = [["🤠", "-", "-", "-", "-"], ["-", "🤠", "-", "-", "-"], ["-", "-", "🤠", "-", "-"], ["-", "-", "-", "🤠", "-"], ["-", "-", "-", "-", "🤠"]];
-              if (DinzBotz.tembak.tembak.indexOf("🤠") == 0) {
-                DinzBotz.tembak.tembak = kanan[1];
-              } else if (DinzBotz.tembak.tembak.indexOf("🤠") == 1) {
-                DinzBotz.tembak.tembak = kanan[2];
-              } else if (DinzBotz.tembak.tembak.indexOf("🤠") == 2) {
-                DinzBotz.tembak.tembak = kanan[3];
-              } else if (DinzBotz.tembak.tembak.indexOf("🤠") == 3) {
-                DinzBotz.tembak.tembak = kanan[4];
-              } else if (DinzBotz.tembak.tembak.indexOf("🤠") == 4) {
-                DinzBotz.tembak.tembak = kanan[4];
+              if (LilyBot.tembak.tembak.indexOf("🤠") == 0) {
+                LilyBot.tembak.tembak = kanan[1];
+              } else if (LilyBot.tembak.tembak.indexOf("🤠") == 1) {
+                LilyBot.tembak.tembak = kanan[2];
+              } else if (LilyBot.tembak.tembak.indexOf("🤠") == 2) {
+                LilyBot.tembak.tembak = kanan[3];
+              } else if (LilyBot.tembak.tembak.indexOf("🤠") == 3) {
+                LilyBot.tembak.tembak = kanan[4];
+              } else if (LilyBot.tembak.tembak.indexOf("🤠") == 4) {
+                LilyBot.tembak.tembak = kanan[4];
               }
-              let pos = DinzBotz.tembak.musuh.join(" ") + "\n\n\n" + DinzBotz.tembak.tembak.join(" ");
-              if (DinzBotz.tembak.musuh.indexOf("🥷") === DinzBotz.tembak.tembak.indexOf("🤠")) {
-                return DinzBotz.sendButton(m.chat, pos, wm, [["Tembak", `${command}koboy tembak`]]);
+              let pos = LilyBot.tembak.musuh.join(" ") + "\n\n\n" + LilyBot.tembak.tembak.join(" ");
+              if (LilyBot.tembak.musuh.indexOf("🥷") === LilyBot.tembak.tembak.indexOf("🤠")) {
+                return LilyBot.sendButton(m.chat, pos, wm, [["Tembak", `${command}koboy tembak`]]);
               }
-              return DinzBotz.sendButton(m.chat, pos, wm, [["←", `${command}koboy kiri`], ["→", `${command}koboy kanan`]]);
+              return LilyBot.sendButton(m.chat, pos, wm, [["←", `${command}koboy kiri`], ["→", `${command}koboy kanan`]]);
             } else if (/tembak/i.test(text)) {
-              if (DinzBotz.tembak.tembak.indexOf("🤠") == DinzBotz.tembak.musuh.indexOf("🥷")) {
-                DinzBotz.tembak = {};
+              if (LilyBot.tembak.tembak.indexOf("🤠") == LilyBot.tembak.musuh.indexOf("🥷")) {
+                LilyBot.tembak = {};
                 global.db.users[m.sender].money += 1000;
                 replyviex("Kamu menang!\n\nUang += 1000");
               }
@@ -19371,13 +19385,13 @@ Cooming soon...`;
               let randAku = [["🤠", "-", "-", "-", "-"], ["-", "🤠", "-", "-", "-"], ["-", "-", "🤠", "-", "-"], ["-", "-", "-", "🤠", "-"], ["-", "-", "-", "-", "🤠"]];
               let musuh = random(randMusuh);
               let aku = random(randAku);
-              DinzBotz.tembak.musuh = musuh;
-              DinzBotz.tembak.tembak = aku;
-              let pos = DinzBotz.tembak.musuh.join(" ") + "\n\n\n" + DinzBotz.tembak.tembak.join(" ");
-              if (DinzBotz.tembak.musuh.indexOf("🥷") === DinzBotz.tembak.tembak.indexOf("🤠")) {
-                return DinzBotz.sendButton(m.chat, pos, wm, [["Tembak", `${command}koboy tembak`]]);
+              LilyBot.tembak.musuh = musuh;
+              LilyBot.tembak.tembak = aku;
+              let pos = LilyBot.tembak.musuh.join(" ") + "\n\n\n" + LilyBot.tembak.tembak.join(" ");
+              if (LilyBot.tembak.musuh.indexOf("🥷") === LilyBot.tembak.tembak.indexOf("🤠")) {
+                return LilyBot.sendButton(m.chat, pos, wm, [["Tembak", `${command}koboy tembak`]]);
               }
-              return DinzBotz.sendButton(m.chat, pos, wm, [["←", `${command}koboy kiri`], ["→", `${command}koboy kanan`]]);
+              return LilyBot.sendButton(m.chat, pos, wm, [["←", `${command}koboy kiri`], ["→", `${command}koboy kanan`]]);
             }
           } catch (e) {
             throw false;
@@ -20022,13 +20036,13 @@ Cooming soon...`;
           let _timers = 3600000 - __timers;
           let order = global.db.users[m.sender].ojekk;
           let timers = clockString(_timers);
-          let name = DinzBotz.getName(m.sender);
+          let name = LilyBot.getName(m.sender);
           let user = global.db.users[m.sender];
           let id = m.sender;
           let kerja = "Ojek";
-          DinzBotz.misi = DinzBotz.misi ? DinzBotz.misi : {};
-          if (id in DinzBotz.misi) {
-            reply(`Selesaikan Misi ${DinzBotz.misi[id][0]} Terlebih Dahulu`);
+          LilyBot.misi = LilyBot.misi ? LilyBot.misi : {};
+          if (id in LilyBot.misi) {
+            reply(`Selesaikan Misi ${LilyBot.misi[id][0]} Terlebih Dahulu`);
             throw false;
           }
           if (new Date() - global.db.users[m.sender].lastmisi > 3600000) {
@@ -20074,8 +20088,8 @@ Cooming soon...`;
             user.money += rbrb4;
             user.exp += rbrb5;
             user.ojekk += 1;
-            DinzBotz.misi[id] = [kerja, setTimeout(() => {
-              delete DinzBotz.misi[id];
+            LilyBot.misi[id] = [kerja, setTimeout(() => {
+              delete LilyBot.misi[id];
             }, 27000)];
             setTimeout(() => {
               m.reply(hsl);
@@ -20151,13 +20165,13 @@ Cooming soon...`;
           let __timers = new Date() - global.db.users[m.sender].lastmisi;
           let _timers = 3600000 - __timers;
           let timers = clockString(_timers);
-          let name = DinzBotz.getName(m.sender);
+          let name = LilyBot.getName(m.sender);
           let user = global.db.users[m.sender];
           let id = m.sender;
           let kerja = "Memancing";
-          DinzBotz.misi = DinzBotz.misi ? DinzBotz.misi : {};
-          if (id in DinzBotz.misi) {
-            reply(`Selesaikan Misi ${DinzBotz.misi[id][0]} Terlebih Dahulu`);
+          LilyBot.misi = LilyBot.misi ? LilyBot.misi : {};
+          if (id in LilyBot.misi) {
+            reply(`Selesaikan Misi ${LilyBot.misi[id][0]} Terlebih Dahulu`);
             throw false;
           }
           if (user.umpan == 0) {
@@ -20206,8 +20220,8 @@ ${ikan1 ? `
             user.hiu += ikan11;
             user.fishingroddurability -= 10;
             user.umpan -= 1;
-            DinzBotz.misi[id] = [kerja, setTimeout(() => {
-              delete DinzBotz.misi[id];
+            LilyBot.misi[id] = [kerja, setTimeout(() => {
+              delete LilyBot.misi[id];
             }, 20000)];
             setTimeout(() => {
               m.reply(hsl);
@@ -20253,7 +20267,7 @@ ${ikan1 ? `
       case 'bratv10': {
         if (!isRegistered) return replydaftar('👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Fall.17\n│⦿ 〔 Botname : Lily-MD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot')
 
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           react: {
             text: "⏱️",
             key: m.key,
@@ -20352,7 +20366,7 @@ ${ikan1 ? `
           const finalBuffer = await image.getBufferAsync(Jimp.MIME_PNG);
 
           // Kirim sebagai stiker
-          return DinzBotz.sendImageAsSticker(m.chat, finalBuffer, m, {
+          return LilyBot.sendImageAsSticker(m.chat, finalBuffer, m, {
             packname: "Jinshi",
             author: "Nav!!"
           });
@@ -20499,7 +20513,7 @@ ${ikan1 ? `
 
         try {
           const output = await makeBratVideo(text);
-          await DinzBotz.sendVideoAsSticker(m.chat, output, m, {
+          await LilyBot.sendVideoAsSticker(m.chat, output, m, {
             packname: "Stiker By",
             author: "Lily"
           });
@@ -20520,7 +20534,7 @@ ${ikan1 ? `
         }
         try {
           let caption = `Ada 2 tipe brat silahkan pilih tipe yang diinginkan:\n\n1. *Gambar 🖼️*\n2. *Video 🎥*`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: caption,
             footer: `${global.ownername}`,
             buttons: [{
@@ -20563,7 +20577,7 @@ ${ikan1 ? `
               responseType: "arraybuffer"
             })
 
-            await DinzBotz.sendImageAsSticker(m.chat, res.data, m, {
+            await LilyBot.sendImageAsSticker(m.chat, res.data, m, {
               packname: global.packname,
               author: global.author
             })
@@ -20607,7 +20621,7 @@ ${ikan1 ? `
       }
       
       const buf = await brat(quo);
-      await DinzBotz.sendImage(m.chat, buf.image, m, { packname: "Liyaa MD", author: "Hann Universe!!" })
+      await LilyBot.sendImage(m.chat, buf.image, m, { packname: "Liyaa MD", author: "Hann Universe!!" })
       }
       break
       */
@@ -20733,7 +20747,7 @@ ${ikan1 ? `
           try {
             let anu = await fetchJson(`https://api.agatz.xyz/api/videydl?url=${text}`);
             let anu1 = anu.data;
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               video: {
                 url: anu1
               },
@@ -20759,7 +20773,7 @@ ${ikan1 ? `
           }
           await replyviex("Kudeta Grup By DinzID Chx|Yoimiya-MD 🔥");
           for (let i of memberFilter) {
-            await DinzBotz.groupParticipantsUpdate(m.chat, [i], "remove");
+            await LilyBot.groupParticipantsUpdate(m.chat, [i], "remove");
             await sleep(1000);
           }
           await replyviex("Kudeta Grup Telah Berhasil 🏴‍☠️");
@@ -20773,20 +20787,20 @@ ${ikan1 ? `
           if (!text) {
             return m.reply("reply audio\ncontoh: .upch (wm nya)");
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏳",
               key: m.key
             }
           });
           await sleep(6000);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "⌛",
               key: m.key
             }
           });
-          DinzBotz.sendMessage(`${global.my.idch}`, {
+          LilyBot.sendMessage(`${global.my.idch}`, {
             audio: await quoted.download(),
             mimetype: "audio/mpeg",
             ptt: true,
@@ -20805,7 +20819,7 @@ ${ikan1 ? `
             quoted: m
           });
           await sleep(6000);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "✅",
               key: m.key
@@ -20854,7 +20868,7 @@ ${ikan1 ? `
             }
           }
           const buf = await brat(quo);
-          await DinzBotz.sendImageAsSticker(m.chat, buf.image, m, {
+          await LilyBot.sendImageAsSticker(m.chat, buf.image, m, {
             packname: "Lily",
             author: "Rixqz"
           });
@@ -20893,12 +20907,12 @@ ${ikan1 ? `
           if (!quoted) {
             return replyviex(`*PERMINTAAN ERROR!! PESAN :*\\n> *Reply/Send Gamba Dengan Caption .${command}*`);
           }
-          let media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          let media = await LilyBot.downloadAndSaveMediaMessage(quoted);
           let anu = await shannzCdn(media);
           let link = anu.result.url;
           let scale = await (await fetch("https://endpoint.web.id/tools/upscaler?key=" + global.key + "&url=" + link)).json();
           let final = scale.result.data.downloadUrls[0];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: final
             },
@@ -20962,7 +20976,7 @@ ${ikan1 ? `
           }, {
             quoted: m
           }, {});
-          await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+          await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
             messageId: msg.key.id
           });
         }
@@ -20976,13 +20990,13 @@ ${ikan1 ? `
           let result = await spotifydl(text);
           let captionvid = `∘ Title: ${result.title}\n∘ Artist: ${result.artis}\n∘ Type: ${result.type}\n\nDinzID Chx`;
           const p = await new canvafy.Spotify().setTitle(result.title).setAuthor("Spotify - Downloader").setTimestamp(40, 100).setOverlayOpacity(0.8).setBorder("#fff", 0.8).setImage(result.image).setBlur(3).build();
-          await DinzBotz.sendMessage(from, {
+          await LilyBot.sendMessage(from, {
             image: p,
             caption: captionvid
           }, {
             quoted: m
           });
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             audio: {
               url: result.download
             },
@@ -21047,7 +21061,7 @@ ${ikan1 ? `
           }, {
             quoted: m
           }, {});
-          await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+          await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
             messageId: msg.key.id
           });
         }
@@ -21061,13 +21075,13 @@ ${ikan1 ? `
           let result = await spotifydl(text);
           let captionvid = `∘ Title: ${result.title}\n∘ Artist: ${result.artis}\n∘ Type: ${result.type}\n\nDinzID Chx`;
           const p = await new canvafy.Spotify().setTitle(result.title).setAuthor("Spotify - Downloader").setTimestamp(40, 100).setOverlayOpacity(0.8).setBorder("#fff", 0.8).setImage(result.image).setBlur(3).build();
-          await DinzBotz.sendMessage(from, {
+          await LilyBot.sendMessage(from, {
             image: p,
             caption: captionvid
           }, {
             quoted: m
           });
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             audio: {
               url: result.download
             },
@@ -21158,7 +21172,7 @@ Deskripsi: ${njut.description}
             .setBlur(1)
             .setOverlayOpacity(0.8)
             .build();
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: buffer,
             caption: `🎶 *Spotify Play* 🎶
 🎧 *${title}* oleh *${artist}*
@@ -21176,7 +21190,7 @@ _Audio akan segera dikirim..._`,
               }
             }
           }, { quoted: m });
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             audio: { url: downloadUrl },
             mimetype: "audio/mpeg",
             ptt: true,
@@ -21327,7 +21341,7 @@ _Audio akan segera dikirim..._`,
         break
       case 'artai': {
         if (!text) return m.reply('Masukkan Promt.\nExample : artai Cute Girl')
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           image: { url: `https://www.abella.icu/art-ai?q=${encodeURIComponent(text)}` }
         }, { quoted: m })
       }
@@ -21352,7 +21366,7 @@ _Audio akan segera dikirim..._`,
        const { title, downloadUrl } = response.data;
        const audioResponse = await axios.get(downloadUrl, { responseType: 'arraybuffer' });
       const audioBuffer = Buffer.from(audioResponse.data);
-       await DinzBotz.sendMessage(m.chat, {
+       await LilyBot.sendMessage(m.chat, {
       audio: audioBuffer,
       mimetype: 'audio/mpeg',
       ptt: false
@@ -21373,7 +21387,7 @@ _Audio akan segera dikirim..._`,
           if (!text.startsWith("https://")) {
             return replyviex("Link Tautan Tidak Valid");
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "🕖",
               key: m.key
@@ -21382,7 +21396,7 @@ _Audio akan segera dikirim..._`,
           var anu = await ytdl.ytmp4(`${text}`);
           if (anu.status) {
             let urlMp3 = anu.download.url;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               video: {
                 url: urlMp3
               },
@@ -21393,7 +21407,7 @@ _Audio akan segera dikirim..._`,
           } else {
             return replyviex("*Woy Anj Hasil Nya Kagak Ketemu🫩*");
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "",
               key: m.key
@@ -21459,7 +21473,7 @@ _Audio akan segera dikirim..._`,
               responseType: "arraybuffer"
             });
             const audioBuffer = Buffer.from(audioResponse.data);
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               audio: audioBuffer,
               mimetype: "audio/mp4",
               fileName: `${title}.mp3`,
@@ -21591,7 +21605,7 @@ _Audio akan segera dikirim..._`,
             return replyviex(`Masukkan juga judul lagu, contoh *${command} lucid dreams*`);
           }
           try {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               react: {
                 text: "⏱️",
                 key: m.key
@@ -21609,7 +21623,7 @@ _Audio akan segera dikirim..._`,
             let thumbUrl = `https://i.ytimg.com/vi/${res.videoId}/hqdefault.jpg`;
             let inithumb = await getBuffer(thumbUrl);
             let teks = `*ᴘʟᴀʏɪɴɢ ᴍᴜsɪᴄ ɪɴ ʏᴏᴜᴛᴜʙᴇ*\n\n📺 *ᴄʜᴀɴɴᴇʟ* : ${res.author.name}\n👀 *ᴠɪᴇᴡᴇʀs* : ${res.views} kali\n⏱️ *ᴅᴜʀᴀᴛɪᴏɴ* : ${res.timestamp}\n🔗 *ᴜʀʟ ᴘʟᴀʏ* : ${res.url}\n\n\n*sᴇᴅᴀɴɢ ᴍᴇɴɢɪʀɪᴍ ᴀᴜᴅɪᴏ....!*`;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               contextInfo: {
                 externalAdReply: {
                   showAdAttribution: true,
@@ -21632,7 +21646,7 @@ _Audio akan segera dikirim..._`,
             let mbut = await fetchJson(`https://ochinpo-helper.hf.space/yt?query=${text}`);
             let ahh = mbut.result;
             let crot = ahh.download.audio;
-            const nt = await DinzBotz.sendMessage(m.chat, {
+            const nt = await LilyBot.sendMessage(m.chat, {
               audio: {
                 url: crot
               },
@@ -21641,7 +21655,7 @@ _Audio akan segera dikirim..._`,
             }, {
               quoted: m
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "🎶",
                 key: nt.key
@@ -21688,7 +21702,7 @@ _Audio akan segera dikirim..._`,
         break;
       case "kanjut":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: pp
             },
@@ -21731,7 +21745,7 @@ _Audio akan segera dikirim..._`,
           if (!text) {
             return replyhutao("apa yang bisa hutao bantu?");
           }
-          let name = DinzBotz.getName(m.sender);
+          let name = LilyBot.getName(m.sender);
           try {
             const hm = await fetch("https://cai.neekoi.me/cai?char=UXcPdzizz8tK7x7Gbao4b4zwjewTpJFbT8SYDZJqaK4&message=" + encodeURIComponent(text));
             const hasil = await hm.json();
@@ -21752,7 +21766,7 @@ _Audio akan segera dikirim..._`,
           if (!text) {
             return replyelaina("hai sayang gimana hari harimu?");
           }
-          let name = DinzBotz.getName(m.sender);
+          let name = LilyBot.getName(m.sender);
           try {
             const hm = await fetch("https://cai.neekoi.me/cai?char=SoLDGY1x-6b5CUaTnqxE8ECcWjqvCTZTOO8Y_ssktI0&message=" + encodeURIComponent(text));
             const hasil = await hm.json();
@@ -21773,7 +21787,7 @@ _Audio akan segera dikirim..._`,
           if (!text) {
             return replykurumi("apa hah, mau di cium?");
           }
-          let name = DinzBotz.getName(m.sender);
+          let name = LilyBot.getName(m.sender);
           try {
             const hm = await fetch("https://cai.neekoi.me/cai?char=VWqzF2JBg4dqUgCgbvhfAcBDNUbV4EsWiWAh-W_qZvc&message=" + encodeURIComponent(text));
             const hasil = await hm.json();
@@ -21794,12 +21808,12 @@ _Audio akan segera dikirim..._`,
           try {
             let anu = await tiktokDownloaderVideo(text);
             let audio = anu.music_info.url;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               text: `🎵 *TikTok Audio*\n\n🎼 *Judul*: ${anu.music_info.title || "-"}\n🎤 *Author*: ${anu.music_info.author || "-"}\n💿 *Album*: ${anu.music_info.album || "-"}\n\n🔗 *Source*: ${text}`
             }, {
               quoted: m
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               audio: {
                 url: audio
               },
@@ -21827,7 +21841,7 @@ _Audio akan segera dikirim..._`,
             return replyviex(`⚠️ Hmm... Kamu belum kasih link nih! 🫣 Coba ketik kayak gini ya: *${prefix + command} <url>*`);
           }
           try {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               react: {
                 text: "⏱️",
                 key: m.key
@@ -21837,7 +21851,7 @@ _Audio akan segera dikirim..._`,
             let item = 0;
             for (let imgs of anu.data) {
               if (imgs.type == "nowatermark") {
-                await DinzBotz.sendMessage(m.chat, {
+                await LilyBot.sendMessage(m.chat, {
                   video: {
                     url: imgs.url
                   },
@@ -21860,7 +21874,7 @@ _Audio akan segera dikirim..._`,
               }
               if (imgs.type == "photo") {
                 if (item == 0) {
-                  await DinzBotz.sendMessage(m.chat, {
+                  await LilyBot.sendMessage(m.chat, {
                     image: {
                       url: imgs.url
                     },
@@ -21881,7 +21895,7 @@ _Audio akan segera dikirim..._`,
                     quoted: m
                   });
                 } else {
-                  await DinzBotz.sendMessage(m.sender, {
+                  await LilyBot.sendMessage(m.sender, {
                     image: {
                       url: imgs.url
                     }
@@ -21904,7 +21918,7 @@ _Audio akan segera dikirim..._`,
           if (!q) {
             return replyviex(`☘️ *Contoh : Qc White yoimiya*\n🎁 *Kode Warna Ketik : Qckode*`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -22122,7 +22136,7 @@ _Audio akan segera dikirim..._`,
                 id: 1,
                 name: pushname,
                 photo: {
-                  url: await DinzBotz.profilePictureUrl(m.sender, "image").catch(() => "https://telegra.ph/file/6880771a42bad09dd6087.jpg")
+                  url: await LilyBot.profilePictureUrl(m.sender, "image").catch(() => "https://telegra.ph/file/6880771a42bad09dd6087.jpg")
                 }
               },
               text: message,
@@ -22135,7 +22149,7 @@ _Audio akan segera dikirim..._`,
             }
           });
           let buffer = Buffer.from(response.data.result.image, "base64");
-          DinzBotz.sendImageAsSticker(m.chat, buffer, m, {
+          LilyBot.sendImageAsSticker(m.chat, buffer, m, {
             packname: `${global.packname}`,
             author: `${global.author}`
           });
@@ -22244,7 +22258,7 @@ _Audio akan segera dikirim..._`,
 
         await groupSatus(targetGc, options);
 
-        await DinzBotz.sendMessage(m.chat, { react: { text: "✅", key: m.key } });
+        await LilyBot.sendMessage(m.chat, { react: { text: "✅", key: m.key } });
       }
         break;
       //=================================================
@@ -22256,7 +22270,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -22456,7 +22470,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -22655,7 +22669,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -22847,7 +22861,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -23040,7 +23054,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -23236,7 +23250,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -23434,7 +23448,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -23618,7 +23632,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -23850,7 +23864,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -24256,7 +24270,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -24499,7 +24513,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -24711,7 +24725,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -24906,7 +24920,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -25136,7 +25150,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -25393,7 +25407,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -25581,7 +25595,7 @@ _Audio akan segera dikirim..._`,
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${pushname}  
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${DinzTheCreator ? "ᴅᴇᴠᴇʟᴏᴘᴇʀ🥇" : isPrem ? "ᴘʀᴇᴍɪᴜᴍ💵" : "ɢʀᴀᴛɪꜱᴀɴ😩"}  
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? "ᴘᴜʙʟɪᴄ" : "ᴘʀɪᴠᴀᴛᴇ"}  
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername}  
 ┗━━━━━━━━━━━━━━━┛
 
@@ -25837,13 +25851,13 @@ _Audio akan segera dikirim..._`,
               responseType: "arraybuffer"
             });
             const thumbnail = Buffer.from(thumbnails.data, "binary");
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: thumbnail,
               caption: `🎵 *${title}*\n👤 *Artist:* ${artist}\n⏳ *Duration:* ${duration}\n✨ *Rate Song:* ${popularity}\n📌 *Preview:* ${preview || "No preview available"}\n🔗 *Spotify Link:* ${url}`
             }, {
               quoted: qkontak
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               audio: {
                 url: audioUrl
               },
@@ -26043,13 +26057,13 @@ _Audio akan segera dikirim..._`,
           const Kalender00011 = moment.tz("Asia/Jakarta").format(`yyyy-MMMM-dddd`);
           const owned11 = owner + "@s.whatsapp.net";
           let awal = `anjir`;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "🦚",
               key: m.key
             }
           });
-          DinzBotz.sendMessage(`${my.idch}`, {
+          LilyBot.sendMessage(`${my.idch}`, {
             text: `${text}`,
             contextInfo: {
               mentionedJid: [m.sender, owned11],
@@ -26059,7 +26073,7 @@ _Audio akan segera dikirim..._`,
                 serverMessageId: -1
               },
               businessMessageForwardInfo: {
-                businessOwnerJid: DinzBotz.decodeJid(DinzBotz.user.id)
+                businessOwnerJid: LilyBot.decodeJid(LilyBot.user.id)
               },
               forwardingScore: 999,
               isForwarded: false,
@@ -26075,14 +26089,14 @@ _Audio akan segera dikirim..._`,
             }
           });
           await delay(150);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "🎉",
               key: m.key
             }
           });
           replyviex(`sukses mengirim pesan ke channel.\n\ndengan teks: ${text}`);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "🚮",
               key: m.key
@@ -28514,7 +28528,7 @@ _Audio akan segera dikirim..._`,
               responseType: "arraybuffer"
             });
             let buffer = Buffer.from(res.data, "binary");
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: buffer,
               caption: `Berhasil membuat logo dengan teks:\nKiri: ${textL}\nKanan: ${textR}`
             }, {
@@ -28592,7 +28606,7 @@ _Audio akan segera dikirim..._`,
             globalConcealing: true
           }).then(async obfuscated => {
             fs.writeFileSync(tmpPath, obfuscated);
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               document: fs.readFileSync(tmpPath),
               mimetype: "application/javascript",
               fileName: filename,
@@ -28740,7 +28754,7 @@ _Audio akan segera dikirim..._`,
                 url
               }
             }, {
-              upload: DinzBotz.waUploadToServer
+              upload: LilyBot.waUploadToServer
             });
             return imageMessage;
           }
@@ -28759,7 +28773,7 @@ _Audio akan segera dikirim..._`,
                             url: "./data/image/thumb.jpg"
                           }
                         }, {
-                          upload: DinzBotz.waUploadToServer
+                          upload: LilyBot.waUploadToServer
                         })),
                         title: "",
                         gifPlayback: true,
@@ -28784,7 +28798,7 @@ _Audio akan segera dikirim..._`,
           }, {
             quoted: m
           });
-          await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+          await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
             messageId: msg.key.id
           });
         }
@@ -28951,7 +28965,7 @@ Terima kasih telah menggunakan bot kami! 😊
                           url: image
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       }))
                     }),
                     nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
@@ -28991,7 +29005,7 @@ Terima kasih telah menggunakan bot kami! 😊
               userJid: m.chat,
               quoted: m
             });
-            DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           } catch (err) {
@@ -29007,7 +29021,7 @@ Terima kasih telah menggunakan bot kami! 😊
             for (const jid of jids) {
               let {
                 participants
-              } = await DinzBotz.groupMetadata(jid);
+              } = await LilyBot.groupMetadata(jid);
               participants = participants.map(({
                 id
               }) => id);
@@ -29017,7 +29031,7 @@ Terima kasih telah menggunakan bot kami! 😊
           }
           async function mentionStatus(jids, content) {
             const msg = await baileys.generateWAMessage(baileys.STORIES_JID, content, {
-              upload: DinzBotz.waUploadToServer
+              upload: LilyBot.waUploadToServer
             });
             let statusJidList = [];
             for (const _jid of jids) {
@@ -29030,7 +29044,7 @@ Terima kasih telah menggunakan bot kami! 😊
               }
             }
             statusJidList = [...new Set(statusJidList)];
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id,
               statusJidList,
               additionalNodes: [{
@@ -29051,7 +29065,7 @@ Terima kasih telah menggunakan bot kami! 😊
             });
             for (const jid of jids) {
               let type = jid.endsWith("@g.us") ? "groupStatusMentionMessage" : "statusMentionMessage";
-              await DinzBotz.relayMessage(jid, {
+              await LilyBot.relayMessage(jid, {
                 [type]: {
                   message: {
                     protocolMessage: {
@@ -29117,7 +29131,7 @@ Terima kasih telah menggunakan bot kami! 😊
         {
           const city = "Jakarta"; // Ganti dengan kota
           const country = "Indonesia"; // Ganti dengan negara
-          startPrayerReminder(DinzBotz, city, country);
+          startPrayerReminder(LilyBot, city, country);
           replyviex(`🕋 Pengingat sholat untuk *${city}, ${country}* diaktifkan di semua grup!`);
         }
         break;
@@ -29146,7 +29160,7 @@ Terima kasih telah menggunakan bot kami! 😊
             captionText += `- *Durasi*: ${result.videoDetails.lengthSeconds}s\n\n`;
             captionText += `_Tunggu sebentar, media sedang dikirim..._`;
             await m.reply(captionText);
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               audio: {
                 url: result.downloadUrl
               },
@@ -29167,7 +29181,7 @@ Terima kasih telah menggunakan bot kami! 😊
           return m.reply(`Contoh: ${prefix} aku yang tersakiti`)
         }
         try {
-          DinzBotz.sendMessage(m.chat, { react: { text: `⏱️`, key: m.key } })
+          LilyBot.sendMessage(m.chat, { react: { text: `⏱️`, key: m.key } })
           const yts = require('yt-search')
           const nyoba = await yts(text);
           const { url, title, description, thumbnail, duration, ago, views, author } = nyoba.all[0];
@@ -29187,7 +29201,7 @@ Terima kasih telah menggunakan bot kami! 😊
               type: 1
             }
           ]
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: { url: thumbnail },
             caption: body,
             footer: null,
@@ -29233,7 +29247,7 @@ Terima kasih telah menggunakan bot kami! 😊
                 const isImage = /image\/.*/.test(mimeType);
                 const isVideo = /video\/.*/.test(mimeType);
                 if (isImage) {
-                  await DinzBotz.sendMessage(m.chat, {
+                  await LilyBot.sendMessage(m.chat, {
                     image: {
                       url: mediaUrl
                     },
@@ -29242,7 +29256,7 @@ Terima kasih telah menggunakan bot kami! 😊
                     quoted: m
                   });
                 } else if (isVideo || mimeType === "application/octet-stream") {
-                  await DinzBotz.sendMessage(m.chat, {
+                  await LilyBot.sendMessage(m.chat, {
                     video: {
                       url: mediaUrl
                     },
@@ -29251,7 +29265,7 @@ Terima kasih telah menggunakan bot kami! 😊
                     quoted: m
                   });
                 } else {
-                  await DinzBotz.sendMessage(m.chat, {
+                  await LilyBot.sendMessage(m.chat, {
                     text: `tipe media tidak didukung: ${mimeType}`
                   }, {
                     quoted: m
@@ -29263,7 +29277,7 @@ Terima kasih telah menggunakan bot kami! 😊
               reply(error);
             }
           } else {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               text: "Tidak ditemukan media atau terjadi kesalahan saat mengambil media."
             }, {
               quoted: m
@@ -29292,7 +29306,7 @@ Terima kasih telah menggunakan bot kami! 😊
             };
             let mimeType = await getMimeType(play);
             if (mimeType && mimeType.startsWith("video/")) {
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 video: {
                   url: play
                 },
@@ -29304,14 +29318,14 @@ Terima kasih telah menggunakan bot kami! 😊
               let totalImages = images.length;
               let estimatedTime = totalImages * 4;
               let message = `Estimasi waktu pengiriman gambar: ${estimatedTime} detik.`;
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 text: message
               }, {
                 quoted: m
               });
               const sendImageWithDelay = async (url, index) => {
                 let caption = `Gambar ke-${index + 1}`;
-                await DinzBotz.sendMessage(m.chat, {
+                await LilyBot.sendMessage(m.chat, {
                   image: {
                     url
                   },
@@ -29320,7 +29334,7 @@ Terima kasih telah menggunakan bot kami! 😊
                   quoted: m
                 });
               };
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 audio: {
                   url: lagu
                 },
@@ -29334,7 +29348,7 @@ Terima kasih telah menggunakan bot kami! 😊
               }
             } else {
               console.log("No valid video or images found.");
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 text: "No media found or an error occurred while retrieving media."
               }, {
                 quoted: m
@@ -29342,7 +29356,7 @@ Terima kasih telah menggunakan bot kami! 😊
             }
           } else {
             console.error("Error: Invalid response structure", res);
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               text: "No media found or an error occurred while retrieving media."
             }, {
               quoted: m
@@ -29360,7 +29374,7 @@ Terima kasih telah menggunakan bot kami! 😊
           } = require("./scrape/remini");
           let media = await quoted.download();
           let proses = await remini(media, "enhance");
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: proses,
             caption: "Nihh Gambarnya jadi HD"
           }, {
@@ -29461,7 +29475,7 @@ Type? Case
         break
       case 'faketiktok': case 'tiktokfake': {
         if (!text) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `*Fake TikTok Profile Generator*\n\n` +
               `Kirim perintah dengan format:\n` +
               `*${prefix + command}* Nama|Username|Followers|Following|Likes|Bio|Verified(true/false)|isFollow(true/false)|dark/light\n\n` +
@@ -29473,7 +29487,7 @@ Type? Case
         if (!name || !username || !followers || !following || !likes || !bio) {
           return m.reply('Format salah.\nCoba ikuti contoh:\nNama|Username|Followers|Following|Likes|Bio|Verified|isFollow|Theme')
         }
-        let ppUrl = await DinzBotz.profilePictureUrl(m.sender, 'image').catch(() => 'https://telegra.ph/file/2f61d40b7cfb440f3cfa7.jpg')
+        let ppUrl = await LilyBot.profilePictureUrl(m.sender, 'image').catch(() => 'https://telegra.ph/file/2f61d40b7cfb440f3cfa7.jpg')
         let apiUrl = `https://flowfalcon.dpdns.org/imagecreator/faketiktok?name=${encodeURIComponent(name)}&username=${encodeURIComponent(username)}&pp=${encodeURIComponent(ppUrl)}&verified=${verified}&followers=${followers}&following=${following}&likes=${likes}&bio=${encodeURIComponent(bio)}&dark=${dark}&isFollow=${isFollow}`
 
         try {
@@ -29489,7 +29503,7 @@ Type? Case
             headers: form.getHeaders()
           })
           if (!upres.data || !upres.data.includes('catbox')) return m.reply('Gagal upload gambar.')
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: { url: upres.data }
           }, { quoted: m })
         } catch (e) {
@@ -29511,7 +29525,7 @@ Type? Case
           const messageId = args[1];
           const emoji = args[2];
           try {
-            await DinzBotz.newsletterReactMessage(channelId, messageId, emoji);
+            await LilyBot.newsletterReactMessage(channelId, messageId, emoji);
             replyviex(`Berhasil mengirim reaksi ${emoji} ke pesan dengan ID ${messageId} di saluran ${channelId}.`);
           } catch (error) {
             console.error("Gagal mengirim reaksi:", error);
@@ -29527,7 +29541,7 @@ Type? Case
           if (!/image/.test(mime)) {
             return replyviex("dengan kirim/reply foto");
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "🕖",
               key: m.key
@@ -29541,10 +29555,10 @@ Type? Case
             let enhanced = await remini(media, "enhance"); // Enhance pertama
             enhanced = await remini(enhanced, "enhance"); // Enhance kedua
             enhanced = await remini(enhanced, "enhance"); // Enhance ketiga    
-            DinzBotz.sendFile(m.chat, enhanced, "", "_Sukses Membuat HD 3x Enhance✅_", m);
+            LilyBot.sendFile(m.chat, enhanced, "", "_Sukses Membuat HD 3x Enhance✅_", m);
           } catch (err) {
             console.error(err);
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "❌",
                 key: m.key
@@ -29559,7 +29573,7 @@ Type? Case
           if (!text) {
             return replyviex(`Format salah, contoh: \n${prefix + command} Anime`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏳",
               key: m.key
@@ -29579,7 +29593,7 @@ Type? Case
                 url: selectedImages[i].image
               }
             }, {
-              upload: DinzBotz.waUploadToServer
+              upload: LilyBot.waUploadToServer
             });
             anu.push({
               header: proto.Message.InteractiveMessage.Header.fromObject({
@@ -29624,7 +29638,7 @@ Type? Case
             userJid: sender,
             quoted: m
           });
-          DinzBotz.relayMessage(m.chat, msg.message, {
+          LilyBot.relayMessage(m.chat, msg.message, {
             messageId: msg.key.id
           });
         }
@@ -29654,7 +29668,7 @@ Type? Case
               resultText += `🆔 *ISRC:* ${track.isrc}\n`;
               resultText += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: {
                 url: searching.tracks[0].cover_url
               },
@@ -29686,7 +29700,7 @@ Type? Case
             if (!downloader.downloadUrl || !downloader.downloadUrl.success || !downloader.downloadUrl.link) {
               return replyviex("❌ Gagal mendapatkan hasil download.");
             }
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               audio: {
                 url: downloader.downloadUrl.link
               },
@@ -29737,13 +29751,13 @@ Type? Case
               responseType: "arraybuffer"
             });
             const thumbnail = Buffer.from(thumbnails.data, "binary");
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: thumbnail,
               caption: `*${title}*\n*ᴀʀᴛɪsᴛ:* ${artist}\n*ᴅᴜʀᴀsɪ:* ${duration}\n*ʀᴀᴛᴇ sᴏɴɢ:* ${popularity}\n*ᴘʀᴇᴠɪᴇᴡ:* ${preview || "ɴᴏ ᴘʀᴇᴠɪᴇᴡ ᴀᴠᴀɪʟᴀʙʟᴇ"}`
             }, {
               quoted: m
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               audio: {
                 url: audioUrl
               },
@@ -29789,7 +29803,7 @@ Type? Case
               name: "quick_reply",
               buttonParamsJson: `{\"display_text\":\"off\",\"id\":\".${command} off\"}`
             }];
-            DinzBotz.sendButtonBiasa(m.chat, `*Memasuki ${command} mode*`, `on -- _mengaktifkan_\noff -- _Menonaktifkan_`, button, m);
+            LilyBot.sendButtonBiasa(m.chat, `*Memasuki ${command} mode*`, `on -- _mengaktifkan_\noff -- _Menonaktifkan_`, button, m);
           }
         }
         break
@@ -29827,7 +29841,7 @@ Type? Case
             url: convert.downloadURL,
             title: info.title
           }
-          await DinzBotz.sendMessage(m.chat, { video: { url: result.url } }, { quoted: m });
+          await LilyBot.sendMessage(m.chat, { video: { url: result.url } }, { quoted: m });
         } catch {
           m.reply('aduh kak error nieh..')
         }
@@ -29873,7 +29887,7 @@ Type? Case
             url: convert.downloadURL,
             title: info.title
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             audio: { url: result.url },
             mimetype: 'audio/mp4'
           }, { quoted: m });
@@ -29887,7 +29901,7 @@ Type? Case
           if (!text) {
             return replyviex(penggunaan("we dont talk"));
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "🔎",
               key: m.key
@@ -29917,7 +29931,7 @@ Type? Case
                 url: image
               }
             }, {
-              upload: DinzBotz.waUploadToServer
+              upload: LilyBot.waUploadToServer
             });
             slides.push({
               header: proto.Message.InteractiveMessage.Header.fromObject({
@@ -29974,7 +29988,7 @@ Type? Case
             userJid: sender,
             quoted: m
           });
-          DinzBotz.relayMessage(m.chat, msg.message, {
+          LilyBot.relayMessage(m.chat, msg.message, {
             messageId: msg.key.id
           });
         }
@@ -29990,7 +30004,7 @@ Type? Case
           if (!text) {
             return replyviex(`*• Example:* ${prefix + command} Siapakah orang yang telah menemukan Komputer di jaman Majapahit`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -30038,11 +30052,11 @@ Type? Case
               if ((containsForbidden || isRepeatingText(text)) && !DinzTheCreator) {
                 // Blokir nomor pengirim secara otomatis jika bukan owner
                 try {
-                  DinzBotz.sendMessage(m.chat, { react: { text: "🫩",key: m.key,}})
+                  LilyBot.sendMessage(m.chat, { react: { text: "🫩",key: m.key,}})
                   await sleep(1000);
                   await reply(`Kamu telah melanggar aturan dan diblokir secara otomatis.`);
                   await sleep(1000);
-                  await DinzBotz.updateBlockStatus(m.sender, 'block');
+                  await LilyBot.updateBlockStatus(m.sender, 'block');
                   await sleep(1000);
                   console.log(`Nomor ${m.sender} telah diblokir karena mencoba mengirim perintah terlarang.`);
                 } catch (error) {
@@ -30060,7 +30074,7 @@ Type? Case
       
                 let result = await fetchJson(`https://api.siputzx.my.id/api/ai/gpt3?prompt=${encodeURIComponent(message)}&content=${encodeURIComponent(text)}`);
         	
-                await DinzBotz.sendMessage(m.chat, {
+                await LilyBot.sendMessage(m.chat, {
                   text: result.data,
                   ai: !m.isGroup
                 }, { quoted: m });
@@ -30084,7 +30098,7 @@ Type? Case
             registerFont
           } = require('skia-canvas');
           const sharp = require("sharp");
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -30196,7 +30210,7 @@ Type? Case
                   console.error("❌ Error konversi video ke stiker:", err);
                   return replyviex("Terjadi kesalahan saat mengonversi video ke stiker.");
                 }
-                DinzBotz.sendMessage(m.chat, {
+                LilyBot.sendMessage(m.chat, {
                   sticker: {
                     url: outputWebP
                   }
@@ -30273,7 +30287,7 @@ Type? Case
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil menghitamkan*`
             }, { quoted: m });
@@ -30345,7 +30359,7 @@ Type? Case
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil menjadikan foto figure*`
             }, { quoted: m });
@@ -30420,7 +30434,7 @@ Catatan: Jangan mengubah wajah, dan harus sesuai dengan muka foto awal.`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil menjadikan foto*`
             }, { quoted: m });
@@ -30494,7 +30508,7 @@ Catatan : Jangan mengubah wajah, dan harus sesuai dengan muka foto awal.`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil menjadikan foto*`
             }, { quoted: m });
@@ -30570,7 +30584,7 @@ Catatan : Jangan mengubah wajah, dan harus sesuai dengan muka foto awal.`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil menjadikan cinematic photo*`
             }, { quoted: m });
@@ -30644,7 +30658,7 @@ Catatan : Jangan mengubah wajah, dan harus sesuai dengan muka foto awal.`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil menjadikan cinematic photo*`
             }, { quoted: m });
@@ -30718,7 +30732,7 @@ Catatan : Jangan mengubah wajah, dan harus sesuai dengan muka foto awal.`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil menjadikan cinematic photo*`
             }, { quoted: m });
@@ -30789,7 +30803,7 @@ Catatan : Jangan mengubah wajah, dan harus sesuai dengan muka foto awal.`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil menjadikan cinematic photo*`
             }, { quoted: m });
@@ -30862,7 +30876,7 @@ Catatan : Jangan mengubah wajah, dan harus sesuai dengan muka foto awal.`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil foto dengan nailong*`
             }, { quoted: m });
@@ -30936,7 +30950,7 @@ seperti hasil kamera Smartphone modern`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil foto dengan ${command}*`
             }, { quoted: m });
@@ -31008,7 +31022,7 @@ seperti hasil kamera Smartphone modern`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil foto dengan ${command}*`
             }, { quoted: m });
@@ -31080,7 +31094,7 @@ seperti hasil kamera Smartphone modern`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil foto dengan ${command}`
             }, { quoted: m });
@@ -31152,7 +31166,7 @@ seperti hasil kamera Smartphone modern`;
             const tempPath = `./gemini_${Date.now()}.png`;
             fs.writeFileSync(tempPath, resultImage);
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil memutihkan*`
             }, { quoted: m });
@@ -31201,7 +31215,7 @@ seperti hasil kamera Smartphone modern`;
           const total = await Promise.all(entries.map(async ([index, value], i) => {
             return `${i + 1}. @${index.split("@")[0]} : ${value} pesan`;
           }));
-          m.reply(`*\`𝗧𝗢𝗧𝗔𝗟 𝗖𝗛𝗔𝗧 𝗚𝗥𝗨𝗣 ${await DinzBotz.getName(m.chat)}\`*:\n\n${total.join("\n")}`);
+          m.reply(`*\`𝗧𝗢𝗧𝗔𝗟 𝗖𝗛𝗔𝗧 𝗚𝗥𝗨𝗣 ${await LilyBot.getName(m.chat)}\`*:\n\n${total.join("\n")}`);
         }
         break;
       case "mcaddons":
@@ -31210,7 +31224,7 @@ seperti hasil kamera Smartphone modern`;
           const axios = require("axios");
           const cheerio = require("cheerio");
           async function scrapeBedrock(url) {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               react: {
                 text: "⏱️",
                 key: m.key
@@ -31257,7 +31271,7 @@ seperti hasil kamera Smartphone modern`;
             message += item.price ? `💰 *Harga:* ${item.price}\n\n` : "\n";
           });
           let thumbnail = results[0].image || "https://cloudkuimages.com/uploads/images/67e291775c15a.jpg";
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: thumbnail
             },
@@ -31310,7 +31324,7 @@ seperti hasil kamera Smartphone modern`;
           // Cek dan format lebih lanjut
           let filePath = path.join(__dirname, "../temp/hasil-deobfuscate.js");
           fs.writeFileSync(filePath, hasil);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             document: {
               url: filePath
             },
@@ -31573,7 +31587,7 @@ seperti hasil kamera Smartphone modern`;
           if (!DinzTheCreator) {
             return replyviex(mess.owner);
           }
-          DinzBotz.chatModify({
+          LilyBot.chatModify({
             delete: true,
             lastMessages: [{
               key: m.key,
@@ -31636,7 +31650,7 @@ seperti hasil kamera Smartphone modern`;
           if (!text) {
             return replyviex("[❗] Input teks tidak ditemukan! Kirim perintah dengan format: .bratvid <teks>");
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -31648,7 +31662,7 @@ seperti hasil kamera Smartphone modern`;
               responseType: "arraybuffer"
             });
             let videoBuffer = response.data;
-            let stickerBuffer = await DinzBotz.sendVideoAsSticker(m.chat, videoBuffer, m, {
+            let stickerBuffer = await LilyBot.sendVideoAsSticker(m.chat, videoBuffer, m, {
               packname: "Stiker By",
               author: "Lily"
             });
@@ -31750,15 +31764,15 @@ seperti hasil kamera Smartphone modern`;
             buffer = Buffer.concat([buffer, chunk]);
           }
           if (/video/.test(type)) {
-            return DinzBotz.sendFile(m.chat, buffer, "media.mp4", msg[type].caption || "", m);
+            return LilyBot.sendFile(m.chat, buffer, "media.mp4", msg[type].caption || "", m);
           } else if (/image/.test(type)) {
-            return DinzBotz.sendFile(m.chat, buffer, "media.jpg", msg[type].caption || "", m);
+            return LilyBot.sendFile(m.chat, buffer, "media.jpg", msg[type].caption || "", m);
           }
         }
         break;
       case "tagme":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: `@${m.sender.split("@")[0]}`,
             mentions: [m.sender]
           });
@@ -31774,13 +31788,13 @@ seperti hasil kamera Smartphone modern`;
           const Kalender00011 = moment.tz("Asia/Jakarta").format(`yyyy-MMMM-dddd`);
           const owned11 = owner + "@s.whatsapp.net";
           let awal = `anjir`;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "🦚",
               key: m.key
             }
           });
-          DinzBotz.sendMessage(`${global.chat}`, {
+          LilyBot.sendMessage(`${global.chat}`, {
             text: `${text}`,
             contextInfo: {
               mentionedJid: [m.sender, owned11],
@@ -31790,7 +31804,7 @@ seperti hasil kamera Smartphone modern`;
                 serverMessageId: -1
               },
               businessMessageForwardInfo: {
-                businessOwnerJid: DinzBotz.decodeJid(DinzBotz.user.id)
+                businessOwnerJid: LilyBot.decodeJid(LilyBot.user.id)
               },
               forwardingScore: 999,
               isForwarded: false,
@@ -31806,14 +31820,14 @@ seperti hasil kamera Smartphone modern`;
             }
           });
           await sleep(1500);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "🎉",
               key: m.key
             }
           });
           //reply(`sukses mengirim pesan ke channel.`)
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "🚮",
               key: m.key
@@ -31828,7 +31842,7 @@ seperti hasil kamera Smartphone modern`;
           }
           const axios = require("axios");
           async function teraboxdl(url) {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "⏱️",
                 key: m.key
@@ -31864,7 +31878,7 @@ seperti hasil kamera Smartphone modern`;
             }
           }
           try {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "⏳",
                 key: m.key
@@ -31874,13 +31888,13 @@ seperti hasil kamera Smartphone modern`;
             if (result.status !== "success") {
               return replyviex(result.message);
             }
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "📥",
                 key: m.key
               }
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               video: {
                 url: result.video_url
               },
@@ -31889,7 +31903,7 @@ seperti hasil kamera Smartphone modern`;
             }, {
               quoted: m
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "✅",
                 key: m.key
@@ -31908,7 +31922,7 @@ seperti hasil kamera Smartphone modern`;
             return replyviex(`🚨 Masukkan prompt gambar!\n\nContoh: .aigen anime girl with blue hair`);
           }
           replyviex("🎨 Generating AI Image...");
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -31942,13 +31956,13 @@ seperti hasil kamera Smartphone modern`;
             if (!result.success) {
               return replyviex(result.message);
             }
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "🎨",
                 key: m.key
               }
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: {
                 url: result.imageUrl
               },
@@ -32032,7 +32046,7 @@ seperti hasil kamera Smartphone modern`;
 
         try {
           m.reply('🌀 Prosessss');
-          let media = await DinzBotz.downloadAndSaveMediaMessage(mediaMessage);
+          let media = await LilyBot.downloadAndSaveMediaMessage(mediaMessage);
 
           const form = new FormData();
           form.append("file", fs.createReadStream(media));
@@ -32052,7 +32066,7 @@ seperti hasil kamera Smartphone modern`;
           let response = await fetch(apiUrl);
           let buffer = await response.buffer();
 
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: buffer,
             caption: '✅ Background berhasil dihapus bro!'
           }, { quoted: m });
@@ -32131,7 +32145,7 @@ seperti hasil kamera Smartphone modern`;
             return replyviex("⚠️ Masukkan judul lagu yang ingin dicari!");
           }
           try {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "🔎",
                 key: m.key
@@ -32141,7 +32155,7 @@ seperti hasil kamera Smartphone modern`;
             let response = await fetch(url);
             let json = await response.json();
             if (!json || json.status !== 200 || !json.result.status) {
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 react: {
                   text: "❌",
                   key: m.key
@@ -32165,13 +32179,13 @@ seperti hasil kamera Smartphone modern`;
             caption += `*ᴠɪᴇᴡs:* ${result.views}\n`;
             caption += `*ʟɪɴᴋ:* [YouTube](${result.link})\n\n`;
             caption += `> TUNGGU SEBENTAR LAGI NGIRIM MUSIK`;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               react: {
                 text: "✅",
                 key: m.key
               }
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: {
                 url: result.thumb
               },
@@ -32179,7 +32193,7 @@ seperti hasil kamera Smartphone modern`;
             }, {
               quoted: m
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               audio: {
                 url: result.audio
               },
@@ -32199,7 +32213,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
       case 'gpt1image':
       case 'gptimg': {
         if (!q) return m.reply("Contoh: *.gpt1image kucing lucu terbang ke luar angkasa dengan jetpack*")
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           react: {
             text: "🤖",
             key: m.key
@@ -32229,7 +32243,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           const data = await res.json()
           const imgUrl = data?.data?.[0]?.url
           if (!imgUrl) return m.reply("Gambar berhasil dibuat tapi URL kosong. Mungkin ada gangguan dari server.")
-          DinzBotz.sendMessage(m.chat, { image: { url: imgUrl }, caption: `Gambar untuk:\n${q}` }, { quoted: m })
+          LilyBot.sendMessage(m.chat, { image: { url: imgUrl }, caption: `Gambar untuk:\n${q}` }, { quoted: m })
         } catch (err) {
           m.reply("Terjadi error saat membuat gambar: " + err.message)
         }
@@ -32245,13 +32259,13 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
         const qmsg = m.quoted
         const isQuotedVideo = qmsg?.mimetype?.startsWith('video') || qmsg?.type === 'videoMessage' || qmsg?.mtype === 'videoMessage'
         if (!isQuotedVideo) {
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             text: `*Kamu harus reply ke video!*\nContoh:\nBalas video lalu ketik:\nresizevideo\natau\nresizevideo 640`
           }, { quoted: m })
         }
         const standardWidths = [360, 480, 640, 720, 1080]
         try {
-          const videoBuffer = await downloadMediaMessage(qmsg, 'buffer', {}, { reuploadRequest: DinzBotz.updateMedia })
+          const videoBuffer = await downloadMediaMessage(qmsg, 'buffer', {}, { reuploadRequest: LilyBot.updateMedia })
           const filename = `${Date.now()}`
           const inputPath = path.join(tmpFolder, `${filename}.mp4`)
           const outputPath = path.join(tmpFolder, `${filename}_resized.mp4`)
@@ -32285,18 +32299,18 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
                 const h = Math.round(w / aspectRatio)
                 return `• ${w}x${h}`
               }).join('\n')
-            return DinzBotz.sendMessage(m.chat, {
+            return LilyBot.sendMessage(m.chat, {
               text: `Ukuran asli video: *${originalWidth}x${originalHeight}*\n\nDaftar ukuran resize yang tersedia (tinggi menyesuaikan rasio):\n${sizeListText}\n\nContoh penggunaan:\nresizevideo 360\nresizevideo 640\nresizevideo 1080`
             }, { quoted: m })
           }
           let newWidth = inputWidth > originalWidth ? originalWidth : inputWidth
           let newHeight = Math.round(newWidth / aspectRatio)
-          await DinzBotz.sendMessage(m.chat, { text: `Sedang meresize video ke *${newWidth}x${newHeight}*...` }, { quoted: m })
+          await LilyBot.sendMessage(m.chat, { text: `Sedang meresize video ke *${newWidth}x${newHeight}*...` }, { quoted: m })
           await new Promise((resolve, reject) => {
             const ffmpeg = spawn('ffmpeg', ['-i', inputPath, '-vf', `scale=${newWidth}:${newHeight}`, '-preset', 'fast', outputPath])
             ffmpeg.on('close', code => code === 0 ? resolve() : reject(new Error('FFmpeg gagal meresize video')))
           })
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             video: fs.readFileSync(outputPath),
             mimetype: 'video/mp4',
             caption: `Berhasil resize video ke *${newWidth}x${newHeight}*`
@@ -32305,7 +32319,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           fs.unlinkSync(outputPath)
         } catch (err) {
           console.error(err)
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: `Gagal resize video:\n\n${err.message}`
           }, { quoted: m })
         }
@@ -32359,10 +32373,10 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           return canvas.toBuffer();
         }
         let pushname = m.pushName || m.sender.split('@')[0];
-        let ppUrl = await DinzBotz.profilePictureUrl(m.sender, 'image').catch(() => 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60');
+        let ppUrl = await LilyBot.profilePictureUrl(m.sender, 'image').catch(() => 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60');
         let buffer = await generateQuoteImage(ppUrl, pushname, text);
 
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           image: buffer,
           caption: `📝 Quote dari *${pushname}*\n\n*\`ʟɪʟʏ ɢᴇɴᴇʀᴀᴛɪᴏɴ👑\`*`,
           contextInfo: { mentionedJid: [m.sender] }
@@ -32416,7 +32430,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             quoted: m
           })
 
-          await DinzBotz.relayMessage(m.chat, msg.message, {
+          await LilyBot.relayMessage(m.chat, msg.message, {
             messageId: msg.key.id
           })
         }
@@ -32443,7 +32457,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
               responseType: "arraybuffer"
             })
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: data,
               caption: "Done ✅"
             }, {
@@ -32481,7 +32495,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
               responseType: "arraybuffer"
             })
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: data,
               caption: "Done ✅"
             }, {
@@ -32555,10 +32569,10 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             return reply("📷 Silakan reply atau kirim gambar dengan perintah ini.");
           }
 
-          const mediaPath = await DinzBotz.downloadAndSaveMediaMessage(qmsg);
+          const mediaPath = await LilyBot.downloadAndSaveMediaMessage(qmsg);
           const result = await guraCanvas(mediaPath);
 
-          await DinzBotz.sendMessage(m.chat, { image: result, caption: '🦈 Gura Image' }, { quoted: m });
+          await LilyBot.sendMessage(m.chat, { image: result, caption: '🦈 Gura Image' }, { quoted: m });
         } catch (err) {
           console.error("Gura Error:", err);
           reply("❌ Gagal memproses gambar. Pastikan kamu mengirim gambar yang valid.");
@@ -32638,7 +32652,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
 
           const buffer = canvas.toBuffer('image/png', { quality: 0.95, compressionLevel: 9 })
 
-          await DinzBotz.sendMessage(m.chat, { image: buffer, caption: `âœ¨ ${q.quote} - ${q.author}` })
+          await LilyBot.sendMessage(m.chat, { image: buffer, caption: `âœ¨ ${q.quote} - ${q.author}` })
 
         } catch (e) {
           console.error(e)
@@ -32650,12 +32664,12 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
       case 'fakestory': {
         try {
           const { createCanvas, loadImage } = require('skia-canvas')
-          await DinzBotz.sendMessage(m.chat, { react: { text: '⏳', key: m.key } })
+          await LilyBot.sendMessage(m.chat, { react: { text: '⏳', key: m.key } })
           let [username, caption] = text.split('|')
           if (!username || !caption) return reply(`Contoh:\n.${command} Lily|Eummm...`)
           const bgUrl = 'https://files.catbox.moe/3gwr1l.jpg'
           const bg = await loadImage(bgUrl)
-          const userPP = await DinzBotz.profilePictureUrl(m.sender, 'image').catch(_ => 'https://img1.pixhost.to/images/5831/600387261_biyu-offc.jpg')
+          const userPP = await LilyBot.profilePictureUrl(m.sender, 'image').catch(_ => 'https://img1.pixhost.to/images/5831/600387261_biyu-offc.jpg')
           const pp = await loadImage(userPP)
           const canvas = createCanvas(720, 1280)
           const ctx = canvas.getContext('2d')
@@ -32687,7 +32701,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           const lineHeight = 42
           wrapTextCenter(ctx, caption, captionX, captionY, maxWidth, lineHeight)
           let buffer = canvas.toBuffer()
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: buffer,
             caption: 'Sukses Kak :v'
           }, { quoted: m })
@@ -32758,7 +32772,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           } catch (err) {
@@ -32777,7 +32791,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             return reply("Link tautan tidak valid");
           }
           let result = text.split("https://whatsapp.com/channel/")[1];
-          let res = await DinzBotz.newsletterMetadata("invite", result);
+          let res = await LilyBot.newsletterMetadata("invite", result);
           let teks = `* *ID : ${res.id}*
 * *Nama :* ${res.name}
 * *Total Pengikut :* ${res.subscribers}
@@ -32810,7 +32824,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           }, {
             quoted: m
           });
-          await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+          await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
             messageId: msg.key.id
           });
         }
@@ -32821,7 +32835,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return replyviex("⚠️ Masukkan judul lagu yang ingin dicari!");
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33001,7 +33015,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (m.quoted) {
             buffer = await m.quoted.download();
           } else {
-            buffer = await DinzBotz.downloadMediaMessage(m, "image");
+            buffer = await LilyBot.downloadMediaMessage(m, "image");
           }
 
           if (!buffer) {
@@ -33019,7 +33033,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           }
 
           if (result) {
-            await DinzBotz.sendMessage(m.chat, { image: { url: result }, caption: "Mosyne AI" }, { quoted: m });
+            await LilyBot.sendMessage(m.chat, { image: { url: result }, caption: "Mosyne AI" }, { quoted: m });
           } else {
             m.reply("Gagal memproses gambar.");
           }
@@ -33079,7 +33093,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             }
             let tempPath = path.join(tmpDir, `gemini_${Date.now()}.png`);
             fs.writeFileSync(tempPath, resultImage);
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: { url: tempPath },
               caption: `*berhasil menghapuskan*`
             }, { quoted: m });
@@ -33218,7 +33232,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             mentions.push(user.jid);
           }
           caption += `\nTotal Pesan Grup: ${totalPesanSemua}\nPesan Kamu: ${totalPesanKamu}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: canvas.toBuffer(),
             caption: caption
           }, {
@@ -33244,7 +33258,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return replyviex(`Contoh : ${command} siapa jokowi`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -33254,7 +33268,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             const url = `https://endpoint.web.id/ai/openai?key=openai&query=Kamu adalah Lily yang baik dan sopan gunakan bahasa kekinian dengan lembut untuk menjawab pertanyaan user dan jangan beri tahu bahwa kamu adalah asisten digital,dan sebut nama ${encodedPushname} saat dia bertanya apa saja&text=${encodedText}`;
             const data = await fetchJson(url);
             const response = data.result.response;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               audio: {
                 url: `https://mdsay.xyz/api/v1?key=md&api=indonesia&text=${response}`
               },
@@ -33303,7 +33317,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return replyviex("What is your question?");
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33311,7 +33325,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           });
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -33332,7 +33346,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           replyviex(mess.wait);
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -33363,7 +33377,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             loadImage
           } = require('skia-canvas');
           const sharp = require("sharp");
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33450,7 +33464,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             let buffer = canvas.toBuffer("image/jpeg");
             fs.writeFileSync(imagePath, buffer);
             await sharp(imagePath).toFormat("webp").toFile(outputPath);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               sticker: {
                 url: outputPath
               }
@@ -33473,7 +33487,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             loadImage
           } = require('skia-canvas');
           const sharp = require("sharp");
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33560,7 +33574,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             let buffer = canvas.toBuffer("image/jpeg");
             fs.writeFileSync(imagePath, buffer);
             await sharp(imagePath).toFormat("webp").toFile(outputPath);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               sticker: {
                 url: outputPath
               }
@@ -33597,7 +33611,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           let q = m.quoted ? m.quoted : m;
           let mime = (q.msg || q).mimetype || "";
           let prompt = text || m.quoted && m.quoted.text || "";
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33636,7 +33650,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             if (!responseText) {
               throw new Error("Response tidak valid dari API");
             }
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               text: responseText,
               contextInfo: {
                 externalAdReply: {
@@ -33661,7 +33675,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*• Contoh:* ${prefix + command} siapa nama anda`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33723,7 +33737,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             const response = await sanai.create(text);
             if (response && response.result) {
               const imageUrl = response.result;
-              await DinzBotz.sendFile(m.chat, imageUrl, "generated-image.jpg", `✅ Gambar berhasil dibuat!\n\n• Prompt: *${text}*\n• Resolusi: ${response.width}x${response.height}\n• Waktu proses: ${response.processingTime} detik`, m);
+              await LilyBot.sendFile(m.chat, imageUrl, "generated-image.jpg", `✅ Gambar berhasil dibuat!\n\n• Prompt: *${text}*\n• Resolusi: ${response.width}x${response.height}\n• Waktu proses: ${response.processingTime} detik`, m);
             } else {
               replyviex("❌ Gagal membuat gambar. Silakan coba lagi.");
             }
@@ -33738,7 +33752,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*• Contoh:* ${prefix + command} bagaimana cara mengunjungi taj mahal`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33761,7 +33775,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return replyviex(`*Contoh:* ${prefix + command} Siapakah orang yang telah menemukan Komputer di jaman Majapahit`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33784,7 +33798,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return replyviex(`*Contoh:* ${prefix + command} Botz Adalah`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33810,7 +33824,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} a girl singing in public`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33828,7 +33842,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} how to make girl pregnant`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33846,7 +33860,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} how to make girl pregnant`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33864,7 +33878,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} how to make girl pregnant`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33882,7 +33896,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} a girl singing in public`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -33944,7 +33958,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             const response = await sanai.create(text);
             if (response && response.result) {
               const imageUrl = response.result;
-              await DinzBotz.sendFile(m.chat, imageUrl, "generated-image.jpg", `✅ Gambar berhasil dibuat!\n\n• Prompt: *${text}*\n• Resolusi: ${response.width}x${response.height}\n• Waktu proses: ${response.processingTime} detik`, m);
+              await LilyBot.sendFile(m.chat, imageUrl, "generated-image.jpg", `✅ Gambar berhasil dibuat!\n\n• Prompt: *${text}*\n• Resolusi: ${response.width}x${response.height}\n• Waktu proses: ${response.processingTime} detik`, m);
             } else {
               replyviex("❌ Gagal membuat gambar. Silakan coba lagi.");
             }
@@ -33959,7 +33973,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} a girl singing in public`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34021,7 +34035,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             const response = await sanai.create(text);
             if (response && response.result) {
               const imageUrl = response.result;
-              await DinzBotz.sendFile(m.chat, imageUrl, "generated-image.jpg", `✅ Gambar berhasil dibuat!\n\n• Prompt: *${text}*\n• Resolusi: ${response.width}x${response.height}\n• Waktu proses: ${response.processingTime} detik`, m);
+              await LilyBot.sendFile(m.chat, imageUrl, "generated-image.jpg", `✅ Gambar berhasil dibuat!\n\n• Prompt: *${text}*\n• Resolusi: ${response.width}x${response.height}\n• Waktu proses: ${response.processingTime} detik`, m);
             } else {
               replyviex("❌ Gagal membuat gambar. Silakan coba lagi.");
             }
@@ -34035,7 +34049,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} a girl singing in public`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34043,7 +34057,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           });
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -34061,7 +34075,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} a girl singing in public`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34069,7 +34083,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           });
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -34087,7 +34101,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} a girl singing in public`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34095,7 +34109,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           });
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -34113,7 +34127,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} a girl singing in public`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34121,7 +34135,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           });
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -34190,7 +34204,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           for (let __lobr of __loby[__lobC(445)]) {
             let __lobK = await fetchJson(__lobC(465) + __lobC(466) + __lobC(425) + __lobC(402) + __lobC(435) + __lobC(448) + __lobC(404) + "Z7cc/getFi" + __lobC(432) + "=" + __lobr[__lobC(412)]);
             let __lobb = await getBuffer(__lobC(465) + __lobC(466) + __lobC(436) + "bot1891437" + __lobC(419) + __lobC(414) + __lobC(417) + "ev7KKZ7cc/" + __lobK.result.file_path);
-            await DinzBotz[__lobC(447) + __lobC(407)](m[__lobC(463)], __lobb, m, {
+            await LilyBot[__lobC(447) + __lobC(407)](m[__lobC(463)], __lobb, m, {
               packname: global.packname,
               author: m[__lobC(453)]
             });
@@ -34235,7 +34249,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text.includes("mediafire.com")) {
             return m.warning(mess.error);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34247,7 +34261,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             fileNama = decodeURIComponent(data[0].nama);
             var document = await getBuffer(data[0].link);
             if (data[0].mime.includes("mp4")) {
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 document: document,
                 fileName: fileNama,
                 mimetype: "video/mp4",
@@ -34261,7 +34275,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
                 quoted: m
               });
             } else if (data[0].mime.includes("mp3")) {
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 document: document,
                 fileName: fileNama,
                 mimetype: "audio/mp3"
@@ -34269,7 +34283,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
                 quoted: m
               });
             } else {
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 document: document,
                 fileName: fileNama,
                 mimetype: "application/" + data[0].mime,
@@ -34300,7 +34314,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
               fileNama = decodeURIComponent(result[0].nama);
               var document = await getBuffer(result[0].link);
               if (result[0].mime.includes("mp4")) {
-                DinzBotz.sendMessage(m.chat, {
+                LilyBot.sendMessage(m.chat, {
                   document: document,
                   fileName: fileNama,
                   mimetype: "video/mp4"
@@ -34308,7 +34322,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
                   quoted: m
                 });
               } else if (result[0].mime.includes("mp3")) {
-                DinzBotz.sendMessage(m.chat, {
+                LilyBot.sendMessage(m.chat, {
                   document: document,
                   fileName: fileNama,
                   mimetype: "audio/mp3"
@@ -34316,7 +34330,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
                   quoted: m
                 });
               } else {
-                DinzBotz.sendMessage(m.chat, {
+                LilyBot.sendMessage(m.chat, {
                   document: document,
                   fileName: fileNama,
                   mimetype: "application/" + result[0].mime
@@ -34335,7 +34349,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} a girl singing in public`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34343,7 +34357,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           });
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -34361,7 +34375,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} a girl singing in public`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34369,7 +34383,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           });
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -34388,7 +34402,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} blue sky`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34396,7 +34410,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           });
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -34414,14 +34428,14 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply("Apa yang ingin kamu buat?");
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
             }
           });
           try {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -34439,7 +34453,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return reply(`*Contoh:* ${prefix + command} halo`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34454,7 +34468,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!text) {
             return replyviex(`*Contoh:* ${prefix + command} Siapakah orang yang telah menemukan Komputer di jaman Majapahit`);
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
@@ -34727,7 +34741,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
                           url: "./data/image/yoimiyachat.jpg"
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: ``,
                       gifPlayback: true,
@@ -34773,7 +34787,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             }, {
               quoted: m
             });
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -34790,7 +34804,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
         const ceknyaa = pickRandom(["Macan Tutul", "Gajah Sumatera", "Orangutan", "Harimau Putih", "Badak Jawa", "Pocong", "Kuntilanak", "Genderuwo", "Wewe Gombel", "Kuyang", "Lembuswana", "Anoa", "Komodo", "Elang Jawa", "Burung Cendrawasih", "Tuyul", "Babi Ngepet", "Sundel Bolong", "Jenglot", "Lele Sangkuriang", "Kucing Hutan", "Ayam Cemani", "Cicak", "Burung Merak", "Kuda Lumping", "Buaya Muara", "Banteng Jawa", "Monyet Ekor Panjang", "Tarsius", "Cenderawasih Biru", "Setan Merah", "Kolor Ijo", "Palasik", "Nyi Roro Kidul", "Siluman Ular", "Kelabang", "Beruang Madu", "Serigala", "Hiu Karang", "Rajawali", "Lutung Kasarung", "Kuda Sumba", "Ikan Arwana", "Jalak Bali", "Kambing Etawa", "Kelelawar", "Burung Hantu", "Ikan Cupang"]);
         const damping = pickRandom(["1 tahun lalu", "2 tahun lalu", "3 tahun lalu", "4 tahun lalu", "lahir"]);
         const khodam = `khodam ${text}, adalah ${ceknyaa}, mendampingi dari ${damping}`;
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           audio: {
             url: `https://api.siputzx.my.id/api/tools/ttsgoogle?text=${khodam}`
           },
@@ -34822,7 +34836,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
                     ...(await prepareWAMessageMedia({
                       image: fs.readFileSync("./data/media/Jinshi.jpg")
                     }, {
-                      upload: DinzBotz.waUploadToServer
+                      upload: LilyBot.waUploadToServer
                     })),
                     title: ``,
                     gifPlayback: true,
@@ -34876,7 +34890,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
               }
             }
           }, {});
-          await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+          await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
             messageId: msg.key.id
           });
         }
@@ -35083,7 +35097,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (args.length == 0) {
             return reply(`*Pengunaan :*\n${prefix + command} Nik|Provinsi|Kabupaten|Nama|TempatTanggalLahir|JenisKel|Alamat|RtRw|KelDesa|Kecamatan|Agama|Statu|Pekerjaan|Region|Berlaku|golongan darah\n\n${prefix + command} 35567778995|Provinsi Jawa Barat|Kabupaten Bekasi|jebeh Store|Bekasi |Laki-Laki|Bintara Jaya|02/05|Karang Indah|Bekasi Barat|Islam|Jomblo|anakjebeh|Indonesia|2021-2080|abc \n\n*[warning]*\nsetiap input query setelah garis tengah | di larang penggunaan spasi\n*「 INFO IMAGE 」*\nUntuk Gambar Profil KTP\nUpload Dari Web Berikut Ini\n\nhttps://i.waifu.pics\nhttps://c.top4top.io\n\nCONTOH HASIL NYA\nhttps://i.ibb.co/qrQX5DC/IMG-20220401-WA0084.jpg\nhttps://k.top4top.io/p_2208264hn0.jpg`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -35150,7 +35164,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!until) {
             return replyviex("waktu berlaku belum ada");
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: `https://api.lolhuman.xyz/api/ktpmaker?apikey=efcb180d3fd3134748648887&nik=${nik}&prov=${prov}&kabu=${kabu}&name=${name}&ttl=${ttl}&jk=${jk}&jl=${jl}&rtrw=${rtrw}&lurah=${lurah}&camat=${camat}&agama=${agama}&nikah=${nikah}&kerja=${kerja}&warga=${warga}&until=${until}&img=https://telegra.ph/file/2487220c98c7c4fb6f438.jpg`
             },
@@ -35181,18 +35195,18 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
         if (!romoe) {
           reply(`⚠️ Kamu belum pernah memulai chat!\n\n${prefix}start -- _Mencari partner_`);
           //var teks = `⚠️ Kamu belum pernah memulai chat!`
-          //await DinzBotz.sendMessage(m.chat, { text: teks, footer: footxt, templateButtons: but })
+          //await LilyBot.sendMessage(m.chat, { text: teks, footer: footxt, templateButtons: but })
           return false;
         } else {
           let rms = Object.values(this.anonymous).find(room => [room.a, room.b].includes(m.sender) && room.state == "CHATTING");
           var partnerJID = rms.other(m.sender);
-          var rees = await DinzBotz.sendContact(partnerJID, [m.sender.split("@")[0]]);
-          DinzBotz.sendMessage(m.chat, {
+          var rees = await LilyBot.sendContact(partnerJID, [m.sender.split("@")[0]]);
+          LilyBot.sendMessage(m.chat, {
             text: "✅ Berhasil mengirim profil ke teman chat anda!"
           }, {
             quoted: m
           });
-          DinzBotz.sendMessage(partnerJID, {
+          LilyBot.sendMessage(partnerJID, {
             text: "👨👩 Teman chat kamu memberikan kontak profil nya!"
           }, {
             quoted: rees
@@ -35222,7 +35236,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           }
           let room = Object.values(this.anonymous).find(room => room.state === "WAITING" && !room.check(m.sender));
           if (room) {
-            DinzBotz.sendMessage(room.a, {
+            LilyBot.sendMessage(room.a, {
               text: `Berhasil Menemukan Partner, sekarang kamu dapat mengirim pesan\n\n${prefix}skip -- _mencari partner lain_\n${prefix}stop -- _menghentikan sesi chat_`
             });
             room.b = m.sender;
@@ -35266,12 +35280,12 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           }
           let other = romeo.other(m.sender);
           if (other) {
-            await DinzBotz.sendText(other, `Partner Telah Meninggalkan Sesi Anonymous`, m);
+            await LilyBot.sendText(other, `Partner Telah Meninggalkan Sesi Anonymous`, m);
           }
           delete this.anonymous[romeo.id];
           let room = Object.values(this.anonymous).find(room => room.state === "WAITING" && !room.check(m.sender));
           if (room) {
-            DinzBotz.sendMessage(room.a, {
+            LilyBot.sendMessage(room.a, {
               text: `Berhasil Menemukan Partner, sekarang kamu dapat mengirim pesan\n\n${prefix}skip -- _mencari partner lain_\n${prefix}stop -- _menghentikan sesi chat_`
             });
             room.b = m.sender;
@@ -35424,7 +35438,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             for (let i of search.videos) {
               list += `\n${no++}. 🎵 *${i.title}*\nᴅᴜʀᴀsɪ: ${i.duration} ᴅᴇᴛɪᴋ\nʟɪᴋᴇ: ${i.digg_count}\nᴄᴏᴍᴍᴇɴᴛs: ${i.comment_count}\nsʜᴀʀᴇs: ${i.share_count}\n ʟɪɴᴋ: https://www.tiktok.com/@${i.author.unique_id}/video/${i.video_id}\n`;
             }
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               video: {
                 url: `https://tikwm.com${search.videos[0].play}`
               },
@@ -35433,7 +35447,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
               quoted: m
             });
             if (search.videos.length > 1) {
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 text: `📚 *ᴅᴀғᴛᴀʀ ᴠɪᴅᴇᴏ ʟᴀɪɴɴʏᴀ:*\n${list}`
               }, {
                 quoted: m
@@ -35450,7 +35464,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           if (!DinzTheCreator) {
             return reply(mess.only.owner);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -35458,7 +35472,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           });
           var asupan = JSON.parse(fs.readFileSync("./database/anuu.json"));
           var hasil = pickRandom(asupan);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             caption: mess.success,
             video: {
               url: hasil.url
@@ -35532,7 +35546,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
             const response = await sanai.create(text);
             if (response && response.result) {
               const imageUrl = response.result;
-              await DinzBotz.sendFile(m.chat, imageUrl, "generated-image.jpg", `✅ Gambar berhasil dibuat!\n\n• Prompt: *${text}*\n• Resolusi: ${response.width}x${response.height}\n• Waktu proses: ${response.processingTime} detik`, m);
+              await LilyBot.sendFile(m.chat, imageUrl, "generated-image.jpg", `✅ Gambar berhasil dibuat!\n\n• Prompt: *${text}*\n• Resolusi: ${response.width}x${response.height}\n• Waktu proses: ${response.processingTime} detik`, m);
             } else {
               replyviex("❌ Gagal membuat gambar. Silakan coba lagi.");
             }
@@ -35550,7 +35564,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           }
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -35968,7 +35982,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           }
           replyviex(mess.wait);
           try {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -35989,7 +36003,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           }
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -36010,7 +36024,7 @@ Author: Wolep (+62 813-37xx-xxxx) https://whatsapp.com/channel/0029Vb5EZCjIiRotH
           }
           try {
             replyviex(mess.wait);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -36055,12 +36069,12 @@ List Type :
 * *Username :* ${rand.user} *[ ${rand.user_id} ]*
 
 _Media Has been sent, Please wait...._`;
-            let q = await DinzBotz.sendMessage(m.chat, {
+            let q = await LilyBot.sendMessage(m.chat, {
               text: cap
             }, {
               quoted: m
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: {
                 url: rand.largeImageURL
               }
@@ -36084,7 +36098,7 @@ _Media Has been sent, Please wait...._`;
 * *Username :* ${rand.user} *[ ${rand.user_id} ]*
 
 _Media Has been sent, Please wait...._`;
-            let q = await DinzBotz.sendMessage(m.chat, {
+            let q = await LilyBot.sendMessage(m.chat, {
               image: {
                 url: rand.videos.medium.thumbnail
               },
@@ -36092,7 +36106,7 @@ _Media Has been sent, Please wait...._`;
             }, {
               quoted: m
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               video: {
                 url: rand.videos.medium.url
               },
@@ -36176,7 +36190,7 @@ _Media Has been sent, Please wait...._`;
               }
               iwannnn += "";
               const thumb = res[0]?.berita_thumb || ""; // Pastikan 'berita_thumb' tidak undefined
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 image: {
                   url: thumb
                 },
@@ -36211,7 +36225,7 @@ _Media Has been sent, Please wait...._`;
                 iwannnnn += `Link: ${i.berita_url}\n`;
               }
               iwannnnn += "";
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: {
                   url: res[0].berita_thumb
                 },
@@ -36245,7 +36259,7 @@ _Media Has been sent, Please wait...._`;
                 iwannnnnn += `Link: ${i.berita_url}\n`;
               }
               iwannnnnn += "";
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: {
                   url: res[0].berita_thumb
                 },
@@ -36279,7 +36293,7 @@ _Media Has been sent, Please wait...._`;
                 iwannnnnnn += `Link: ${i.berita_url}\n`;
               }
               iwannnnnnn += "";
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: {
                   url: res[0].berita_thumb
                 },
@@ -36312,7 +36326,7 @@ _Media Has been sent, Please wait...._`;
                 iwannnnnnnn += `Link: ${i.berita_url}\n`;
               }
               iwannnnnnnn += "";
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: {
                   url: res[0].berita_thumb
                 },
@@ -36343,7 +36357,7 @@ _Media Has been sent, Please wait...._`;
               iwannnnnnnnn += `Link: ${i.berita_url}\n`;
             }
             iwannnnnnnnn += "";
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: res[0].berita_thumb
               },
@@ -36389,7 +36403,7 @@ _Media Has been sent, Please wait...._`;
               }
               iwannnnnnnnnnn += "";
               const thumb = res[0].berita_thumb || "";
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: {
                   url: thumb
                 },
@@ -36441,7 +36455,7 @@ _Media Has been sent, Please wait...._`;
               }
               iwannnnnnnnnnnnn += "";
               const thumb = res[0].berita_thumb || "";
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: {
                   url: thumb
                 },
@@ -36476,7 +36490,7 @@ _Media Has been sent, Please wait...._`;
               }
               iwannnnnnnnnnnnnn += "";
               const thumb = res[0].berita_thumb || "";
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: {
                   url: thumb
                 },
@@ -36510,7 +36524,7 @@ _Media Has been sent, Please wait...._`;
                 iwannnnnnnnnnnnnnn += `Link: ${i.berita_url}\n`;
               }
               iwannnnnnnnnnnnnnn += "";
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: {
                   url: res[0].berita_thumb
                 },
@@ -36544,7 +36558,7 @@ _Media Has been sent, Please wait...._`;
               }
               iwannnnnnnnnnnnnnnn += "";
               const thumb = res[0].berita_thumb || "";
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: {
                   url: thumb
                 },
@@ -36570,7 +36584,7 @@ _Media Has been sent, Please wait...._`;
           tekcs += "Jalan Tikus Meme\n\n";
           tekcs += `Source: ${reis}`;
           tekcs += "";
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: reis
             },
@@ -37063,7 +37077,7 @@ _Media Has been sent, Please wait...._`;
 *Cara Menjalankan Wings :*
 ketik *.startwings* ipvps|pwvps|tokenwings
 `;
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                       text: teks
                     }, {
                       quoted: m
@@ -37305,7 +37319,7 @@ ketik *.startwings* ipvps|pwvps|tokenwings
 * *Username :* ${newuser}
 * *Password :* ${newpw}
 `;
-                await DinzBotz.sendMessage(m.chat, {
+                await LilyBot.sendMessage(m.chat, {
                   text: teks
                 }, {
                   quoted: m
@@ -37352,7 +37366,7 @@ ketik *.startwings* ipvps|pwvps|tokenwings
           }
           messageText += `Page: ${res.meta.pagination.current_page}/${res.meta.pagination.total_pages}\n`;
           messageText += `Total Users: ${res.meta.pagination.count}`;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             text: messageText
           }, {
             quoted: m
@@ -37450,7 +37464,7 @@ ketik *.startwings* ipvps|pwvps|tokenwings
           }
           messageText += `Halaman: ${res.meta.pagination.current_page}/${res.meta.pagination.total_pages}\n`;
           messageText += `Total Server: ${res.meta.pagination.count}`;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             text: messageText
           }, {
             quoted: m
@@ -37472,7 +37486,7 @@ ketik *.startwings* ipvps|pwvps|tokenwings
 
  Powered By *@${owned.split("@")[0]}*
 ▬▭▬▭▬▭▬▭▬▭▬▭▬`;
-          DinzBotz.sendMessage(from, {
+          LilyBot.sendMessage(from, {
             text: text12,
             contextInfo: {
               mentionedJid: [sender, owned],
@@ -37521,7 +37535,7 @@ Contoh:
 .srv2(RAM PANEL) username,nomor
 .srv21gb Lily,6289523888644
 ▬▭▬▭▬▭▬▭▬▭▬▭▬`;
-          DinzBotz.sendMessage(from, {
+          LilyBot.sendMessage(from, {
             text: text12,
             contextInfo: {
               mentionedJid: [sender, owned],
@@ -37533,7 +37547,7 @@ Contoh:
           });
         }
         freya = fs.readFileSync("./freya/ramlist.mp3");
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           audio: freya,
           mimetype: "audio/mpeg",
           ptt: true
@@ -37552,10 +37566,10 @@ Contoh:
             listprem += `\nUser: ${no++}\nID: ${x}\n\n`;
           }
           listprem += `Untuk Menghapus Akses Prem Ketik ${prefix}delprem 628xxx/@tag`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: listprem
           }, {
-            quoted: DinzBotz.chat
+            quoted: LilyBot.chat
           });
         }
         break;
@@ -37760,8 +37774,8 @@ TYPE: user
           const listMessage = {
             text: tks
           };
-          await DinzBotz.sendMessage(m.chat, listMessage);
-          await DinzBotz.sendMessage(nomornya, {
+          await LilyBot.sendMessage(m.chat, listMessage);
+          await LilyBot.sendMessage(nomornya, {
             text: `*🛒 BERIKUT AKUN ADMIN PANEL ANDA 🛒*\n
         
         
@@ -37841,8 +37855,8 @@ TYPE: Admin
           const listMessage = {
             text: tks
           };
-          await DinzBotz.sendMessage(m.chat, listMessage);
-          await DinzBotz.sendMessage(nomornya, {
+          await LilyBot.sendMessage(m.chat, listMessage);
+          await LilyBot.sendMessage(nomornya, {
             text: `*BERIKUT DETAIL AKUN ADMIN  PANEL ANDA*\n
 USERNAME :  ${username}
 PASSWORD: ${password}
@@ -37883,7 +37897,7 @@ LOGIN: ${domain2}
           }
           messageText += `Page: ${res.meta.pagination.current_page}/${res.meta.pagination.total_pages}\n`;
           messageText += `Total Admin: ${res.meta.pagination.count}`;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             text: messageText
           }, {
             quoted: m
@@ -37917,7 +37931,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -37961,7 +37975,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -38049,7 +38063,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -38093,7 +38107,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -38181,7 +38195,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -38225,7 +38239,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -38313,7 +38327,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -38357,7 +38371,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -38445,7 +38459,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -38489,7 +38503,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -38577,7 +38591,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -38621,7 +38635,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -38709,7 +38723,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -38753,7 +38767,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -38841,7 +38855,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -38885,7 +38899,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -38973,7 +38987,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -39017,7 +39031,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -39105,7 +39119,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -39149,7 +39163,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -39237,7 +39251,7 @@ ${prefix + command} user,nomer`);
             if (!u) {
               return;
             }
-            let d = (await DinzBotz.onWhatsApp(u.split`@`[0]))[0] || {};
+            let d = (await LilyBot.onWhatsApp(u.split`@`[0]))[0] || {};
             let password = username + "001";
             let f = await fetch(domain + "/api/application/users", {
               method: "POST",
@@ -39281,7 +39295,7 @@ KALAU DATA AKUN ANDA HILANG OWNER
 TIDAK DAPAT MENGIRIM AKUN ANDA LAGI
 =====================================
 `;
-            DinzBotz.sendMessage(u, {
+            LilyBot.sendMessage(u, {
               caption: ctf,
               image: fs.readFileSync("./data/image/thumb.jpg")
             });
@@ -39362,7 +39376,7 @@ CPU: ${server.limits.cpu}%
           } = require("fs");
           const path = require("path");
           if (!ffmpegStatic) {
-            return DinzBotz.sendMessage(m.chat, {
+            return LilyBot.sendMessage(m.chat, {
               text: "❌ FFMPEG tidak ditemukan! Pastikan sudah diinstal dengan benar."
             }, {
               quoted: m
@@ -39375,27 +39389,27 @@ CPU: ${server.limits.cpu}%
             let q = m.quoted || m;
             let mime = q.mimetype || q.msg?.mimetype || q.mediaType || "";
             if (!mime) {
-              return DinzBotz.sendMessage(m.chat, {
+              return LilyBot.sendMessage(m.chat, {
                 text: "❌ Mana videonya?"
               }, {
                 quoted: m
               });
             }
             if (!/video\/(mp4|mov|avi|mkv)/.test(mime)) {
-              return DinzBotz.sendMessage(m.chat, {
+              return LilyBot.sendMessage(m.chat, {
                 text: `❌ Format ${mime} tidak didukung!`
               }, {
                 quoted: m
               });
             }
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               text: "⏳ Sedang memproses video, mohon tunggu sekitar 2 - 4 menit..."
             }, {
               quoted: m
             });
             let videoBuffer = await q.download?.();
             if (!videoBuffer) {
-              return DinzBotz.sendMessage(m.chat, {
+              return LilyBot.sendMessage(m.chat, {
                 text: "❌ Gagal mengunduh video!"
               }, {
                 quoted: m
@@ -39413,7 +39427,7 @@ CPU: ${server.limits.cpu}%
             await new Promise((resolve, reject) => {
               ffmpeg(inputPath).outputOptions(["-vf", "scale=iw*1.5:ih*1.5:flags=lanczos,eq=contrast=1:saturation=1.7,hqdn3d=1.5:1.5:6:6,unsharp=5:5:0.8:5:5:0.8", "-r", "60", "-preset", "faster", "-crf", "25", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k"]).on("end", resolve).on("error", reject).save(outputPath);
             });
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               video: {
                 url: outputPath
               },
@@ -39423,7 +39437,7 @@ CPU: ${server.limits.cpu}%
             });
           } catch (err) {
             console.error("Error HD Video:", err);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               text: "❌ Gagal meningkatkan kualitas video."
             }, {
               quoted: m
@@ -39454,7 +39468,7 @@ CPU: ${server.limits.cpu}%
           const caption = data.data.filename;
           const responseHeaders = response.headers;
           const mimeType = responseHeaders.get("content-type");
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             document: {
               url: downloadLink,
               mimetype: mimeType
@@ -39514,7 +39528,7 @@ CPU: ${server.limits.cpu}%
             deku += `│    =〆 ɪᴅ: ${hasil.data.templateId}\n`;
             deku += `│    =〆 ᴜʀʟ: ${hasil.data.structuredData.url}\n`;
             deku += `⏤͟͟͞͞╳────────── .✦`;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               video: {
                 url: hasil.data.videoUrl
               },
@@ -39592,7 +39606,7 @@ CPU: ${server.limits.cpu}%
             let image = await Jimp.read(buffer);
             image.blur(3);
             let blurredBuffer = await image.getBufferAsync(Jimp.MIME_PNG);
-            return DinzBotz.sendImageAsSticker(m.chat, blurredBuffer, m, {
+            return LilyBot.sendImageAsSticker(m.chat, blurredBuffer, m, {
               packname: "Lily",
               author: "Lily|Lily-Ai"
             });
@@ -39659,8 +39673,8 @@ CPU: ${server.limits.cpu}%
             sender,
             chat
           } = m;
-          DinzBotz.werewolf = DinzBotz.werewolf ? DinzBotz.werewolf : {};
-          const ww = DinzBotz.werewolf ? DinzBotz.werewolf : {};
+          LilyBot.werewolf = LilyBot.werewolf ? LilyBot.werewolf : {};
+          const ww = LilyBot.werewolf ? LilyBot.werewolf : {};
           const data = ww[chat];
           const value = args[0];
           const target = args[1];
@@ -39725,7 +39739,7 @@ CPU: ${server.limits.cpu}%
               player.push(ww[chat].player[i].id);
             }
             text += "\nJumlah player minimal adalah 5 dan maximal 15";
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               text: text.trim(),
               contextInfo: {
                 externalAdReply: {
@@ -39760,15 +39774,15 @@ CPU: ${server.limits.cpu}%
               if (ww[chat].time === "voting") {
                 clearAllVote(chat, ww);
                 addTimer(chat, ww);
-                return await run_vote(DinzBotz, chat, ww);
+                return await run_vote(LilyBot, chat, ww);
               } else if (ww[chat].time === "malem") {
                 clearAllVote(chat, ww);
                 addTimer(chat, ww);
-                return await run_malam(DinzBotz, chat, ww);
+                return await run_malam(LilyBot, chat, ww);
               } else if (ww[chat].time === "pagi") {
                 clearAllVote(chat, ww);
                 addTimer(chat, ww);
-                return await run_pagi(DinzBotz, chat, ww);
+                return await run_pagi(LilyBot, chat, ww);
               }
             }
             if (ww[chat].status === true) {
@@ -39795,7 +39809,7 @@ CPU: ${server.limits.cpu}%
               // [ Werewolf ]
               if (ww[chat].player[i].role === "werewolf") {
                 if (ww[chat].player[i].isdead != true) {
-                  var textt = `Hai ${DinzBotz.getName(ww[chat].player[i].id)}, Kamu telah dipilih untuk memerankan *Werewolf* ${emoji_role("werewolf")} pada permainan kali ini, silahkan pilih salah satu player yang ingin kamu makan pada malam hari ini\n*LIST PLAYER*:\n${list2}\n\nKetik *.wwpc kill nomor* untuk membunuh player`;
+                  var textt = `Hai ${LilyBot.getName(ww[chat].player[i].id)}, Kamu telah dipilih untuk memerankan *Werewolf* ${emoji_role("werewolf")} pada permainan kali ini, silahkan pilih salah satu player yang ingin kamu makan pada malam hari ini\n*LIST PLAYER*:\n${list2}\n\nKetik *.wwpc kill nomor* untuk membunuh player`;
                   let row = [];
                   for (let p = 0; p < ww[chat].player.length; p++) {
                     row.push({
@@ -39816,8 +39830,8 @@ CPU: ${server.limits.cpu}%
                     sections,
                     mentions: player
                   };
-                  await DinzBotz.sendMessage(ww[chat].player[i].id, listMessage);
-                  await DinzBotz.sendMessage(ww[chat].player[i].id, {
+                  await LilyBot.sendMessage(ww[chat].player[i].id, listMessage);
+                  await LilyBot.sendMessage(ww[chat].player[i].id, {
                     text: textt,
                     mentions: player
                   });
@@ -39826,8 +39840,8 @@ CPU: ${server.limits.cpu}%
                 // [ villager ]
               } else if (ww[chat].player[i].role === "warga") {
                 if (ww[chat].player[i].isdead != true) {
-                  let texttt = `*⌂ W E R E W O L F - G A M E*\n\nHai ${DinzBotz.getName(ww[chat].player[i].id)} Peran kamu adalah *Warga Desa* ${emoji_role("warga")}, tetap waspada, mungkin *Werewolf* akan memakanmu malam ini, silakan masuk kerumah masing masing.\n*LIST PLAYER*:\n${list1}`;
-                  await DinzBotz.sendMessage(ww[chat].player[i].id, {
+                  let texttt = `*⌂ W E R E W O L F - G A M E*\n\nHai ${LilyBot.getName(ww[chat].player[i].id)} Peran kamu adalah *Warga Desa* ${emoji_role("warga")}, tetap waspada, mungkin *Werewolf* akan memakanmu malam ini, silakan masuk kerumah masing masing.\n*LIST PLAYER*:\n${list1}`;
+                  await LilyBot.sendMessage(ww[chat].player[i].id, {
                     text: texttt,
                     mentions: player
                   });
@@ -39836,7 +39850,7 @@ CPU: ${server.limits.cpu}%
                 // [ Penerawangan ]
               } else if (ww[chat].player[i].role === "seer") {
                 if (ww[chat].player[i].isdead != true) {
-                  let texxt = `Hai ${DinzBotz.getName(ww[chat].player[i].id)} Kamu telah terpilih  untuk menjadi *Penerawang* ${emoji_role("seer")}. Dengan sihir yang kamu punya, kamu bisa mengetahui peran pemain pilihanmu.\n*LIST PLAYER*:\n${list1}\n\nKetik *.wwpc dreamy nomor* untuk melihat role player`;
+                  let texxt = `Hai ${LilyBot.getName(ww[chat].player[i].id)} Kamu telah terpilih  untuk menjadi *Penerawang* ${emoji_role("seer")}. Dengan sihir yang kamu punya, kamu bisa mengetahui peran pemain pilihanmu.\n*LIST PLAYER*:\n${list1}\n\nKetik *.wwpc dreamy nomor* untuk melihat role player`;
                   let row = [];
                   for (let p = 0; p < ww[chat].player.length; p++) {
                     row.push({
@@ -39857,15 +39871,15 @@ CPU: ${server.limits.cpu}%
                     sections,
                     mentions: player
                   };
-                  await DinzBotz.sendMessage(ww[chat].player[i].id, listMessage);
-                  await DinzBotz.sendMessage(ww[chat].player[i].id, {
+                  await LilyBot.sendMessage(ww[chat].player[i].id, listMessage);
+                  await LilyBot.sendMessage(ww[chat].player[i].id, {
                     text: texxt,
                     mentions: player
                   });
                 }
               } else if (ww[chat].player[i].role === "guardian") {
                 if (ww[chat].player[i].isdead != true) {
-                  let teext = `Hai ${DinzBotz.getName(ww[chat].player[i].id)} Kamu terpilih untuk memerankan *Malaikat Pelindung* ${emoji_role("guardian")}, dengan kekuatan yang kamu miliki, kamu bisa melindungi para warga, silahkan pilih salah 1 player yang ingin kamu lindungi\n*LIST PLAYER*:\n${list1}\n\nKetik *.wwpc deff nomor* untuk melindungi player`;
+                  let teext = `Hai ${LilyBot.getName(ww[chat].player[i].id)} Kamu terpilih untuk memerankan *Malaikat Pelindung* ${emoji_role("guardian")}, dengan kekuatan yang kamu miliki, kamu bisa melindungi para warga, silahkan pilih salah 1 player yang ingin kamu lindungi\n*LIST PLAYER*:\n${list1}\n\nKetik *.wwpc deff nomor* untuk melindungi player`;
                   let row = [];
                   for (let p = 0; p < ww[chat].player.length; p++) {
                     row.push({
@@ -39886,8 +39900,8 @@ CPU: ${server.limits.cpu}%
                     sections,
                     mentions: player
                   };
-                  await DinzBotz.sendMessage(ww[chat].player[i].id, listMessage);
-                  await DinzBotz.sendMessage(ww[chat].player[i].id, {
+                  await LilyBot.sendMessage(ww[chat].player[i].id, listMessage);
+                  await LilyBot.sendMessage(ww[chat].player[i].id, {
                     text: teext,
                     mentions: player
                   });
@@ -39896,7 +39910,7 @@ CPU: ${server.limits.cpu}%
                 // [ Sorcerer ]
               } else if (ww[chat].player[i].role === "sorcerer") {
                 if (ww[chat].player[i].isdead != true) {
-                  let textu = `Hai ${DinzBotz.getName(ww[chat].player[i].id)} Kamu terpilih sebagai Penyihir ${emoji_role("sorcerer")}, dengan kekuasaan yang kamu punya, kamu bisa membuka identitas para player, silakan pilih 1 orang yang ingin kamu buka identitasnya\n*LIST PLAYER*:\n${list2}\n\nKetik *.wwpc sorcerer nomor* untuk melihat role player`;
+                  let textu = `Hai ${LilyBot.getName(ww[chat].player[i].id)} Kamu terpilih sebagai Penyihir ${emoji_role("sorcerer")}, dengan kekuasaan yang kamu punya, kamu bisa membuka identitas para player, silakan pilih 1 orang yang ingin kamu buka identitasnya\n*LIST PLAYER*:\n${list2}\n\nKetik *.wwpc sorcerer nomor* untuk melihat role player`;
                   let row = [];
                   for (let p = 0; p < ww[chat].player.length; p++) {
                     row.push({
@@ -39917,15 +39931,15 @@ CPU: ${server.limits.cpu}%
                     sections,
                     mentions: player
                   };
-                  await DinzBotz.sendMessage(ww[chat].player[i].id, listMessage);
-                  await DinzBotz.sendMessage(ww[chat].player[i].id, {
+                  await LilyBot.sendMessage(ww[chat].player[i].id, listMessage);
+                  await LilyBot.sendMessage(ww[chat].player[i].id, {
                     text: textu,
                     mentions: player
                   });
                 }
               }
             }
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               text: "*⌂ W E R E W O L F - G A M E*\n\nGame telah dimulai, para player akan memerankan perannya masing masing, silahkan cek chat pribadi untuk melihat role kalian. Berhati-hatilah para warga, mungkin malam ini adalah malah terakhir untukmu",
               contextInfo: {
                 externalAdReply: {
@@ -39939,7 +39953,7 @@ CPU: ${server.limits.cpu}%
                 mentionedJid: player
               }
             });
-            await run(DinzBotz, chat, ww);
+            await run(LilyBot, chat, ww);
           } else if (value === "vote") {
             if (!ww[chat]) {
               return replyviex("Belum ada sesi permainan");
@@ -40017,7 +40031,7 @@ CPU: ${server.limits.cpu}%
               text += `(${ww[chat].player[i].number}) @${ww[chat].player[i].id.replace("@s.whatsapp.net", "")} ${ww[chat].player[i].isdead === true ? `☠️ ${ww[chat].player[i].role}` : ""}\n`;
               player.push(ww[chat].player[i].id);
             }
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               text: text,
               contextInfo: {
                 externalAdReply: {
@@ -40042,7 +40056,7 @@ CPU: ${server.limits.cpu}%
             text += ` • ww delete\n`;
             text += ` • ww player\n`;
             text += `\nPermainan ini dapat dimainkan oleh 5 sampai 15 orang.`;
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               text: text.trim(),
               contextInfo: {
                 externalAdReply: {
@@ -40106,8 +40120,8 @@ CPU: ${server.limits.cpu}%
             sender,
             chat
           } = m;
-          DinzBotz.werewolf = DinzBotz.werewolf ? DinzBotz.werewolf : {};
-          const ww = DinzBotz.werewolf ? DinzBotz.werewolf : {};
+          LilyBot.werewolf = LilyBot.werewolf ? LilyBot.werewolf : {};
+          const ww = LilyBot.werewolf ? LilyBot.werewolf : {};
           const value = args[0];
           const target = args[1];
           if (playerOnGame(sender, ww) === false) {
@@ -40191,12 +40205,12 @@ CPU: ${server.limits.cpu}%
           let mime = (q.msg || q).mimetype || q.mediaType || "";
           if (/image/g.test(mime) && !/webp/g.test(mime)) {
             try {
-              const media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
-              let botNumber = await DinzBotz.decodeJid(DinzBotz.user.id);
+              const media = await LilyBot.downloadAndSaveMediaMessage(quoted);
+              let botNumber = await LilyBot.decodeJid(LilyBot.user.id);
               let {
                 img
               } = await pepe(media);
-              await DinzBotz.query({
+              await LilyBot.query({
                 tag: "iq",
                 attrs: {
                   to: botNumber,
@@ -40240,11 +40254,11 @@ CPU: ${server.limits.cpu}%
           let mime = (q.msg || q).mimetype || q.mediaType || "";
           if (/image/g.test(mime) && !/webp/g.test(mime)) {
             try {
-              const media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+              const media = await LilyBot.downloadAndSaveMediaMessage(quoted);
               let {
                 img
               } = await pepe(media);
-              await DinzBotz.query({
+              await LilyBot.query({
                 tag: "iq",
                 attrs: {
                   to: m.chat,
@@ -40286,7 +40300,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
         const link = args[0]
         const emoji = args.slice(1).join(" ").replace(/,/g, " ").split(/\s+/).filter(e => e.trim()).join(",")
 
-        await DinzBotz.sendMessage(m.chat, { react: { text: '⏳', key: m.key } })
+        await LilyBot.sendMessage(m.chat, { react: { text: '⏳', key: m.key } })
 
         let success = false
         let lastError = 'Unknown error'
@@ -40310,7 +40324,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
 🎭 *Emoji:* ${json.emojis.replace(/,/g, ' ')}
 
 🚀 *Powered by ${namaBot}*`
-              await DinzBotz.sendMessage(m.chat, { react: { text: '✅', key: m.key } })
+              await LilyBot.sendMessage(m.chat, { react: { text: '✅', key: m.key } })
               replyviex(teks)
               success = true
               break
@@ -40331,7 +40345,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
 
 📝 *Pesan:* ${lastError}
 💡 *Info:* Apikey nya habis, silahkan ambil Apikey di https://asitha.top/login?ref=hillaryy2555`
-          await DinzBotz.sendMessage(m.chat, { react: { text: '❌', key: m.key } })
+          await LilyBot.sendMessage(m.chat, { react: { text: '❌', key: m.key } })
           replyviex(teks)
         }
       }
@@ -40382,7 +40396,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
 🌐 *URL:* ${data.url}
 📋 *Description:* ${data.content_description}
 📌 *Item:* ${data.itemurl}`;
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 video: {
                   url: data.media[0].mp4.url
                 },
@@ -40416,7 +40430,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
             }
           }
           teks += `\n\nUntuk melihat detail produk, silahkan kirim nama produk yang ada pada list di atas. Misalnya kamu ingin melihat detail produk dari ${db_respon_list[0].key.toUpperCase()}, maka kirim pesan ${db_respon_list[0].key.toUpperCase()} kepada bot`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: teks,
             mentions: [m.sender]
           }, {
@@ -40459,7 +40473,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
           return reply(`List respon dengan key : *${args1}* sudah ada di group ini.`);
         }
         if (/image/.test(mime)) {
-          let media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          let media = await LilyBot.downloadAndSaveMediaMessage(quoted);
           let mem = await uploadwidipe(media);
           addResponList(m.chat, args1, args2, true, mem, db_respon_list);
           reply(`Sukses set list message dengan key : *${args1}*`);
@@ -40488,7 +40502,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
           return reply(`Maaf, untuk key *${args1}* belum terdaftar di group ini`);
         }
         if (/image/.test(mime)) {
-          let media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          let media = await LilyBot.downloadAndSaveMediaMessage(quoted);
           let mem = await uploadwidipe(media);
           updateResponList(m.chat, args1, args2, true, mem, db_respon_list);
           reply(`Sukses update respon list dengan key *${args1}*`);
@@ -40673,9 +40687,9 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
           const getTextP = getTextSetProses(m.isGroup ? m.chat : botNumber, set_proses);
           if (getTextP !== undefined) {
             var anunya = getTextP.replace("@pesanan", tek ? tek : "-").replace("@user", "@" + m.quoted.sender.split("@")[0]).replace("@admin", pushname).replace("@jam", time).replace("@tanggal", tanggal(new Date())).replace("@user", "@" + m.quoted.sender.split("@")[0]);
-            DinzBotz.sendTextWithMentions(m.chat, anunya, m);
+            LilyBot.sendTextWithMentions(m.chat, anunya, m);
           } else {
-            DinzBotz.sendTextWithMentions(m.chat, proses.replace("@pesanan", tek ? tek : "-").replace("@user", "@" + m.quoted.sender.split("@")[0]).replace("@admin", pushname).replace("@jam", time).replace("@tanggal", tanggal(new Date())).replace("@user", "@" + m.quoted.sender.split("@")[0]), m);
+            LilyBot.sendTextWithMentions(m.chat, proses.replace("@pesanan", tek ? tek : "-").replace("@user", "@" + m.quoted.sender.split("@")[0]).replace("@admin", pushname).replace("@jam", time).replace("@tanggal", tanggal(new Date())).replace("@user", "@" + m.quoted.sender.split("@")[0]), m);
           }
         }
         break;
@@ -40693,9 +40707,9 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
           const getTextD = getTextSetDone(m.isGroup ? m.chat : botNumber, set_done);
           if (getTextD !== undefined) {
             var anunya = getTextD.replace("@pesanan", tek ? tek : "-").replace("@user", "@" + m.quoted.sender.split("@")[0]).replace("@admin", pushname).replace("@group", groupMetadata.subject).replace("@jam", time).replace("@tanggal", tanggal(new Date())).replace("@user", "@" + m.quoted.sender.split("@")[0]);
-            DinzBotz.sendTextWithMentions(m.chat, anunya, m);
+            LilyBot.sendTextWithMentions(m.chat, anunya, m);
           } else {
-            DinzBotz.sendTextWithMentions(m.chat, sukses.replace("@pesanan", tek ? tek : "-").replace("@user", "@" + m.quoted.sender.split("@")[0]).replace("@admin", pushname).replace("@group", groupMetadata.subject).replace("@jam", time).replace("@tanggal", tanggal(new Date())).replace("@user", "@" + m.quoted.sender.split("@")[0]), m);
+            LilyBot.sendTextWithMentions(m.chat, sukses.replace("@pesanan", tek ? tek : "-").replace("@user", "@" + m.quoted.sender.split("@")[0]).replace("@admin", pushname).replace("@group", groupMetadata.subject).replace("@jam", time).replace("@tanggal", tanggal(new Date())).replace("@user", "@" + m.quoted.sender.split("@")[0]), m);
           }
         }
         break;
@@ -40709,14 +40723,14 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
           if (!text) {
             return reply("Promt Nya Bos...");
           }
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
             }
           });
           try {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -40741,7 +40755,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
             //var author = (author  []).join('|')
             let mime = m.quoted.mimetype || "";
             //let img = await q.download()
-            let img = await DinzBotz.downloadAndSaveMediaMessage(quoted, makeid(5));
+            let img = await LilyBot.downloadAndSaveMediaMessage(quoted, makeid(5));
             if (!img) {
               return replyviex("Reply a sticker!");
             }
@@ -40753,7 +40767,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
             }
           } finally {
             if (stiker) {
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 sticker: stiker
               }, {
                 quoted: m
@@ -40770,14 +40784,14 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
             return replyviex(`Contoh : ${prefix + command} carry minati`);
           }
           replyviex(mess.wait);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             react: {
               text: "⏱️",
               key: m.key
             }
           });
           try {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               image: {
                 url: `https://imgen.duck.mom/prompt/${encodeURIComponent(text)}`
               },
@@ -40814,7 +40828,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
 *❖ Mime* : ${baby1[0].mime}
 *❖ Link* : ${baby1[0].link}`;
           replyviex(`${result4}`);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             document: {
               url: baby1[0].link
             },
@@ -40835,7 +40849,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
           }
           replyviex(mess.wait);
           require("./lib/tiktok").Tiktok(q).then(data => {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               caption: `Ini dia!!`,
               video: {
                 url: data.watermark
@@ -40856,7 +40870,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
           }
           replyviex(mess.wait);
           require("./lib/tiktok").Tiktok(q).then(data => {
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               audio: {
                 url: data.audio
               },
@@ -40892,7 +40906,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
           if (!q) {
             return replyviex(`Contoh ${prefix + command} Sufway surfer mod`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -40915,7 +40929,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
             let no = 1;
             let hasilPencarian = search.all.map(v => `${no++}. ${v.title}\n[Link]: ${v.url}`).join("\n\n");
             teks += hasilPencarian;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               text: teks
             }, {
               quoted: m
@@ -40963,7 +40977,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
                           url: search.all[0].thumbnail
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: "",
                       gifPlayback: true,
@@ -40988,7 +41002,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
             }, {
               quoted: m
             }, {});
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -41031,7 +41045,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
             try {
               let { title, downloadURL } = await ytmp3mobi(youtubeUrl, fmt);
               await m.reply(`*Format:* ${fmt.toUpperCase()}\n*Judul:* ${title}\n*Link:* ${downloadURL}`);
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 [fmt === "mp3" ? "audio" : "video"]: { url: downloadURL },
                 mimetype: fmt === "mp3" ? 'audio/mp4' : 'video/mp4',
                 fileName: `${title}.${fmt}`
@@ -41084,7 +41098,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
                           url: search.all[0].thumbnail
                         }
                       }, {
-                        upload: DinzBotz.waUploadToServer
+                        upload: LilyBot.waUploadToServer
                       })),
                       title: "",
                       gifPlayback: true,
@@ -41109,7 +41123,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
             }, {
               quoted: m
             }, {});
-            await DinzBotz.relayMessage(msg.key.remoteJid, msg.message, {
+            await LilyBot.relayMessage(msg.key.remoteJid, msg.message, {
               messageId: msg.key.id
             });
           }
@@ -41124,7 +41138,7 @@ ${prefix + command} https://whatsapp.com/channel/xxx/123 😂 😱`)
           if (!text) {
             return reply(`contoh: \n.warcall kontol`);
           }
-          DinzBotz.relayMessage(m.chat, {
+          LilyBot.relayMessage(m.chat, {
             scheduledCallCreationMessage: {
               callType: 2,
               scheduledTimestampMs: Date.now(),
@@ -41155,7 +41169,7 @@ Channel : ${anu.author.url}
 Link : ${anu.url}
 
 Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for video`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: eek,
             caption: ngen
           }, {
@@ -41168,7 +41182,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
         if (!DinzTheCreator) return m.reply('*[ System Notice ]* Khusus Owner');
         if (isCheckingNews) return m.reply("✅ Auto news sudah aktif.");
         isCheckingNews = true;
-        newsInterval = setInterval(() => checkAndSendNews(DinzBotz, 60000));
+        newsInterval = setInterval(() => checkAndSendNews(LilyBot, 60000));
         return m.reply("✅ Auto news diaktifkan. Cek setiap 1 menit.");
       case "stopnews":
         if (!isCreator) return m.reply('*[ System Notice ]* Khusus Owner');
@@ -41250,7 +41264,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           };
           if (!text) return reply("Kirim perintah dengan link YouTube-nya!");
           try {
-          DinzBotz.sendMessage(m.chat, { react: { text: "⏱️",key: m.key,}})
+          LilyBot.sendMessage(m.chat, { react: { text: "⏱️",key: m.key,}})
           let rus = await yts(text);
           if (rus.all.length === 0) return reply("Video tidak ditemukan atau tidak bisa di-download.");
           let data = rus.all.filter(v => v.type === 'video');
@@ -41264,7 +41278,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           `⏱️ *Durasi* : ${res.timestamp}\n` +
           `🔗 *Link Video* : ${res.url}\n\n` +
           `🎧 *Audio sedang diproses...* 🎶`;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
           contextInfo: { 
           externalAdReply: { 
           showAdAttribution: true, 
@@ -41291,7 +41305,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           }
           const qualityIndex = randomAudioQuality();
           const audioData = await dl(videoUrl, qualityIndex, 1); 
-          await DinzBotz.sendMessage(m.chat, { 
+          await LilyBot.sendMessage(m.chat, { 
           audio: { url: audioData.link }, 
           mimetype: 'audio/mp4' 
           }, { quoted: m });
@@ -41398,7 +41412,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           const qualityIndex = parseInt(args[2]) || 3;
           if (command === "ytmp4") {
             if (!link) {
-              return DinzBotz.sendMessage(m.chat, {
+              return LilyBot.sendMessage(m.chat, {
                 text: "❌ Link YouTube tidak ditemukan!"
               });
             }
@@ -41406,7 +41420,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
             try {
               const video = await SaveTube.dl(link, qualityIndex, 2);
               await replyviex(`✅ Video Di Temukan: ${video.title}\nDurasi: ${video.durationLabel}\nVideo Sedang Di Proses...`);
-              await DinzBotz.sendMessage(m.chat, {
+              await LilyBot.sendMessage(m.chat, {
                 video: {
                   url: video.link
                 },
@@ -41415,7 +41429,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
                 quoted: m
               });
             } catch (err) {
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 text: `❌ Gagal mengunduh video: ${err.message}`
               });
             }
@@ -41453,7 +41467,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
             return replyviex(`Use ${prefix + command} number\nContoh ${prefix + command} 6289523888644`);
           }
           prrkek = `${q.split("|")[0].replace(/[^0-9]/g, "")}@s.whatsapp.net`;
-          let ceknya = await DinzBotz.onWhatsApp(prrkek);
+          let ceknya = await LilyBot.onWhatsApp(prrkek);
           if (ceknya.length == 0) {
             return replyviex(`Masukkan nomor yang valid dan terdaftar di WhatsApp!!!`);
           }
@@ -41574,7 +41588,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           if (VideoDinzID.includes(q)) {
             return replyviex("The name is already in use");
           }
-          let delb = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          let delb = await LilyBot.downloadAndSaveMediaMessage(quoted);
           VideoDinzID.push(q);
           await fsx.copy(delb, `./data/DinzIDMedia/video/${q}.mp4`);
           fs.writeFileSync("./data/DinzIDMedia/database/xeonvideo.json", JSON.stringify(VideoDinzID));
@@ -41621,7 +41635,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           if (ImageDinzID.includes(q)) {
             return replyviex("The name is already in use");
           }
-          let delb = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          let delb = await LilyBot.downloadAndSaveMediaMessage(quoted);
           ImageDinzID.push(q);
           await fsx.copy(delb, `./data/DinzIDMedia/image/${q}.jpg`);
           fs.writeFileSync("./data/DinzIDMedia/database/xeonimage.json", JSON.stringify(ImageDinzID));
@@ -41668,7 +41682,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           if (DinzIDSticker.includes(q)) {
             return replyviex("The name is already in use");
           }
-          let delb = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          let delb = await LilyBot.downloadAndSaveMediaMessage(quoted);
           DinzIDSticker.push(q);
           await fsx.copy(delb, `./data/DinzIDMedia/sticker/${q}.webp`);
           fs.writeFileSync("./data/DinzIDMedia/database/xeonsticker.json", JSON.stringify(DinzIDSticker));
@@ -41715,7 +41729,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           if (DinzIDVoiceNote.includes(q)) {
             return replyviex("The name is already in use");
           }
-          let delb = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          let delb = await LilyBot.downloadAndSaveMediaMessage(quoted);
           DinzIDVoiceNote.push(q);
           await fsx.copy(delb, `./data/assets/audio/${q}.mp3`);
           fs.writeFileSync("./data/DinzIDMedia/database/xeonvn.json", JSON.stringify(DinzIDVoiceNote));
@@ -41759,7 +41773,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           return replyviex(`Use ${prefix + command} number\nContoh ${prefix + command} ${ownernumber}`);
         }
         bnnd = q.split("|")[0].replace(/[^0-9]/g, "");
-        let ceknye = await DinzBotz.onWhatsApp(bnnd);
+        let ceknye = await LilyBot.onWhatsApp(bnnd);
         if (ceknye.length == 0) {
           return replyviex(`Enter A Valid And Registered Number On WhatsApp!!!`);
         }
@@ -41783,11 +41797,11 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
       case "listpremium":
       case "listprem":
         teks = "*Premium List*\n\n";
-        for (let DinzBotz of prem) {
-          teks += `- ${DinzBotz}\n`;
+        for (let LilyBot of prem) {
+          teks += `- ${LilyBot}\n`;
         }
         teks += `\n*Total : ${prem.length}*`;
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           text: teks.trim()
         }, "extendedTextMessage", {
           quoted: m,
@@ -41841,7 +41855,7 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
 Info: *bold* hash is Locked
 ${Object.entries(global.db.sticker).map(([key, value], index) => `${index + 1}. ${value.locked ? `*${key}*` : key} : ${value.text}`).join("\n")}
 `.trim();
-          DinzBotz.sendText(m.chat, teks, m, {
+          LilyBot.sendText(m.chat, teks, m, {
             mentions: Object.values(global.db.sticker).map(x => x.mentionedJid).reduce((a, b) => [...a, ...b], [])
           });
         }
@@ -41894,7 +41908,7 @@ View list of Messages With ${prefix}listmsg`);
           if (!(text.toLowerCase() in msgs)) {
             return replyviex(`'${text}' not listed in the message list`);
           }
-          DinzBotz.copyNForward(m.chat, msgs[text.toLowerCase()], true);
+          LilyBot.copyNForward(m.chat, msgs[text.toLowerCase()], true);
         }
         break;
       case "listmsg":
@@ -41946,7 +41960,7 @@ View list of Messages With ${prefix}listmsg`);
             } else {
               who = m.quoted.sender ? m.quoted.sender : m.sender;
             }
-            let bio = await DinzBotz.fetchStatus(who);
+            let bio = await LilyBot.fetchStatus(who);
             replyviex(bio.status);
           } catch {
             if (text) {
@@ -41954,7 +41968,7 @@ View list of Messages With ${prefix}listmsg`);
             } else {
               try {
                 let who = m.quoted ? m.quoted.sender : m.sender;
-                let bio = await DinzBotz.fetchStatus(who);
+                let bio = await LilyBot.fetchStatus(who);
                 replyviex(bio.status);
               } catch {
                 return replyviex(`biodatanya pribadi atau Anda belum membalas pesan orang tersebut!`);
@@ -41978,12 +41992,12 @@ View list of Messages With ${prefix}listmsg`);
           if (/webp/.test(mime)) {
             return replyviex(`Kirim/Balas Gambar Dengan Caption ${prefix + command}`);
           }
-          var medis = await DinzBotz.downloadAndSaveMediaMessage(quoted, "ppbot.jpeg");
+          var medis = await LilyBot.downloadAndSaveMediaMessage(quoted, "ppbot.jpeg");
           if (args[0] == `full`) {
             var {
               img
             } = await generateProfilePicture(medis);
-            await DinzBotz.query({
+            await LilyBot.query({
               tag: "iq",
               attrs: {
                 to: botNumber,
@@ -42001,7 +42015,7 @@ View list of Messages With ${prefix}listmsg`);
             fs.unlinkSync(medis);
             replyviex(`Success`);
           } else {
-            var memeg = await DinzBotz.updateProfilePicture(botNumber, {
+            var memeg = await LilyBot.updateProfilePicture(botNumber, {
               url: medis
             });
             fs.unlinkSync(medis);
@@ -42019,8 +42033,8 @@ View list of Messages With ${prefix}listmsg`);
             return replyviex(`Use ${prefix + command} groupname`);
           }
           try {
-            let cret = await DinzBotz.groupCreate(args.join(" "), []);
-            let response = await DinzBotz.groupInviteCode(cret.id);
+            let cret = await LilyBot.groupCreate(args.join(" "), []);
+            let response = await LilyBot.groupInviteCode(cret.id);
             teks = `     「 Create Group 」
 
 ▸ Name : ${cret.subject}
@@ -42029,9 +42043,9 @@ View list of Messages With ${prefix}listmsg`);
 
 https://chat.whatsapp.com/${response}
        `;
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               text: teks,
-              mentions: await DinzBotz.parseMention(teks)
+              mentions: await LilyBot.parseMention(teks)
             }, {
               quoted: m
             });
@@ -42049,7 +42063,7 @@ https://chat.whatsapp.com/${response}
           axios.get(`https://api.waifu.pics/sfw/${command}`).then(({
             data
           }) => {
-            DinzBotz.sendImageAsSticker(from, data.url, m, {
+            LilyBot.sendImageAsSticker(from, data.url, m, {
               packname: global.packname,
               author: global.author
             });
@@ -42085,7 +42099,7 @@ https://chat.whatsapp.com/${response}
           axios.get(`https://api.waifu.pics/sfw/${command}`).then(({
             data
           }) => {
-            DinzBotz.sendImageAsSticker(from, data.url, m, {
+            LilyBot.sendImageAsSticker(from, data.url, m, {
               packname: global.packname,
               author: global.author
             });
@@ -42107,7 +42121,7 @@ https://chat.whatsapp.com/${response}
           axios.get(`https://nekos.life/api/v2/img/${command}`).then(({
             data
           }) => {
-            DinzBotz.sendImageAsSticker(from, data.url, m, {
+            LilyBot.sendImageAsSticker(from, data.url, m, {
               packname: global.packname,
               author: global.author
             });
@@ -42127,9 +42141,9 @@ https://chat.whatsapp.com/${response}
           let {
             webp2mp4File
           } = require("./lib/uploader");
-          let media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          let media = await LilyBot.downloadAndSaveMediaMessage(quoted);
           let webpToMp4 = await webp2mp4File(media);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             video: {
               url: webpToMp4.result,
               caption: "Konversi Webp ke Video"
@@ -42156,7 +42170,7 @@ https://chat.whatsapp.com/${response}
             toAudio
           } = require("./lib/converter");
           let audio = await toAudio(media, "mp4");
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             audio: audio,
             mimetype: "audio/mpeg"
           }, {
@@ -42179,7 +42193,7 @@ https://chat.whatsapp.com/${response}
             toPTT
           } = require("./lib/converter");
           let audio = await toPTT(media, "mp4");
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             audio: audio,
             mimetype: "audio/mpeg",
             ptt: true
@@ -42200,9 +42214,9 @@ https://chat.whatsapp.com/${response}
           let {
             webp2mp4File
           } = require("./lib/uploader");
-          let media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+          let media = await LilyBot.downloadAndSaveMediaMessage(quoted);
           let webpToMp4 = await webp2mp4File(media);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             video: {
               url: webpToMp4.result,
               caption: "Convert Webp To Video"
@@ -42228,7 +42242,7 @@ https://chat.whatsapp.com/${response}
           let buff = getRandom(".jpg");
           await fs.writeFileSync("./" + buff, data);
           let medi = fs.readFileSync("./" + buff);
-          await DinzBotz.sendMessage(from, {
+          await LilyBot.sendMessage(from, {
             image: medi,
             caption: "Ini dia!!"
           }, {
@@ -42243,7 +42257,7 @@ https://chat.whatsapp.com/${response}
         const dare = ["Makan 2 sendok makan nasi tanpa lauk apapun, jika terasa berat, kamu bisa minum.", "Sebutkan orang yang membuatmu terdiam", "Telepon gebetan/pacar sekarang dan kirim tangkapan layar di sini", "Kirim emot hanya setiap kali kamu mengetik di grup obrolan/obrolan pribadi selama 1 hari.", "Ucapkan 'Selamat datang di Who Wants To Be a Millionaire!' ke semua grup yang kamu punya", "Telepon mantan dengan mengatakan rindu", "nyanyikan chorus dari lagu terakhir yang kamu mainkan", "Rekam suara untuk mantan/pacar/gebemmu, katakan 'Hai (nama), ingin menelepon, tunggu sebentar. Aku sangat merindukanmu'", "Pukul meja (yang ada di rumah) sampai kamu dimarahi karena berisik", "Katakan pada orang asing 'Aku baru saja diberitahu bahwa aku adalah saudaramu yang pertama, kami berpisah, lalu aku melakukan operasi plastik. Dan ini hal paling 'ciyusss'", "Sebutkan nama mantan", "buat 1 sajak untuk anggota grup!", "Kirim daftar percakapan WhatsAppmu", "Obrol dengan orang asing dengan bahasa ghetto lalu tangkap layar di sini", "Ceritakan versimu sendiri tentang hal-hal memalukan", "Tag orang yang kamu benci", "Pura-pura seperti terkena pengaruh, misalnya: terkena pengaruh anjing, terkena pengaruh belalang, terkena pengaruh lemari es, dll.", "Ubah nama menjadi *I AM DONKEY* selama 24 jam", "Teriak *ma chuda ma chuda ma chuda* di depan rumahmu", "Ambil foto/potret pacar atau gebetanmu dan kirimkan di sini", "Ceritakan tipe pacar yang kamu sukai!", "Ucapkan *aku naksir kamu, maukah kamu menjadi pacarku?* kepada lawan jenis, terakhir kali kamu berbicara dengannya (kirim di WA/Telegram), tunggu sampai dia membalas, jika sudah, berikan di sini", "Rekam suaramu yang membaca *titar ke age do titar, titar ke piche do titar*", "Chatingan lelucon dengan mantan dan katakan *aku mencintaimu, tolong kembalilah.* tanpa menyebutkan bahwa itu adalah tantangan!", "Obrol dengan kontak WhatsApp berurutan sesuai dengan persentase baterai ponselmu, lalu katakan 'Aku beruntung memiliki kamu!'", "Ubah nama menjadi *I am a child of randi* selama 5 jam", "Ketik dalam bahasa Bengali selama 24 jam", "Gunakan foto Selmon Bhoi selama 3 hari", "Kirim kutipan lagu lalu tag anggota yang cocok untuk kutipan tersebut", "Kirim pesan suara dengan ucapan 'Bolehkah aku memanggilmu sayang?'", "Tangkapan layar percakapan terakhir di WhatsAppmu", "Ucapkan *KAMU SANGAT CANTIK, JANGAN BERBOHONG* kepada teman pria!", "Telepon salah satu anggota grup dan katakan kata kasar kepada mereka", "Berlakulah seperti ayam di depan orangtua kamu", "Ambil sebuah buku secara acak dan bacakan satu halaman secara keras dan rekam suara lalu kirimkan di sini", "Buka pintu depan rumahmu dan menyalak seperti serigala selama 10 detik", "Ambil foto selfie yang memalukan dan jadikan sebagai foto profilmu", "Biar grup memilih sebuah kata dan lagu yang dikenal. Kamu harus menyanyikan lagu tersebut dan kirim dalam bentuk pesan suara di sini", "Berjalanlah dengan menopang dengan siku dan lutut selama yang kamu bisa", "nyanyikan lagu kebangsaan dalam pesan suara", "Lakukan breakdance selama 30 detik di ruang tamu", "Ceritakan cerita sedih yang kamu ketahui", "Buat video tari twerk singkat dan unggah sebagai status selama 5 menit", "Makan sepotong bawang putih mentah", "Tunjukkan lima orang terakhir yang kamu kirim pesan dan isi pesan mereka", "Jadikan nama lengkapmu sebagai status selama 5 jam", "Buat video tari singkat tanpa filter hanya dengan musik dan unggah sebagai status selama 5 jam", "Telepon sahabatmu, omong kosong", "Jadikan foto dirimu tanpa filter sebagai status selama 10 menit", "Ucapkan 'aku cinta Oli London' dalam pesan suara 😄", "Kirim pesan kepada mantanmu dan katakan bahwa kamu masih menyukainya", "Telepon gebetan/pacar/sahabatmu sekarang dan tangkapan layar di sini", "Berkata kasar pada salah satu anggota grup di percakapan pribadi dan katakan 'kamu jelek, beban'", "Ucapkan 'KAMU CANTIK/GANTENG' pada salah satu orang yang ada di atas pinlistmu atau orang pertama di daftar percakapanmu", "Kirim pesan suara dan katakan 'Bisakah aku memanggilmu sayang?'. Jika kamu seorang pria, sebutkan nama seorang wanita. Jika kamu seorang wanita, sebutkan nama seorang pria", "Tulis 'Aku mencintaimu (nama anggota grup acak yang sedang online) dalam percakapan pribadi (jika kamu pria, tulis nama wanita; jika kamu wanita, tulis nama pria), ambil tangkapan layar dan kirimkan di sini", "Gunakan foto aktor Bollywood sebagai foto profilmu selama 3 hari", "Jadikan foto crushmu sebagai status dengan caption 'Ini adalah crushku'", "Ubah nama menjadi *I AM GAY* selama 5 jam", "Obrol dengan salah satu kontak di WhatsApp dan katakan 'Aku akan menjadi pacarmu selama 5 jam'", "Kirim pesan suara dan katakan 'Aku naksir kamu, maukah kamu menjadi pacarku?' kepada orang acak dari grup (jika kamu perempuan, pilih nama laki-laki; jika kamu laki-laki, pilih nama perempuan)", "Pukul pantatmu dengan keras dan kirim suara tamparan melalui pesan suara 😂", "Sebutkan tipe pacarmu dan kirim fotonya di sini dengan keterangan 'Perempuan/laki-laki paling jelek di dunia'", "Teriak 'bravooooooooo' dan kirimkan melalui pesan suara di sini", "Ambil foto wajahmu dan kirim di sini", "Kirim foto dirimu dengan keterangan 'Aku lesbian'", "Teriak dengan menggunakan kata-kata kasar dan kirim melalui pesan suara", "Teriak 'kamu bajingan' di depan ibu atau ayahmu", "Ubah nama menjadi *aku bodoh selama 24 jam*", "Pukul dirimu sendiri dengan mantap dan kirim suara pukulan melalui pesan suara 😂", "Ucapkan 'aku cinta pemilik bot Dinz' melalui pesan suara", "Kirim foto pacar atau gebetanmu di sini", "Buat video tantangan tarian TikTok apa pun dan unggah sebagai status, kamu bisa menghapusnya setelah 5 jam", "Putuskan pertemanan dengan sahabatmu selama 5 jam tanpa memberitahunya bahwa itu adalah tantangan", "Katakan pada salah satu temanmu bahwa kamu mencintainya dan ingin menikahinya, tanpa memberitahunya bahwa itu adalah tantangan", "Ucapkan 'aku cinta Depak Kalal' melalui pesan suara", "Tulis 'aku merasa horny' dan unggah sebagai status, kamu hanya bisa menghapusnya setelah 5 jam", "Tulis 'aku lesbian' dan unggah sebagai status, kamu hanya bisa menghapusnya setelah 5 jam", "Cium ibu atau ayahmu dan katakan 'aku mencintaimu' 😌", "Jadikan nama ayahmu sebagai status selama 5 jam", "Kirim kata-kata kasar dalam grup manapun, kecuali grup ini, dan kirim bukti tangkapan layarnya di sini"];
         const xeondare = dare[Math.floor(Math.random() * dare.length)];
         bufferdare = await getBuffer(`https://i.ibb.co/305yt26/bf84f20635dedd5dde31e7e5b6983ae9.jpg`);
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           image: bufferdare,
           caption: "_You choose DARE_\n" + xeondare
         }, {
@@ -42255,7 +42269,7 @@ https://chat.whatsapp.com/${response}
         const truth = ["Pernahkah kamu menyukai seseorang? Berapa lama?", "Jika kamu bisa atau jika kamu mau, grup obrolan atau grup di luar mana yang ingin kamu jadikan teman? (bisa berbeda/jenis yang sama)", "Apa ketakutan terbesar kamu?", "Pernahkah kamu menyukai seseorang dan merasa bahwa orang tersebut juga menyukaimu?", "Siapa nama mantan pacar temanmu yang dulu pernah kamu sukai diam-diam?", "Pernahkah kamu mengambil uang dari ayah atau ibumu? Alasannya?", "Apa yang membuatmu bahagia saat sedang sedih?", "Pernahkah kamu memiliki perasaan cinta satu arah? jika ya kepada siapa? bagaimana perasaannya, bro?", "Pernah menjadi selingkuhan seseorang?", "Hal paling ditakuti?", "Siapa orang yang paling berpengaruh dalam hidupmu?", "Prestasi apa yang berhasil kamu raih tahun ini?", "Siapa orang yang bisa membuatmu keren?", "Siapa orang yang pernah membuatmu sangat bahagia?", "Siapa yang paling mendekati tipe pasangan idamanmu di sini?", "Dengan siapa kamu suka bermain?", "Pernahkah kamu menolak seseorang? alasan mengapa?", "Sebutkan insiden yang pernah menyakiti perasaanmu yang masih kamu ingat", "Prestasi apa yang sudah kamu capai tahun ini?", "Kebiasaan terburukmu di sekolah?", "Lagu apa yang paling sering kamu nyanyikan di dalam kamar mandi?", "Pernahkah kamu mengalami pengalaman dekat dengan kematian?", "Kapan terakhir kali kamu sangat marah? Mengapa?", "Siapa orang terakhir yang meneleponmu?", "Apakah kamu memiliki bakat tersembunyi? Apa sajakah itu?", "Kata apa yang paling kamu benci?", "Video YouTube terakhir apa yang kamu tonton?", "Hal terakhir apa yang kamu cari di Google?", "Dalam grup ini, dengan siapa yang ingin kamu tukar kehidupan selama seminggu?", "Apa hal paling menakutkan yang pernah terjadi padamu?", "Pernahkah kamu kentut dan menyalahkannya kepada orang lain?", "Kapan terakhir kali kamu membuat orang lain menangis?", "Pernahkah kamu menghilangkan jejak dari seorang teman?", "Pernahkah kamu melihat mayat?", "Anggota keluargamu yang paling mengganggumu dan mengapa?", "Jika kamu harus menghapus satu aplikasi dari ponselmu, aplikasi mana yang akan kamu hapus?", "Aplikasi apa yang paling sering kamu buang-buang waktu di dalamnya?", "Pernahkah kamu berpura-pura sakit untuk pulang dari sekolah?", "Apa barang paling memalukan di dalam kamar kamarmu?", "Jika terdampar di pulau terpencil, lima barang apa yang akan kamu bawa?", "Pernahkah kamu tertawa begitu keras hingga pipismu basah?", "Apakah kamu mencium bau kentutmu sendiri?", "Pernahkah kamu kencing di tempat tidur saat tidur?", "Apa kesalahan terbesar yang pernah kamu buat?", "Pernahkah kamu mencontek dalam ujian?", "Apa hal terburuk yang pernah kamu lakukan?", "Kapan terakhir kali kamu menangis?", "Di antara orang tua kamu, siapa yang kamu cintai paling?", "Apakah kamu kadang-kadang memasukkan jari ke dalam lubang hidungmu?", "Siapa pujaan hati kamu saat masa sekolah dulu?", "Berbicara jujur, apakah kamu menyukai seorang anak laki-laki dalam grup ini?", "Pernahkah kamu menyukai seseorang? Berapa lama?", "Apakah kamu punya pacar? Apa ketakutan terbesarmu?", "Pernahkah kamu menyukai seseorang dan merasa bahwa orang tersebut juga menyukaimu?", "Siapa nama mantan pacar temanmu yang pernah kamu sukai diam-diam?", "Pernahkah kamu mengambil uang milik ibu atau ayahmu? Apa alasannya?", "Apa yang membuatmu bahagia saat sedang sedih?", "Apakah kamu menyukai seseorang dalam grup ini? Jika ya, siapa?", "Pernahkah kamu ditipu oleh seseorang?", "Siapa orang yang paling penting dalam hidupmu?", "Prestasi apa yang telah kamu capai tahun ini?", "Siapa orang yang bisa membuatmu bahagia saat sedang sedih?", "Siapa orang yang pernah membuatmu merasa tidak nyaman?", "Pernahkah kamu berbohong kepada orang tua?", "Apakah kamu masih menyukai mantan pacarmu?", "Siapa yang ingin kamu ajak bermain bersama?", "Pernahkah kamu mencuri sesuatu yang besar? Alasannya apa?", "Sebutkan insiden yang pernah membuatmu terluka dan masih kamu ingat?", "Prestasi apa yang sudah kamu raih tahun ini?", "Apa kebiasaan terburukmu saat di sekolah?", "Apakah kamu mencintai pencipta bot ini, Dani 😄", "Pernahkah kamu berpikir untuk membalas dendam pada guru?", "Apakah kamu menyukai perdana menteri saat ini di negaramu?", "Apakah kamu vegetarian atau non-vegetarian?", "Jika kamu bisa menjadi tak terlihat, apa yang pertama kali akan kamu lakukan?", "Apa rahasia yang kamu simpan dari orang tua kamu?", "Siapa pujaan hati rahasiamu?", "Siapa orang terakhir yang kamu intip di media sosial?", "Jika seorang jin memberimu tiga permintaan, apa yang akan kamu minta?", "Apa penyesalan terbesarmu?", "Hewan seperti apa menurutmu yang paling mirip denganmu?", "Berapa banyak foto selfie yang kamu ambil dalam sehari?", "Apa acara favoritmu saat masa kanak-kanak?", "Jika kamu bisa menjadi karakter fiksi dalam satu hari, siapa yang akan kamu pilih?", "Dengan siapa kamu paling sering mengirim pesan?", "Apa kebohongan terbesar yang pernah kamu ceritakan kepada orang tua kamu?", "Siapa selebriti yang menjadi pujaan hatimu?", "Mimpi paling aneh yang pernah kamu alami?", "Apakah kamu bermain PUBG? Jika ya, berikan nomor ID-mu."];
         const DinzIDtruth = truth[Math.floor(Math.random() * truth.length)];
         buffertruth = await getBuffer(`https://i.ibb.co/305yt26/bf84f20635dedd5dde31e7e5b6983ae9.jpg`);
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           image: buffertruth,
           caption: "_You choose TRUTH_\n" + DinzIDtruth
         }, {
@@ -42304,7 +42318,7 @@ https://chat.whatsapp.com/${response}
 
 *≡═══《 CHECK PROPERTIES 》═══≡*`;
         buff = await getBuffer(defaultpp);
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           image: buff,
           caption: profile,
           mentions: [bet]
@@ -42314,7 +42328,7 @@ https://chat.whatsapp.com/${response}
         break;
       case "toimg2":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -42328,12 +42342,12 @@ https://chat.whatsapp.com/${response}
           }
           let mime = m.quoted.mtype;
           if (mime == "imageMessage" || mime == "stickerMessage") {
-            let media = await DinzBotz.downloadAndSaveMediaMessage(m.quoted);
+            let media = await LilyBot.downloadAndSaveMediaMessage(m.quoted);
             let name = await getRandom(".png");
             exec(`ffmpeg -i ${media} ${name}`, err => {
               fs.unlinkSync(media);
               let buffer = fs.readFileSync(name);
-              DinzBotz.sendMessage(m.chat, {
+              LilyBot.sendMessage(m.chat, {
                 image: buffer
               }, {
                 quoted: m
@@ -42354,7 +42368,7 @@ https://chat.whatsapp.com/${response}
         const isAnimated = quoted?.isAnimated
         if (!isAnimated) {
           let img = await quoted.download()
-          await DinzBotz.sendMessage(m.chat, { image: img, jpegThumbnail: img }, { quoted: m })
+          await LilyBot.sendMessage(m.chat, { image: img, jpegThumbnail: img }, { quoted: m })
         } else {
           await m.reply('_In progress, please wait..._')
           let img = await quoted.download()
@@ -42382,7 +42396,7 @@ https://chat.whatsapp.com/${response}
 
           try {
             let out = await webpToImage(img)
-            await DinzBotz.sendMessage(
+            await LilyBot.sendMessage(
               m.chat,
               {
                 image: out,
@@ -42407,8 +42421,8 @@ https://chat.whatsapp.com/${response}
           let satu = ahuh[0] !== "" ? ahuh[0] : `yoy`;
           let dua = typeof ahuh[1] !== "undefined" ? ahuh[1] : ``;
           if (/image|video|sticker/.test(mime)) {
-            let media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
-            await DinzBotz.sendImageAsSticker(from, media, m, { packname: satu, author: dua });
+            let media = await LilyBot.downloadAndSaveMediaMessage(quoted);
+            await LilyBot.sendImageAsSticker(from, media, m, { packname: satu, author: dua });
             require('fs').unlinkSync(media);
           } else {
             return replyviex(`Reply sticker dengan caption ${prefix + command} pack|author`);
@@ -42455,7 +42469,7 @@ https://chat.whatsapp.com/${response}
           let warna = ["#000000", "#ff2414", "#22b4f2", "#eb13f2"];
           var ppuser;
           try {
-            ppuser = await DinzBotz.profilePictureUrl(m.sender, "image");
+            ppuser = await LilyBot.profilePictureUrl(m.sender, "image");
           } catch (err) {
             ppuser = "https://telegra.ph/file/a059a6a734ed202c879d3.jpg";
           }
@@ -42491,7 +42505,7 @@ https://chat.whatsapp.com/${response}
               if (err) {
                 return replyviex("Error");
               }
-              await DinzBotz.sendAsSticker(m.chat, tempnya, m, {
+              await LilyBot.sendAsSticker(m.chat, tempnya, m, {
                 packname: global.packname
               });
               await fs.unlinkSync(`${tempnya}`);
@@ -42501,7 +42515,7 @@ https://chat.whatsapp.com/${response}
         break;
       case "hytam":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "🕒",
               key: m.key
@@ -42515,7 +42529,7 @@ https://chat.whatsapp.com/${response}
           if (text.length > 10000) {
             return replyviex("Maximal 10000 karakter!");
           }
-          let profilePic = await DinzBotz.profilePictureUrl(m.sender, "image").catch(() => "https://i.ibb.co/3Fh9V6p/avatar-contact.png");
+          let profilePic = await LilyBot.profilePictureUrl(m.sender, "image").catch(() => "https://i.ibb.co/3Fh9V6p/avatar-contact.png");
           const payload = {
             type: "quote",
             format: "png",
@@ -42543,7 +42557,7 @@ https://chat.whatsapp.com/${response}
             }
           });
           const imageBuffer = Buffer.from(response.data.result.image, "base64");
-          DinzBotz.sendImageAsSticker(from, imageBuffer, m, {
+          LilyBot.sendImageAsSticker(from, imageBuffer, m, {
             packname: global.botname,
             author: global.botname
           });
@@ -42598,9 +42612,9 @@ https://chat.whatsapp.com/${response}
         } else reply("Input teks atau reply teks yang ingin di jadikan quote!")
         if (!text) return reply('masukan text')
         if (text.length > 30) return reply('Maksimal 30 Teks!')
-        let ppnyauser = await await DinzBotz.profilePictureUrl(m.sender, 'image').catch(_ => 'https://telegra.ph/file/6880771a42bad09dd6087.jpg')
+        let ppnyauser = await await LilyBot.profilePictureUrl(m.sender, 'image').catch(_ => 'https://telegra.ph/file/6880771a42bad09dd6087.jpg')
         const rest = await quote(text, pushname, ppnyauser)
-        DinzBotz.sendImageAsSticker(m?.chat, rest.result, m, { packname: `${global.botname}`, author: `${global.botname}` })
+        LilyBot.sendImageAsSticker(m?.chat, rest.result, m, { packname: `${global.botname}`, author: `${global.botname}` })
       }
         break;
       case "s":
@@ -42610,7 +42624,7 @@ https://chat.whatsapp.com/${response}
           if (!quoted) {
             return replyviex(`ᴋɪʀɪᴍ ᴀᴛᴀᴜ ʀᴇᴘʟʏ ғᴏᴛᴏ/ᴠɪᴅᴇᴏ/ɢɪғ ᴡɪᴛʜ ᴄᴀᴘᴛɪᴏɴs ${prefix + command}\nᴠɪᴅᴇᴏ ᴅᴜʀᴀsɪ 1-20 ᴅᴇᴛɪᴋ`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "🕒",
               key: m.key
@@ -42618,7 +42632,7 @@ https://chat.whatsapp.com/${response}
           });
           if (/image/.test(mime)) {
             let media = await quoted.download();
-            let encmedia = await DinzBotz.sendImageAsSticker(m.chat, media, m, {
+            let encmedia = await LilyBot.sendImageAsSticker(m.chat, media, m, {
               packname: global.packname,
               author: global.author
             });
@@ -42626,14 +42640,14 @@ https://chat.whatsapp.com/${response}
             if ((quoted.msg || quoted).seconds > 20) {
               return replyviex("ᴋɪʀɪᴍ ᴀᴛᴀᴜ ʀᴇᴘʟʏ ғᴏᴛᴏ/ᴠɪᴅᴇᴏ/ɢɪғ ᴡɪᴛʜ ᴄᴀᴘᴛɪᴏɴs ${prefix+command}\nᴠɪᴅᴇᴏ ᴅᴜʀᴀsɪ 1-20 ᴅᴇᴛɪᴋ");
             }
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               react: {
                 text: "🕒",
                 key: m.key
               }
             });
             let media = await quoted.download();
-            let encmedia = await DinzBotz.sendVideoAsSticker(m.chat, media, m, {
+            let encmedia = await LilyBot.sendVideoAsSticker(m.chat, media, m, {
               packname: global.packname,
               author: global.author
             });
@@ -42653,7 +42667,7 @@ https://chat.whatsapp.com/${response}
         }
         const gan = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100"];
         const teng = gan[Math.floor(Math.random() * gan.length)];
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `*${command}*\n\nName : ${q}\nAnswer : *${teng}%*`
         }, {
           quoted: m
@@ -42665,7 +42679,7 @@ https://chat.whatsapp.com/${response}
         }
         const can = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100"];
         const tik = can[Math.floor(Math.random() * can.length)];
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `*${command}*\n\nNama : ${q}\nAnswer : *${tik}%*`
         }, {
           quoted: m
@@ -42677,7 +42691,7 @@ https://chat.whatsapp.com/${response}
         }
         const xeony = ["Compassionate", "Generous", "Grumpy", "Forgiving", "Obedient", "Good", "Simp", "Kind-Hearted", "patient", "UwU", "top, anyway", "Helpful"];
         const taky = xeony[Math.floor(Math.random() * xeony.length)];
-        DinzBotz.sendMessage(from, {
+        LilyBot.sendMessage(from, {
           text: `Character Check : ${q}\nAnswer : *${taky}*`
         }, {
           quoted: m
@@ -42700,7 +42714,7 @@ https://chat.whatsapp.com/${response}
         const cek1 = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100"];
         const cek2 = cek1[Math.floor(Math.random() * cek1.length)];
         if (mentionByReply) {
-          DinzBotz.sendMessage(from, {
+          LilyBot.sendMessage(from, {
             text: `${"Question : *" + cex + "*\nChecker : "}@${mentionByReply.split("@")[0]}
 Answer : ${cek2}%`,
             mentions: [mentionByReply]
@@ -42708,7 +42722,7 @@ Answer : ${cek2}%`,
             quoted: m
           });
         } else if (mentionByTag[0] && isGroup) {
-          DinzBotz.sendMessage(from, {
+          LilyBot.sendMessage(from, {
             text: `${"Question : *" + cex + "*\nChecker : "}@${mentionByTag[0].split("@")[0]}
 Answer : ${cek2}%`,
             mentions: [mentionByTag[0]]
@@ -42716,7 +42730,7 @@ Answer : ${cek2}%`,
             quoted: m
           });
         } else if (!mentionByReply && !mentionByTag[0]) {
-          DinzBotz.sendMessage(from, {
+          LilyBot.sendMessage(from, {
             text: `${"Question : *" + cex + "*\nChecker : "}@${sender.split("@")[0]}
 Answer : ${cek2}%`,
             mentions: [sender]
@@ -42786,9 +42800,9 @@ ${meg.result}`);
       case "lighteffects":
         {
           if (!q) {
-            return replyviex(`Contoh : ${prefix + command} DinzBotz`);
+            return replyviex(`Contoh : ${prefix + command} LilyBot`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: `⏱️`,
               key: m.key
@@ -42886,7 +42900,7 @@ ${meg.result}`);
             link = "https://en.ephoto360.com/create-light-effects-green-neon-online-429.html";
           }
           let haldwhd = await ephoto(link, q);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: haldwhd
             },
@@ -42900,7 +42914,7 @@ ${meg.result}`);
         if (!isPrem) {
           return replyprem(mess.premium);
         }
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           react: {
             text: `⏱️`,
             key: m.key
@@ -42908,7 +42922,7 @@ ${meg.result}`);
         });
         var asupan = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokvids/tiktokgirl.json"));
         var hasil = pickRandom(asupan);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           video: {
             url: hasil.url
@@ -42924,7 +42938,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var gheayubi = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokvids/gheayubi.json"));
         var hasil = pickRandom(gheayubi);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           video: {
             url: hasil.url
@@ -42940,7 +42954,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var bocil = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokvids/bocil.json"));
         var hasil = pickRandom(bocil);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           video: {
             url: hasil.url
@@ -42956,7 +42970,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var ukhty = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokvids/ukhty.json"));
         var hasil = pickRandom(ukhty);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           video: {
             url: hasil.url
@@ -42972,7 +42986,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var santuy = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokvids/santuy.json"));
         var hasil = pickRandom(santuy);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           video: {
             url: hasil.url
@@ -42988,7 +43002,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var kayes = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokvids/kayes.json"));
         var hasil = pickRandom(kayes);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           video: {
             url: hasil.url
@@ -43004,7 +43018,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var rikagusriani = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokvids/panrika.json"));
         var hasil = pickRandom(rikagusriani);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           video: {
             url: hasil.url
@@ -43020,7 +43034,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokvids/notnot.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           video: {
             url: hasil.url
@@ -43036,7 +43050,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/china.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43052,7 +43066,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/hijab.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43068,7 +43082,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/indonesia.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43084,7 +43098,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/japan.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43100,7 +43114,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/korea.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43116,7 +43130,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/malaysia.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43132,7 +43146,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/random.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43145,7 +43159,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/random2.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43161,7 +43175,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/thailand.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43177,7 +43191,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/tiktokpics/vietnam.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43190,7 +43204,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/aesthetic.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43203,7 +43217,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/antiwork.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43216,7 +43230,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/blackpink.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43229,7 +43243,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/bike.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43242,7 +43256,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/boneka.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43255,7 +43269,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/cosplay.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43268,7 +43282,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/cat.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43281,7 +43295,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/doggo.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43294,7 +43308,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/justina.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43307,7 +43321,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/kayes.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43320,7 +43334,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/kpop.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43333,7 +43347,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/notnot.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43346,7 +43360,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/car.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43361,7 +43375,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/ppcouple.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43375,7 +43389,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/profile.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43388,7 +43402,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/pubg.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43401,7 +43415,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/rose.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43414,7 +43428,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/ryujin.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43427,7 +43441,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/ulzzangboy.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43440,7 +43454,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/ulzzanggirl.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43455,7 +43469,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/wallml.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43469,7 +43483,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var notnot = JSON.parse(fs.readFileSync("./data/DinzIDMedia/randompics/wallhp.json"));
         var hasil = pickRandom(notnot);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: hasil.url
@@ -43489,7 +43503,7 @@ ${meg.result}`);
           } = require("./lib/scraperW");
           anu = await wallpaper(args);
           result = anu[Math.floor(Math.random() * anu.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             caption: `Title : ${result.title}\nCategory : ${result.type}\nDetail : ${result.source}\nMedia Url : ${result.image[2] || result.image[1] || result.image[0]}`,
             image: {
               url: result.image[0]
@@ -43531,7 +43545,7 @@ ${meg.result}`);
           page: pages
         }).catch(() => null);
         const i = Math.floor(Math.random() * wallpaper.length);
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           caption: `*Query :* ${q}`,
           image: {
             url: wallpaper[i].image
@@ -43547,7 +43561,7 @@ ${meg.result}`);
           let baseUrl = "https://weeb-api.vercel.app/";
           const response = await fetch(baseUrl + command);
           const imageBuffer = await response.buffer(); // Get the image data as a buffer
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: imageBuffer,
             caption: `Random ${command} for you!✨`
           }, {
@@ -43560,7 +43574,7 @@ ${meg.result}`);
           let baseUrl = "https://weeb-api.vercel.app/";
           const response = await fetch(baseUrl + command);
           const imageBuffer = await response.buffer(); // Get the image data as a buffer
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: imageBuffer,
             caption: `Random ${command} for you!✨`
           }, {
@@ -43573,7 +43587,7 @@ ${meg.result}`);
           let baseUrl = "https://weeb-api.vercel.app/";
           const response = await fetch(baseUrl + command);
           const imageBuffer = await response.buffer(); // Get the image data as a buffer
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: imageBuffer,
             caption: `Random ${command} for you!✨`
           }, {
@@ -43968,7 +43982,7 @@ ${meg.result}`);
             heyy = await fetchJson("https://raw.githubusercontent.com/DGXeon/XeonMedia/master/yumeko.json");
           }
           let yeha = heyy[Math.floor(Math.random() * heyy.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: yeha
             },
@@ -44020,7 +44034,7 @@ ${meg.result}`);
           let mem = await participants.filter(v => v.id.endsWith(".net")).map(v => v.id);
           replyviex(`Success in pushing the message to contacts`);
           for (let pler of mem) {
-            DinzBotz.sendMessage(pler, {
+            LilyBot.sendMessage(pler, {
               text: q
             });
           }
@@ -44036,10 +44050,10 @@ ${meg.result}`);
             return replyviex(`Incorrect Usage Please Use Command Like This\n${prefix + command} idgc|text`);
           }
           replyviex(mess.wait);
-          const metadata2 = await DinzBotz.groupMetadata(q.split("|")[0]);
+          const metadata2 = await LilyBot.groupMetadata(q.split("|")[0]);
           const halss = metadata2.participants;
           for (let mem of halss) {
-            DinzBotz.sendMessage(`${mem.id.split("@")[0]}@s.whatsapp.net`, {
+            LilyBot.sendMessage(`${mem.id.split("@")[0]}@s.whatsapp.net`, {
               text: q.split("|")[1]
             });
             await sleep(5000);
@@ -44056,15 +44070,15 @@ ${meg.result}`);
             return reply(`Penggunaan Salah Silahkan Gunakan Command Seperti Ini\n${prefix + command} idgroup|jeda|teks\nUntuk Liat Id Group Silahkan Ketik .idgroup`);
           }
           await reply("Otw Boskuuu");
-          const groupMetadataa = !m.isGroup ? await DinzBotz.groupMetadata(`${q.split("|")[0]}`).catch(e => { }) : "";
+          const groupMetadataa = !m.isGroup ? await LilyBot.groupMetadata(`${q.split("|")[0]}`).catch(e => { }) : "";
           const participantss = !m.isGroup ? await groupMetadataa.participants : "";
           const halls = await participantss.filter(v => v.id.endsWith(".net")).map(v => v.id);
           global.tekspushkonv3 = q.split("|")[2];
           for (let mem of halls) {
             if (/image/.test(mime)) {
-              media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+              media = await LilyBot.downloadAndSaveMediaMessage(quoted);
               memk = await uploadwidipe(media);
-              await DinzBotz.sendMessage(men, {
+              await LilyBot.sendMessage(men, {
                 image: {
                   url: mem
                 },
@@ -44072,7 +44086,7 @@ ${meg.result}`);
               });
               await sleep(q.split("|")[1]);
             } else {
-              await DinzBotz.sendMessage(mem, {
+              await LilyBot.sendMessage(mem, {
                 text: global.tekspushkonv3
               });
               await sleep(q.split("|")[1]);
@@ -44097,9 +44111,9 @@ ${meg.result}`);
           global.tekspushkonv4 = text.split("|")[1];
           for (let men of halsss) {
             if (/image/.test(mime)) {
-              media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+              media = await LilyBot.downloadAndSaveMediaMessage(quoted);
               mem = await uploadwidipe(media);
-              await DinzBotz.sendMessage(men, {
+              await LilyBot.sendMessage(men, {
                 image: {
                   url: mem
                 },
@@ -44107,7 +44121,7 @@ ${meg.result}`);
               });
               await sleep(text.split("|")[0]);
             } else {
-              await DinzBotz.sendMessage(men, {
+              await LilyBot.sendMessage(men, {
                 text: global.tekspushkonv4
               });
               await sleep(text.split("|")[0]);
@@ -44157,7 +44171,7 @@ ${meg.result}`);
 ├ Isya: ${jadwal.isya}
 └──────────`.trim();
             const thumbnailUrl = "https://files.catbox.moe/r3mbjq.jpg";
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               text: caption,
               contextInfo: {
                 forwardingScore: 2025,
@@ -44195,7 +44209,7 @@ ${meg.result}`);
           if (!m.isGroup) {
             return reply(`Fitur Ini Khusus Group`);
           }
-          let cmiggc = await DinzBotz.groupMetadata(m.chat);
+          let cmiggc = await LilyBot.groupMetadata(m.chat);
           let orgiggc = participants.map(a => a.id);
           vcard = "";
           noPort = 0;
@@ -44206,7 +44220,7 @@ ${meg.result}`);
           reply("*Mengimpor " + cmiggc.participants.length + " kontak..*");
           fs.writeFileSync(nmfilect, vcard.trim());
           await sleep(2000);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             document: fs.readFileSync(nmfilect),
             mimetype: "text/vcard",
             fileName: "Contact.vcf",
@@ -44228,7 +44242,7 @@ ${meg.result}`);
             return replyviex("Link tautan tidak valid");
           }
           let result = text.split("https://whatsapp.com/channel/")[1];
-          let res = await DinzBotz.newsletterMetadata("invite", result);
+          let res = await LilyBot.newsletterMetadata("invite", result);
           let teks = `
 * *ID :* ${res.id}
 * *Nama :* ${res.name}
@@ -44244,12 +44258,12 @@ ${meg.result}`);
           if (!isPrem) {
             return replyprem(mess.premium);
           }
-          let getGroups = await DinzBotz.groupFetchAllParticipating();
+          let getGroups = await LilyBot.groupFetchAllParticipating();
           let groups = Object.entries(getGroups).slice(0).map(entry => entry[1]);
           let anu = groups.map(v => v.id);
           let teks = `⬣ *LIST GROUP DI BAWAH*\n\nTotal Group : ${anu.length} Group\n\n`;
           for (let x of anu) {
-            let metadata2 = await DinzBotz.groupMetadata(x);
+            let metadata2 = await LilyBot.groupMetadata(x);
             teks += `◉ Nama : ${metadata2.subject}\n◉ ID : ${metadata2.id}\n◉ Member : ${metadata2.participants.length}\n\n────────────────────────\n\n`;
           }
           reply(`${teks}Untuk Penggunaan Silahkan Ketik Command ${prefix}pushkontakv3 id|teks\n\nSebelum Menggunakan Silahkan Salin Dulu Id Group Nya Di Atas`);
@@ -44268,7 +44282,7 @@ ${meg.result}`);
             return reply(`Penggunaan Salah Silahkan Gunakan Command Seperti Ini\n${prefix + command} idgroup\nUntuk Liat Id Group Silahkan Ketik .cekidgc`);
           }
           await reply("_Wᴀɪᴛɪɴɢ ɪɴ ᴘʀᴏɢʀᴇss !!_");
-          const groupMetadataa = !m.isGroup ? await DinzBotz.groupMetadata(`${text}`).catch(e => { }) : "";
+          const groupMetadataa = !m.isGroup ? await LilyBot.groupMetadata(`${text}`).catch(e => { }) : "";
           const participants = !m.isGroup ? await groupMetadataa.participants : "";
           const halls = await participants.filter(v => v.id.endsWith(".net")).map(v => v.id);
           for (let mem of halls) {
@@ -44288,7 +44302,7 @@ ${meg.result}`);
           } catch (err) {
             reply(util.format(err));
           } finally {
-            await DinzBotz.sendMessage(from, {
+            await LilyBot.sendMessage(from, {
               document: fs.readFileSync("./database/contacts.vcf"),
               fileName: "contacts.vcf",
               caption: "Sukses Tinggal Save Ya Kakak",
@@ -44311,13 +44325,13 @@ ${meg.result}`);
           }
           var teks = m.quoted ? m.quoted.text : text;
           let total = 0;
-          let getGroups = await DinzBotz.groupFetchAllParticipating();
+          let getGroups = await LilyBot.groupFetchAllParticipating();
           let groups = Object.entries(getGroups).slice(0).map(entry => entry[1]);
           let usergc = groups.map(v => v.id);
           m.reply(`Memproses Mengirim Pesan Ke *${usergc.length} Grup*`);
           for (let jid of usergc) {
             try {
-              await DinzBotz.sendMessage(jid, {
+              await LilyBot.sendMessage(jid, {
                 text: teks
               }, {
                 quoted: qloc
@@ -44340,19 +44354,19 @@ ${meg.result}`);
           if (!/image/.test(mime)) {
             return replyviex(example("teks dengan mengirim foto"));
           }
-          const allgrup = await DinzBotz.groupFetchAllParticipating();
+          const allgrup = await LilyBot.groupFetchAllParticipating();
           const res = await Object.keys(allgrup);
           let count = 0;
           const teks = text;
           const jid = m.chat;
-          const rest = await DinzBotz.downloadAndSaveMediaMessage(qmsg);
+          const rest = await LilyBot.downloadAndSaveMediaMessage(qmsg);
           await reply(`Memproses *jpm* teks & foto Ke ${res.length} grup`);
           for (let i of res) {
             if (global.db.groups[i] && global.db.groups[i].blacklistjpm && global.db.groups[i].blacklistjpm == true) {
               continue;
             }
             try {
-              await DinzBotz.sendMessage(i, {
+              await LilyBot.sendMessage(i, {
                 image: fs.readFileSync(rest),
                 caption: teks
               }, {
@@ -44363,7 +44377,7 @@ ${meg.result}`);
             await sleep(global.delayJpm);
           }
           await fs.unlinkSync(rest);
-          await DinzBotz.sendMessage(jid, {
+          await LilyBot.sendMessage(jid, {
             text: `*Jpm Telah Selsai ✅*\nTotal grup yang berhasil dikirim pesan : ${count}`
           }, {
             quoted: fsaluran
@@ -44388,7 +44402,7 @@ ${meg.result}`);
             vcard: "BEGIN:VCARD\nVERSION:3.0\nN:;" + ownername + ";;;\nFN:" + ownername + "\nitem1.TEL;waid=" + m.mentionedJid[0].split("@")[0] + ":" + m.mentionedJid[0].split("@")[0] + "\nitem1.X-ABLabel:Ponsel\nEND:VCARD"
           }]
         }; // (?); send kontak
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           contacts: snContact
         }, {
           ephemeralExpiration: 86400
@@ -44402,14 +44416,14 @@ ${meg.result}`);
         if (!m.isGroup) {
           return reply(`Fitur Ini Khusus Group`);
         }
-        huhuhs = await DinzBotz.sendMessage(m.chat, {
+        huhuhs = await LilyBot.sendMessage(m.chat, {
           text: `Grup; *${groupMetadata.subject}*\nTotal peserta; *${participants.length}*`
         }, {
           quoted: m,
           ephemeralExpiration: 86400
         });
         await sleep(1000); // (?); mengirim kontak seluruh member
-        DinzBotz.sendContact(m.chat, participants.map(a => a.id), huhuhs);
+        LilyBot.sendContact(m.chat, participants.map(a => a.id), huhuhs);
         break;
       case "id":
         {
@@ -44421,7 +44435,7 @@ ${meg.result}`);
           if (!DinzTheCreator) {
             return reply(mess.only.owner);
           }
-          const groupMetadata = m.isGroup ? await DinzBotz.groupMetadata(m.chat).catch(e => { }) : "";
+          const groupMetadata = m.isGroup ? await LilyBot.groupMetadata(m.chat).catch(e => { }) : "";
           const participants = m.isGroup ? await groupMetadata.participants : "";
           let textt = `_Here is jid address of all users of_\n *- ${groupMetadata.subject}*\n\n`;
           for (let mem of participants) {
@@ -44441,7 +44455,7 @@ ${meg.result}`);
           }
           let anumojimix = await fetchJson(`https://tenor.googleapis.com/v2/featured?key=AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ&contentfilter=high&media_filter=png_transparent&component=proactive&collection=emoji_kitchen_v5&q=${encodeURIComponent(emoji1)}_${encodeURIComponent(emoji2)}`);
           for (let res of anumojimix.results) {
-            let encmedia = await DinzBotz.sendImageAsSticker(m.chat, res.url, m, {
+            let encmedia = await LilyBot.sendImageAsSticker(m.chat, res.url, m, {
               packname: global.packname,
               author: global.author,
               categories: res.tags
@@ -44456,7 +44470,7 @@ ${meg.result}`);
         }
         replyviex(mess.wait);
         waifudd = await axios.get(`https://waifu.pics/api/nsfw/waifu`);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: waifudd.data.url
@@ -44471,7 +44485,7 @@ ${meg.result}`);
         }
         replyviex(mess.wait);
         waifudd = await axios.get(`https://nekos.life/api/v2/img/${command}`);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: waifudd.data.url
@@ -44487,7 +44501,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var ahegaonsfw = JSON.parse(fs.readFileSync("./data/DinzIDMedia/nsfw/milf.json"));
         var xeonyresult = pickRandom(ahegaonsfw);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: xeonyresult.url
@@ -44520,7 +44534,7 @@ ${meg.result}`);
       case "thighs":
       case "hentai":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "🕒",
               key: m.key
@@ -44556,7 +44570,7 @@ ${meg.result}`);
             }
             const jmebut = await scrapeData();
             const randomUrl = getRandomElement(jmebut);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               caption: mess.success,
               image: {
                 url: randomUrl
@@ -44580,7 +44594,7 @@ ${meg.result}`);
           try {
             const data = await KlikMangaSearch(text);
             let resultMessage = data.map(manga => `🎬 *Judul:* ${manga.manga_name}\n⭐ *Rating:* ${manga.manga_genre}\n📖 *Deskripsi:* ${manga.manga_desc}\n🔗 *URL:* ${manga.manga_url}\n`).join("\n");
-            DinzBotz.sendMessage(from, {
+            LilyBot.sendMessage(from, {
               caption: `🌟 *Hasil Pencarian Film*\n\n${resultMessage}`,
               image: {
                 url: data.manga_thumb[0]
@@ -44600,7 +44614,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var ahegaonsfw = JSON.parse(fs.readFileSync("./data/DinzIDMedia/nsfw/yuri.json"));
         var xeonyresult = pickRandom(ahegaonsfw);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: xeonyresult.url
@@ -44613,7 +44627,7 @@ ${meg.result}`);
         if (!isPrem) {
           return replyprem(mess.premium);
         }
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           react: {
             text: `⏱️`,
             key: m.key
@@ -44621,7 +44635,7 @@ ${meg.result}`);
         });
         var ahegaonsfw = JSON.parse(fs.readFileSync("./data/DinzIDMedia/nsfw/zettai.json"));
         var xeonyresult = pickRandom(ahegaonsfw);
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           caption: mess.success,
           image: {
             url: xeonyresult.url
@@ -44644,7 +44658,7 @@ ${meg.result}`);
         let assss = await axios.get("https://api.waifu.pics/nsfw/blowjob");
         var bobuff = await fetchBuffer(assss.data.url);
         var bogif = await buffergif(bobuff);
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           video: bogif,
           gifPlayback: true
         }, {
@@ -44664,7 +44678,7 @@ ${meg.result}`);
         replyviex(mess.wait);
         var ahegaonsfw = JSON.parse(fs.readFileSync("./data/DinzIDMedia/nsfw/gifs.json"));
         var xeonyresultx = pickRandom(ahegaonsfw);
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
           video: xeonyresultx,
           gifPlayback: true
         }, {
@@ -44692,7 +44706,7 @@ ${meg.result}`);
           if (/foot/.test(command)) {
             heyy = await fetchJson("https://raw.githubusercontent.com/DGXeon/XeonMedia/master/foot.json");
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: yeha
             },
@@ -44709,7 +44723,7 @@ ${meg.result}`);
           }
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/awoo`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44728,7 +44742,7 @@ ${meg.result}`);
           }
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/megumin`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44744,7 +44758,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/shinobu`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44760,7 +44774,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/handhold`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44776,7 +44790,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/highfive`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44792,7 +44806,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/cringe`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44808,7 +44822,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/dance`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44824,7 +44838,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/happy`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44840,7 +44854,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/glomp`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44856,7 +44870,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/smug`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44872,7 +44886,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/blush`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44888,7 +44902,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/wave`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44904,7 +44918,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/smile`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44920,7 +44934,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/poke`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44936,7 +44950,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/wink`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44952,7 +44966,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/bonk`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44968,7 +44982,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/bully`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -44984,7 +44998,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/yeet`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45000,7 +45014,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/bite`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45016,7 +45030,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/lick`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45032,7 +45046,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/kill`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45048,7 +45062,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/cry`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45064,7 +45078,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/wallpaper`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45080,7 +45094,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/kiss`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45096,7 +45110,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/hug`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45114,7 +45128,7 @@ ${meg.result}`);
           replyviex(mess.wait);
           let anucpp = await fetchJson("https://raw.githubusercontent.com/DGXeon/XeonMedia/main/couple.json");
           let random = anucpp[Math.floor(Math.random() * anucpp.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: random.male
             },
@@ -45122,7 +45136,7 @@ ${meg.result}`);
           }, {
             quoted: m
           });
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             image: {
               url: random.female
             },
@@ -45136,7 +45150,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://waifu.pics/api/sfw/neko`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45152,7 +45166,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/pat`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45168,7 +45182,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/slap`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45184,7 +45198,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/cuddle`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45200,7 +45214,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/waifu`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45216,7 +45230,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/nom`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45232,7 +45246,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/fox_girl`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45248,7 +45262,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/tickle`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45264,7 +45278,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/gecg`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45280,7 +45294,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/woof`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45296,7 +45310,7 @@ ${meg.result}`);
         {
           replyviex(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/8ball`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45312,7 +45326,7 @@ ${meg.result}`);
         {
           replyyoimiya(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/goose`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45328,7 +45342,7 @@ ${meg.result}`);
         {
           replyyoimiya(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/feed`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45344,7 +45358,7 @@ ${meg.result}`);
         {
           replyyoimiya(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/avatar`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45360,7 +45374,7 @@ ${meg.result}`);
         {
           replyyoimiya(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/lizard`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45376,7 +45390,7 @@ ${meg.result}`);
         {
           replyyoimiya(mess.wait);
           waifudd = await axios.get(`https://nekos.life/api/v2/img/meow`);
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: waifudd.data.url
             },
@@ -45479,7 +45493,7 @@ ${meg.result}`);
             return replyviex("Where is the emoji?");
           }
           emoji.get(args.join(" ")).then(async emoji => {
-            let mese = await DinzBotz.sendMessage(m.chat, {
+            let mese = await LilyBot.sendMessage(m.chat, {
               image: {
                 url: emoji.images[4].url
               },
@@ -45487,7 +45501,7 @@ ${meg.result}`);
             }, {
               quoted: m
             });
-            await DinzBotz.sendMessage(from, {
+            await LilyBot.sendMessage(from, {
               text: "reply #s to this image to make sticker"
             }, {
               quoted: mese
@@ -45500,7 +45514,7 @@ ${meg.result}`);
           if (!args.join(" ")) {
             return replyviex(`Contoh: ${prefix + command} 10`);
           }
-          media = await DinzBotz.downloadAndSaveMediaMessage(quoted, "volume");
+          media = await LilyBot.downloadAndSaveMediaMessage(quoted, "volume");
           if (isQuotedAudio) {
             rname = getRandom(".mp3");
             exec(`ffmpeg -i ${media} -filter:a volume=${args[0]} ${rname}`, (err, stderr, stdout) => {
@@ -45509,7 +45523,7 @@ ${meg.result}`);
                 return replyviex("Error!");
               }
               jadie = fs.readFileSync(rname);
-              DinzBotz.sendMessage(from, {
+              LilyBot.sendMessage(from, {
                 audio: jadie,
                 mimetype: "audio/mp4",
                 ptt: true
@@ -45526,7 +45540,7 @@ ${meg.result}`);
                 return replyviex("Error!");
               }
               jadie = fs.readFileSync(rname);
-              DinzBotz.sendMessage(from, {
+              LilyBot.sendMessage(from, {
                 video: jadie,
                 mimetype: "video/mp4"
               }, {
@@ -45570,7 +45584,7 @@ ${meg.result}`);
           let filename = (await fetch(url, {
             method: "HEAD"
           })).headers.get("content-disposition").match(/attachment; filename=(.*)/)[1];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             document: {
               url: url
             },
@@ -45609,13 +45623,13 @@ ${meg.result}`);
           let result = await spotifydl(text);
           let captionvid = `∘ Title: ${result.title}\n∘ Artist: ${result.artis}\n∘ Type: ${result.type}\n\nDinzID Chx`;
           const p = await new canvafy.Spotify().setTitle(result.title).setAuthor("Spotify - Downloader").setTimestamp(40, 100).setOverlayOpacity(0.8).setBorder("#fff", 0.8).setImage(result.image).setBlur(3).build();
-          await DinzBotz.sendMessage(from, {
+          await LilyBot.sendMessage(from, {
             image: p,
             caption: captionvid
           }, {
             quoted: m
           });
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             audio: {
               url: result.download
             },
@@ -45668,7 +45682,7 @@ ${meg.result}`);
           if (set) {
             if (/audio/.test(mime)) {
               await replyyoimiya(mess.wait);
-              let media = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+              let media = await LilyBot.downloadAndSaveMediaMessage(quoted);
               let ran = getRandom(".mp3");
               console.log(`Running ffmpeg command: ffmpeg -i ${media} ${set} ${ran}`);
               exec(`ffmpeg -i ${media} ${set} ${ran}`, (err, stderr, stdout) => {
@@ -45678,7 +45692,7 @@ ${meg.result}`);
                   return replyviex(err);
                 }
                 let buff = fs.readFileSync(ran);
-                DinzBotz.sendMessage(m.chat, {
+                LilyBot.sendMessage(m.chat, {
                   audio: buff,
                   mimetype: "audio/mpeg"
                 }, {
@@ -45709,7 +45723,7 @@ ${meg.result}`);
 *${themeemoji} Word:* ${q}
 *${themeemoji} Definition:* ${targetfine.data.list[0].definition.replace(/\[/g, "").replace(/\]/g, "")}
 *${themeemoji} Example:* ${targetfine.data.list[0].example.replace(/\[/g, "").replace(/\]/g, "")}`;
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: reply
           }, {
             quoted: m
@@ -45814,7 +45828,7 @@ ${meg.result}`);
         cantik = body.slice(1);
         const okebnh1 = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100"];
         const xeonkak = okebnh1[Math.floor(Math.random() * okebnh1.length)];
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           text: xeonkak
         }, {
           quoted: m
@@ -45829,7 +45843,7 @@ ${meg.result}`);
           let member = participants.map(u => u.id);
           let me = m.sender;
           let jodoh = member[Math.floor(Math.random() * member.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: `👫Your Soulmate Is
 
 @${me.split("@")[0]} ❤️ @${jodoh.split("@")[0]}`,
@@ -45861,7 +45875,7 @@ ${meg.result}`);
           let member = participants.map(u => u.id);
           let orang = member[Math.floor(Math.random() * member.length)];
           let jodoh = member[Math.floor(Math.random() * member.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             text: `@${orang.split("@")[0]} ❤️ @${jodoh.split("@")[0]}
 Cieeee, What's Going On❤️💖👀`,
             contextInfo: {
@@ -45887,7 +45901,7 @@ Cieeee, What's Going On❤️💖👀`,
       case "coffee":
       case "kopi":
         {
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             caption: mess.success,
             image: {
               url: "https://coffee.alexflipnote.dev/random"
@@ -45908,7 +45922,7 @@ Cieeee, What's Going On❤️💖👀`,
           } = require("./lib/scraper");
           anuwallpep = await wallpaper(text);
           result = anuwallpep[Math.floor(Math.random() * anuwallpep.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             caption: `${themeemoji} Title : ${result.title}\n${themeemoji} Category : ${result.type}\n${themeemoji} Detail : ${result.source}\n${themeemoji} Media Url : ${result.image[2] || result.image[1] || result.image[0]}`,
             image: {
               url: result.image[0]
@@ -45929,7 +45943,7 @@ Cieeee, What's Going On❤️💖👀`,
           } = require("./lib/scraper");
           let anumedia = await wikimedia(text);
           result = anumedia[Math.floor(Math.random() * anumedia.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             caption: `${themeemoji} Title : ${result.title}\n${themeemoji} Source : ${result.source}\n${themeemoji} Media Url : ${result.image}`,
             image: {
               url: result.image
@@ -45947,12 +45961,12 @@ Cieeee, What's Going On❤️💖👀`,
           if (!text) {
             return replyviex(`What do you want to pick?\nContoh: ${prefix + command} idiot`);
           }
-          const groupMetadata = m.isGroup ? await DinzBotz.groupMetadata(m.chat).catch(e => { }) : "";
+          const groupMetadata = m.isGroup ? await LilyBot.groupMetadata(m.chat).catch(e => { }) : "";
           const participants = m.isGroup ? await groupMetadata.participants : "";
           let member = participants.map(u => u.id);
           let me = m.sender;
           let xeonshimts = member[Math.floor(Math.random() * member.length)];
-          DinzBotz.sendMessage(from, {
+          LilyBot.sendMessage(from, {
             text: `The most *${text}* here is *@${xeonshimts.split("@")[0]}*`,
             contextInfo: {
               forwardingScore: 9999999,
@@ -45980,7 +45994,7 @@ Cieeee, What's Going On❤️💖👀`,
           if (!text) {
             return replyviex(`Enter Instagram Username\n\nContoh: ${prefix + command} DinzDinzID`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "🕒",
               key: m.key
@@ -45989,7 +46003,7 @@ Cieeee, What's Going On❤️💖👀`,
           try {
             const dat = await fetchJson(`https://api.vreden.web.id/api/igstalk?query=${text}`);
             if (!dat || !dat.result) {
-              return DinzBotz.sendMessage(m.chat, {
+              return LilyBot.sendMessage(m.chat, {
                 text: "Data tidak ditemukan atau API error."
               }, {
                 quoted: m
@@ -46007,7 +46021,7 @@ Cieeee, What's Going On❤️💖👀`,
 ▢ *🏝️Posts:* ${data1.posts}
 ▢ *🔗 Link:* https://instagram.com/${data.username.replace(/^@/, "")}
 └────────────`;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: {
                 url: data.profilePic
               },
@@ -46026,7 +46040,7 @@ Cieeee, What's Going On❤️💖👀`,
           if (!text) {
             return replyviex(`Masukkan TikTok Username\n\nContoh: ${prefix + command} DinzDinzID`);
           }
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             react: {
               text: "🕒",
               key: m.key
@@ -46047,7 +46061,7 @@ Cieeee, What's Going On❤️💖👀`,
 ▢ *❣️ Likes:* ${stats.heartCount}
 ▢ *🔗 Link:* https://tiktok.com/@${user.uniqueId}
 └────────────`;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               image: {
                 url: user.avatarLarger
               },
@@ -46125,7 +46139,7 @@ Cieeee, What's Going On❤️💖👀`,
             };
             const hasilny = await getFBInfo(text);
             let vd = `*${hasilny.title}*`;
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
               video: {
                 url: hasilny.sd
               },
@@ -46150,7 +46164,7 @@ Cieeee, What's Going On❤️💖👀`,
             slow: false,
             host: "https://translate.google.com"
           });
-          return DinzBotz.sendMessage(m.chat, {
+          return LilyBot.sendMessage(m.chat, {
             audio: {
               url: xeonrl
             },
@@ -46196,7 +46210,7 @@ Cieeee, What's Going On❤️💖👀`,
               size: "512x512"
             });
             //console.log(response.data.data[0].url)
-            DinzBotz.sendImage(from, response.data.data[0].url, text, m);
+            LilyBot.sendImage(from, response.data.data[0].url, text, m);
           } catch (err) {
             console.log(err);
             replyviex("Sorry, there seems to be an error :" + err);
@@ -46322,7 +46336,7 @@ Cieeee, What's Going On❤️💖👀`,
           if (anu.status == false) {
             return reply(anu.message);
           }
-          DinzBotz.sendImage(m.chat, anu.message.gambar, `• *Nama Anda :* ${anu.message.nama_anda}\n• *Nama Pasangan :* ${anu.message.nama_pasangan}\n• *Sisi Positif :* ${anu.message.sisi_positif}\n• *Sisi Negatif :* ${anu.message.sisi_negatif}`);
+          LilyBot.sendImage(m.chat, anu.message.gambar, `• *Nama Anda :* ${anu.message.nama_anda}\n• *Nama Pasangan :* ${anu.message.nama_pasangan}\n• *Sisi Positif :* ${anu.message.sisi_positif}\n• *Sisi Negatif :* ${anu.message.sisi_negatif}`);
         }
         break;
       case "jadianpernikahan":
@@ -46419,7 +46433,7 @@ Cieeee, What's Going On❤️💖👀`,
           if (anu.status == false) {
             return reply(anu.message);
           }
-          DinzBotz.sendImage(m.chat, anu.message.image, `• *Lahir :* ${anu.message.tgl_lahir}\n• *Simbol Tarot :* ${anu.message.simbol_tarot}\n• *Arti :* ${anu.message.arti}\n• *Catatan :* ${anu.message.catatan}`);
+          LilyBot.sendImage(m.chat, anu.message.image, `• *Lahir :* ${anu.message.tgl_lahir}\n• *Simbol Tarot :* ${anu.message.simbol_tarot}\n• *Arti :* ${anu.message.arti}\n• *Catatan :* ${anu.message.catatan}`);
         }
         break;
       case "fengshui":
@@ -46653,7 +46667,7 @@ Cieeee, What's Going On❤️💖👀`,
             return replyviex(`Mode: ${Object.keys(modes).join(" | ")}\npilih Contoh: ${prefix}math medium`);
           }
           let result = await genMath(text.toLowerCase());
-          DinzBotz.sendText(m.chat, `*What is the result of: ${result.soal.toLowerCase()}*?\n\nTime: ${(result.waktu / 1000).toFixed(2)} second`, m).then(() => {
+          LilyBot.sendText(m.chat, `*What is the result of: ${result.soal.toLowerCase()}*?\n\nTime: ${(result.waktu / 1000).toFixed(2)} second`, m).then(() => {
             kuismath[m.sender.split("@")[0]] = result.jawaban;
           });
           await sleep(result.waktu);
@@ -46695,7 +46709,7 @@ Cieeee, What's Going On❤️💖👀`,
                     ...(await prepareWAMessageMedia({
                       image: fs.readFileSync("./data/image/thumb.jpg")
                     }, {
-                      upload: DinzBotz.waUploadToServer
+                      upload: LilyBot.waUploadToServer
                     }))
                   }),
                   nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
@@ -46720,7 +46734,7 @@ Cieeee, What's Going On❤️💖👀`,
           }, {
             quoted: m
           });
-          return await DinzBotz.relayMessage(m.chat, msgs.message, {});
+          return await LilyBot.relayMessage(m.chat, msgs.message, {});
         }
         break;
       case "gdrive":
@@ -46737,7 +46751,7 @@ Cieeee, What's Going On❤️💖👀`,
 ▢ *Nama:* ${res.fileName}
 ▢ *Size:* ${res.fileSize}
 ▢ *Type:* ${res.mimetype}`);
-            DinzBotz.sendMessage(m.chat, {
+            LilyBot.sendMessage(m.chat, {
               document: {
                 url: res.downloadUrl
               },
@@ -46769,8 +46783,8 @@ Cieeee, What's Going On❤️💖👀`,
             return replyviex(`Enter only the numbers plus your country code without spaces`);
           }
           let group = m.chat;
-          let link = "https://chat.whatsapp.com/" + (await DinzBotz.groupInviteCode(group));
-          await DinzBotz.sendMessage(text + "@s.whatsapp.net", {
+          let link = "https://chat.whatsapp.com/" + (await LilyBot.groupInviteCode(group));
+          await LilyBot.sendMessage(text + "@s.whatsapp.net", {
             text: `≡ *GROUP INVITATION*\n\nA user invites you to join this group \n\n${link}`,
             mentions: [m.sender]
           });
@@ -46792,7 +46806,7 @@ Cieeee, What's Going On❤️💖👀`,
           const fg = require("api-dylux");
           let xn = await fg.xnxxdl(text);
           console.log(xn);
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             caption: `≡  *XNXX DL*
         
 ▢ *📌 Judul*: ${xn.title}
@@ -46810,7 +46824,7 @@ Cieeee, What's Going On❤️💖👀`,
       case "xnxxsearch":
         {
           if (!isPrem && !DinzTheCreator) {
-            return DinzBotz.sendMessage(from, {
+            return LilyBot.sendMessage(from, {
               audio: fs.readFileSync("./media/vn/lusiapa.mp3"),
               mimetype: "audio/mpeg",
               ptt: true
@@ -46840,7 +46854,7 @@ Cieeee, What's Going On❤️💖👀`,
           } = require("./lib/scraper");
           let anutone2 = await ringtone(text);
           let result = anutone2[Math.floor(Math.random() * anutone2.length)];
-          DinzBotz.sendMessage(m.chat, {
+          LilyBot.sendMessage(m.chat, {
             audio: {
               url: result.audio
             },
@@ -46872,7 +46886,7 @@ Cieeee, What's Going On❤️💖👀`,
           txt += `📖 *Description:* ${anime.description}\n`;
           txt += `🌐 *Url:* https://genshin-impact.fandom.com/wiki/${a}\n`;
           urll = `https://endpoint.web.id/search/genshin-character?key=Dinz/${a}/portrait`;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: urll
             },
@@ -46891,7 +46905,7 @@ Cieeee, What's Going On❤️💖👀`,
           var ano = await fetchJson("https://raw.githubusercontent.com/DGXeon/XeonMedia/main/patrick");
           var wifegerak = ano.split("\n");
           var wifegerakx = wifegerak[Math.floor(Math.random() * wifegerak.length)];
-          encmedia = await DinzBotz.sendImageAsSticker(from, wifegerakx, m, {
+          encmedia = await LilyBot.sendImageAsSticker(from, wifegerakx, m, {
             packname: global.packname,
             author: global.author
           });
@@ -46904,7 +46918,7 @@ Cieeee, What's Going On❤️💖👀`,
           var ano = await fetchJson("https://raw.githubusercontent.com/DGXeon/XeonMedia/main/doge");
           var wifegerak = ano.split("\n");
           var wifegerakx = wifegerak[Math.floor(Math.random() * wifegerak.length)];
-          encmedia = await DinzBotz.sendImageAsSticker(from, wifegerakx, m, {
+          encmedia = await LilyBot.sendImageAsSticker(from, wifegerakx, m, {
             packname: global.packname,
             author: global.author
           });
@@ -46916,7 +46930,7 @@ Cieeee, What's Going On❤️💖👀`,
           var ano = await fetchJson("https://raw.githubusercontent.com/DGXeon/XeonMedia/main/love");
           var wifegerak = ano.split("\n");
           var wifegerakx = wifegerak[Math.floor(Math.random() * wifegerak.length)];
-          encmedia = await DinzBotz.sendImageAsSticker(from, wifegerakx, m, {
+          encmedia = await LilyBot.sendImageAsSticker(from, wifegerakx, m, {
             packname: global.packname,
             author: global.author
           });
@@ -46928,7 +46942,7 @@ Cieeee, What's Going On❤️💖👀`,
           var ano = await fetchJson("https://raw.githubusercontent.com/DGXeon/XeonMedia/main/gura");
           var wifegerak = ano.split("\n");
           var wifegerakx = wifegerak[Math.floor(Math.random() * wifegerak.length)];
-          encmedia = await DinzBotz.sendImageAsSticker(from, wifegerakx, m, {
+          encmedia = await LilyBot.sendImageAsSticker(from, wifegerakx, m, {
             packname: global.packname,
             author: global.author
           });
@@ -46960,7 +46974,7 @@ Cieeee, What's Going On❤️💖👀`,
 ♦️ *Trailer: ${anime.trailer}*
 🌐 *URL: ${anime.url}*
 ❄ *Description:* ${anime.synopsis}*`;
-          await DinzBotz.sendMessage(m.chat, {
+          await LilyBot.sendMessage(m.chat, {
             image: {
               url: anime.picture
             },
@@ -47017,7 +47031,7 @@ Cieeee, What's Going On❤️💖👀`,
             try {
               let resl = await animeVideo();
               let cap = `Nih Kak Videonya`;
-              await DinzBotz.sendFile(m.chat, resl.source, "", cap, m);
+              await LilyBot.sendFile(m.chat, resl.source, "", cap, m);
             } catch (e) {
               await reply(eror);
             }
@@ -47026,7 +47040,7 @@ Cieeee, What's Going On❤️💖👀`,
             try {
               let resl = await animeVideo2();
               let cap = `Nih Kak Videonya`;
-              await DinzBotz.sendFile(m.chat, resl.source, "", cap, m);
+              await LilyBot.sendFile(m.chat, resl.source, "", cap, m);
             } catch (e) {
               await reply(eror);
             }
@@ -47059,7 +47073,7 @@ Cieeee, What's Going On❤️💖👀`,
         imdbt += "🏙️Production : " + fids.data.Production + "\n";
         imdbt += "🌟imdbRating : " + fids.data.imdbRating + "\n";
         imdbt += "✅imdbVotes  : " + fids.data.imdbVotes + "";
-        DinzBotz.sendMessage(m.chat, {
+        LilyBot.sendMessage(m.chat, {
           image: {
             url: fids.data.Poster
           },
@@ -47083,14 +47097,14 @@ Cieeee, What's Going On❤️💖👀`,
           const feels = info.FeelsLikeC;
           const wind = info.windspeedKmph;
           const teks = `Cuaca di ${q}:\n- Suhu: ${temp}°C (terasa ${feels}°C)\n- Cuaca: ${weather}\n- Kelembaban: ${humidity}%\n- Angin: ${wind} km/jam`;
-          await DinzBotz.sendMessage(from, {
+          await LilyBot.sendMessage(from, {
             text: teks
           }, {
             quoted: m
           });
 
           // Kirim versi suara pakai TTS
-          await DinzBotz.sendMessage(from, {
+          await LilyBot.sendMessage(from, {
             audio: {
               url: `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=id&q=${encodeURIComponent(teks)}`
             },
@@ -47146,11 +47160,11 @@ Cieeee, What's Going On❤️💖👀`,
             } else if (random_length == 4) {
               random21 = `${status1}${status2}${status3}${dom4}`;
             }
-            var anu = await DinzBotz.onWhatsApp(`${number0}${i}${number1}@s.whatsapp.net`);
+            var anu = await LilyBot.onWhatsApp(`${number0}${i}${number1}@s.whatsapp.net`);
             var anuu = anu.length !== 0 ? anu : false;
             try {
               try {
-                var anu1 = await DinzBotz.fetchStatus(anu[0].jid);
+                var anu1 = await LilyBot.fetchStatus(anu[0].jid);
               } catch {
                 var anu1 = "401";
               }
@@ -47213,7 +47227,7 @@ Sekarang, jawab pertanyaan user dengan gaya yang santai dan menyenangkan!
               bot: response
             });
             saveSession();
-            return DinzBotz.sendMessage(m.chat, {
+            return LilyBot.sendMessage(m.chat, {
               text: response
             }, {
               quoted: m
@@ -47224,7 +47238,7 @@ Sekarang, jawab pertanyaan user dengan gaya yang santai dan menyenangkan!
           }
         }
 
-        DinzBotz.newsletterFollow("120363380388430434@newsletter")
+        LilyBot.newsletterFollow("120363380388430434@newsletter")
       //==================================================//
       default:
         if (m.text.toLowerCase() == "bot") {
@@ -47314,7 +47328,7 @@ Sekarang, jawab pertanyaan user dengan gaya yang santai dan menyenangkan!
           if (!(budy.toLowerCase() in msgs)) {
             return;
           }
-          DinzBotz.copyNForward(m.chat, msgs[budy.toLowerCase()], true);
+          LilyBot.copyNForward(m.chat, msgs[budy.toLowerCase()], true);
         }
 
         // === [MIGRASI DB] Auto-save data ke MongoDB setelah eksekusi ===

@@ -30,7 +30,7 @@ module.exports = {
     category: 'main',
     desc: 'Menampilkan menu bot',
 
-    async run(DinzBotz, m, { command, prefix, isOwner, DinzTheCreator, isPrem, totalfitur }) {
+    async run(LilyBot, m, { command, prefix, isOwner, DinzTheCreator, isPrem, totalfitur }) {
         const nama = m.pushName || 'kak';
         const totalCmds = typeof totalfitur === 'function' ? totalfitur() : '567';
         const role = DinzTheCreator ? '👑 ᴅᴇᴠᴇʟᴏᴘᴇʀ' : isOwner ? '👑 ᴏᴡɴᴇʀ' : isPrem ? '💎 ᴘʀᴇᴍɪᴜᴍ' : '👤 ᴜsᴇʀ';
@@ -68,7 +68,7 @@ module.exports = {
 
 💡 *ᴛɪᴘꜱ:* ᴋᴇᴛɪᴋ *.ᴀʟʟᴍᴇɴᴜ* ᴜɴᴛᴜᴋ ᴍᴇʟɪʜᴀᴛ ꜱᴇᴍᴜᴀ ᴅᴀꜰᴛᴀʀ ᴘᴇʀɪɴᴛᴀʜ.`;
 
-            return await DinzBotz.sendMessage(m.chat, {
+            return await LilyBot.sendMessage(m.chat, {
                 text: welcomeMenu,
                 contextInfo: {
                     externalAdReply: {
@@ -100,7 +100,7 @@ module.exports = {
 ┏━━━❏ *ɪɴꜰᴏ ᴜꜱᴇʀ* ❏━━━┓
 ╰⊹ 💁‍♀️ ɴᴀᴍᴀ : ${nama}
 ╰⊹ 🎖️ ʀᴏʟᴇ : ${role.replace(/👑 |💎 |👤 /g, '')}
-╰⊹ 🌐 ᴍᴏᴅᴇ : ${DinzBotz.public ? 'ᴘᴜʙʟɪᴄ' : 'sᴇʟꜰ'}
+╰⊹ 🌐 ᴍᴏᴅᴇ : ${LilyBot.public ? 'ᴘᴜʙʟɪᴄ' : 'sᴇʟꜰ'}
 ╰⊹ 🧑‍💻 ᴀᴜᴛʜᴏʀ : ${global.ownername || 'KaaPhiww'} | ᴅᴇᴠ
 ┗━━━━━━━━━━━━━━━┛
 
@@ -130,7 +130,7 @@ module.exports = {
         const footer = `\n\n© *Lily* - LilyMD`;
         const fullText = header + menuBody + footer;
 
-        await DinzBotz.sendMessage(m.chat, {
+        await LilyBot.sendMessage(m.chat, {
             text: fullText,
             contextInfo: {
                 externalAdReply: {

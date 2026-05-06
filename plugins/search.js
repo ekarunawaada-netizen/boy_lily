@@ -7,7 +7,7 @@ module.exports = {
     command: ['google', 'yts', 'pinterest', 'kbbi', 'resep'],
     category: 'search',
     desc: 'Fitur pencarian informasi (Google, Pinterest, Youtube)',
-    async run(DinzBotz, m, { command, text, q, isRegistered, replydaftar, replyviex, fetchJson, mess, prefix }) {
+    async run(LilyBot, m, { command, text, q, isRegistered, replydaftar, replyviex, fetchJson, mess, prefix }) {
         if (!isRegistered) {
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦");
         }
@@ -44,7 +44,7 @@ module.exports = {
                     // Menggunakan API Siputzx yang lebih stabil daripada Lolhuman GataDios
                     const res = await fetchJson(`https://api.siputzx.my.id/api/s/pinterest?query=${encodeURIComponent(text)}`);
                     if (!res?.data || res.data.length === 0) return replyviex("Gambar tidak ditemukan!");
-                    await DinzBotz.sendMessage(m.chat, { image: { url: res.data[0] }, caption: `Hasil pencarian: ${text}` }, { quoted: m });
+                    await LilyBot.sendMessage(m.chat, { image: { url: res.data[0] }, caption: `Hasil pencarian: ${text}` }, { quoted: m });
                     break;
                 }
                 case 'kbbi': {

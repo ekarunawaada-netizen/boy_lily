@@ -1,7 +1,6 @@
-///SC RECODE BY DINZID VyL
-// © RECODE BY DinzID Vyl 2022 - 2025
-// Cr : @DanzNano
-//JANGAN HAPUS CREDITS!! HAPUS? = GW ENC SEMUA!! 
+
+// Cr : @Kaaphiww
+
 
 const {
     default: makeWASocket,
@@ -48,16 +47,16 @@ exports.makeWASocket = (connectionOptions, options = {}) => {
     //         }
     //     })
     // })
-    
+
     // Load Group Message
     DinzBotz.loadAllMessages = (messageID) => {
-      return Object.entries(DinzBotz.chats)
-      .filter(([_, { messages }]) => typeof messages === 'object')
-      .find(([_, { messages }]) => Object.entries(messages)
-      .find(([k, v]) => (k === messageID || v.key?.id === messageID)))
-      ?.[1].messages?.[messageID]
+        return Object.entries(DinzBotz.chats)
+            .filter(([_, { messages }]) => typeof messages === 'object')
+            .find(([_, { messages }]) => Object.entries(messages)
+                .find(([k, v]) => (k === messageID || v.key?.id === messageID)))
+            ?.[1].messages?.[messageID]
     }
-    
+
     DinzBotz.decodeJid = (jid) => {
         if (!jid) return jid
         if (/:\d+@/gi.test(jid)) {
@@ -85,8 +84,8 @@ exports.makeWASocket = (connectionOptions, options = {}) => {
             }
         }
     }
-	
-	
+
+
     DinzBotz.ev.on('contacts.upsert', updateNameToDb)
     DinzBotz.ev.on('groups.update', updateNameToDb)
     DinzBotz.ev.on('chats.set', async ({ chats }) => {
@@ -220,53 +219,53 @@ exports.makeWASocket = (connectionOptions, options = {}) => {
             DinzBotz.ev.on(eventName, on)
         })
     }
-    
-  DinzBotz.delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-     
-  /**
-     * 
-     * @param {String} text 
-     * @returns 
-     */
+
+    DinzBotz.delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+    /**
+       * 
+       * @param {String} text 
+       * @returns 
+       */
     DinzBotz.filter = (text) => {
-      let mati = ["q", "w", "r", "t", "y", "p", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m"]
-      if (/[aiueo][aiueo]([qwrtypsdfghjklzxcvbnm])?$/i.test(text)) return text.substring(text.length - 1)
-      else {
-        let res = Array.from(text).filter(v => mati.includes(v))
-        let resu = res[res.length - 1]
-        for (let huruf of mati) {
-            if (text.endsWith(huruf)) {
-                resu = res[res.length - 2]
+        let mati = ["q", "w", "r", "t", "y", "p", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m"]
+        if (/[aiueo][aiueo]([qwrtypsdfghjklzxcvbnm])?$/i.test(text)) return text.substring(text.length - 1)
+        else {
+            let res = Array.from(text).filter(v => mati.includes(v))
+            let resu = res[res.length - 1]
+            for (let huruf of mati) {
+                if (text.endsWith(huruf)) {
+                    resu = res[res.length - 2]
+                }
             }
+            let misah = text.split(resu)
+            return resu + misah[misah.length - 1]
         }
-        let misah = text.split(resu)
-        return resu + misah[misah.length - 1]
-      }
     }
-    
+
     /**
      * ms to date
      * @param {String} ms
      */
     DinzBotz.msToDate = (ms) => {
-      let days = Math.floor(ms / (24 * 60 * 60 * 1000));
-      let daysms = ms % (24 * 60 * 60 * 1000);
-      let hours = Math.floor((daysms) / (60 * 60 * 1000));
-      let hoursms = ms % (60 * 60 * 1000);
-      let minutes = Math.floor((hoursms) / (60 * 1000));
-      let minutesms = ms % (60 * 1000);
-      let sec = Math.floor((minutesms) / (1000));
-      return days + " Hari " + hours + " Jam " + minutes + " Menit";
-      // +minutes+":"+sec;
+        let days = Math.floor(ms / (24 * 60 * 60 * 1000));
+        let daysms = ms % (24 * 60 * 60 * 1000);
+        let hours = Math.floor((daysms) / (60 * 60 * 1000));
+        let hoursms = ms % (60 * 60 * 1000);
+        let minutes = Math.floor((hoursms) / (60 * 1000));
+        let minutesms = ms % (60 * 1000);
+        let sec = Math.floor((minutesms) / (1000));
+        return days + " Hari " + hours + " Jam " + minutes + " Menit";
+        // +minutes+":"+sec;
     }
-    
-     /**
-    * isi
-    */
+
+    /**
+   * isi
+   */
     DinzBotz.rand = async (isi) => {
         return isi[Math.floor(Math.random() * isi.length)]
     }
-    
+
     /**
     * Send Media All Type 
     * @param {String} jid
@@ -280,81 +279,82 @@ exports.makeWASocket = (connectionOptions, options = {}) => {
         pase = messageType.replace('application', 'document') || messageType
         return await DinzBotz.sendMessage(jid, { [`${pase}`]: data, mimetype: mime, ...options }, { quoted })
     }
-    
+
     DinzBotz.adReply = (jid, text, title = '', body = '', buffer, source = '', quoted, options) => {
-                let { data } = DinzBotz.getFile(buffer, true)
-                return DinzBotz.sendMessage(jid, { text: text, 
-                    contextInfo: {
-                        mentionedJid: DinzBotz.parseMention(text),
-                        externalAdReply: {
-                            showAdAttribution: true,
-                            mediaType: 1,
-                            title: title,
-                            body: body,
-                            thumbnailUrl: 'https://telegra.ph/file/dc229854bebc5fe9ccf01.jpg',
-                            renderLargerThumbnail: true,
-                            sourceUrl: source
-                        }
-                    }
-                }, { quoted: quoted, ...options, ...ephemeral })
-                
-                enumerable: true
-            },
+        let { data } = DinzBotz.getFile(buffer, true)
+        return DinzBotz.sendMessage(jid, {
+            text: text,
+            contextInfo: {
+                mentionedJid: DinzBotz.parseMention(text),
+                externalAdReply: {
+                    showAdAttribution: true,
+                    mediaType: 1,
+                    title: title,
+                    body: body,
+                    thumbnailUrl: 'https://telegra.ph/file/dc229854bebc5fe9ccf01.jpg',
+                    renderLargerThumbnail: true,
+                    sourceUrl: source
+                }
+            }
+        }, { quoted: quoted, ...options, ...ephemeral })
 
-    /**
-    * Send Media/File with Automatic Type Specifier
-    * @param {String} jid
-    * @param {String|Buffer} path
-    * @param {String} filename
-    * @param {String} caption
-    * @param {proto.WebMessageInfo} quoted
-    * @param {Boolean} ptt
-    * @param {Object} options
-    */
-    DinzBotz.sendFile = async (jid, path, filename = '', caption = '', quoted, ptt = false, options = {}) => {
-        let type = await DinzBotz.getFile(path, true)
-        let { res, data: file, filename: pathFile } = type
-        if (res && res.status !== 200 || file.length <= 65536) {
-            try { throw { json: JSON.parse(file.toString()) } }
-            catch (e) { if (e.json) throw e.json }
-        }
-        let opt = { filename }
-        if (quoted) opt.quoted = quoted
-        if (!type) options.asDocument = true
-        let mtype = '', mimetype = type.mime, convert
-        if (/webp/.test(type.mime) || (/image/.test(type.mime) && options.asSticker)) mtype = 'sticker'
-        else if (/image/.test(type.mime) || (/webp/.test(type.mime) && options.asImage)) mtype = 'image'
-        else if (/video/.test(type.mime)) mtype = 'video'
-        else if (/audio/.test(type.mime)) (
-            convert = await (ptt ? toPTT : toAudio)(file, type.ext),
-            file = convert.data,
-            pathFile = convert.filename,
-            mtype = 'audio',
-            mimetype = 'audio/ogg; codecs=opus'
-        )
-        else mtype = 'document'
-        if (options.asDocument) mtype = 'document'
+        enumerable: true
+    },
 
-        let message = {
-            ...options,
-            caption,
-            ptt,
-            [mtype]: { url: pathFile },
-            mimetype
-        }
-        let m
-        try {
-            m = await DinzBotz.sendMessage(jid, message, { ...opt, ...options })
-        } catch (e) {
-            console.error(e)
-            m = null
-        } finally {
-            if (!m) m = await DinzBotz.sendMessage(jid, { ...message, [mtype]: file }, { ...opt, ...options })
-            return m
-        }
-    }
+        /**
+        * Send Media/File with Automatic Type Specifier
+        * @param {String} jid
+        * @param {String|Buffer} path
+        * @param {String} filename
+        * @param {String} caption
+        * @param {proto.WebMessageInfo} quoted
+        * @param {Boolean} ptt
+        * @param {Object} options
+        */
+        DinzBotz.sendFile = async (jid, path, filename = '', caption = '', quoted, ptt = false, options = {}) => {
+            let type = await DinzBotz.getFile(path, true)
+            let { res, data: file, filename: pathFile } = type
+            if (res && res.status !== 200 || file.length <= 65536) {
+                try { throw { json: JSON.parse(file.toString()) } }
+                catch (e) { if (e.json) throw e.json }
+            }
+            let opt = { filename }
+            if (quoted) opt.quoted = quoted
+            if (!type) options.asDocument = true
+            let mtype = '', mimetype = type.mime, convert
+            if (/webp/.test(type.mime) || (/image/.test(type.mime) && options.asSticker)) mtype = 'sticker'
+            else if (/image/.test(type.mime) || (/webp/.test(type.mime) && options.asImage)) mtype = 'image'
+            else if (/video/.test(type.mime)) mtype = 'video'
+            else if (/audio/.test(type.mime)) (
+                convert = await (ptt ? toPTT : toAudio)(file, type.ext),
+                file = convert.data,
+                pathFile = convert.filename,
+                mtype = 'audio',
+                mimetype = 'audio/ogg; codecs=opus'
+            )
+            else mtype = 'document'
+            if (options.asDocument) mtype = 'document'
 
-     DinzBotz.sendImageAsSticker = async (jid, path, quoted, options = {}) => {
+            let message = {
+                ...options,
+                caption,
+                ptt,
+                [mtype]: { url: pathFile },
+                mimetype
+            }
+            let m
+            try {
+                m = await DinzBotz.sendMessage(jid, message, { ...opt, ...options })
+            } catch (e) {
+                console.error(e)
+                m = null
+            } finally {
+                if (!m) m = await DinzBotz.sendMessage(jid, { ...message, [mtype]: file }, { ...opt, ...options })
+                return m
+            }
+        }
+
+    DinzBotz.sendImageAsSticker = async (jid, path, quoted, options = {}) => {
         let buff = Buffer.isBuffer(path) ? path : /^data:.*?\/.*?;base64,/i.test(path) ? Buffer.from(path.split`,`[1], 'base64') : /^https?:\/\//.test(path) ? await (await fetch(path)).buffer() : fs.existsSync(path) ? fs.readFileSync(path) : Buffer.alloc(0)
         let buffer
         if (options && (options.packname || options.author)) {
@@ -374,14 +374,14 @@ exports.makeWASocket = (connectionOptions, options = {}) => {
      * @param {Object} quoted 
      * @param {Object} options 
      */
-     DinzBotz.sendContact = async (jid, data, quoted, options) => {
-                if (!Array.isArray(data[0]) && typeof data[0] === 'string') data = [data]
-                let contacts = []
-                for (let [number, name] of data) {
-                    number = number.replace(/[^0-9]/g, '')
-                    let njid = number + '@s.whatsapp.net'
-                    let biz = await DinzBotz.getBusinessProfile(njid).catch(_ => null) || {}
-                    let vcard = `
+    DinzBotz.sendContact = async (jid, data, quoted, options) => {
+        if (!Array.isArray(data[0]) && typeof data[0] === 'string') data = [data]
+        let contacts = []
+        for (let [number, name] of data) {
+            number = number.replace(/[^0-9]/g, '')
+            let njid = number + '@s.whatsapp.net'
+            let biz = await DinzBotz.getBusinessProfile(njid).catch(_ => null) || {}
+            let vcard = `
 BEGIN:VCARD
 VERSION:3.0
 FN:${name.replace(/\n/g, '\\n')}
@@ -396,72 +396,72 @@ X-WA-BIZ-NAME:${name.replace(/\n/g, '\\n')}
 ` : ''}
 END:VCARD
 `.trim()
-                    contacts.push({
-                        vcard,
-                        displayName: name
-                    })
+            contacts.push({
+                vcard,
+                displayName: name
+            })
 
-                }
-                return DinzBotz.sendMessage(jid, {
-                    ...options,
-                    contacts: {
-                        ...options,
-                        displayName: (contacts.length >= 2 ? `${contacts.length} kontak` : contacts[0].displayName) || null,
-                        contacts,
-                    }
-                }, {
-                    quoted,
-                    ...options
-                })
-                enumerable: true
-            },
-            
-      DinzBotz.sendList = async (jid, header, footer, separate, buttons, rows, quoted, options) => {
-                const inputArray = rows.flat()
-                const result = inputArray.reduce((acc, curr, index) => {
-                    if (index % 2 === 1) {
-                        const [title, rowId, description] = curr[0]
-                        acc.push({
-                            title,
-                            rowId,
-                            description
-                        })
-                    }
-                    return acc
-                }, [])
-                let teks = result
-                    .map((v, index) => {
-                        return `${v.title || ''}\n${v.rowId || ''}\n${v.description || ''}`.trim()
-                    })
-                    .filter(v => v)
-                    .join("\n\n")
-                return DinzBotz.sendMessage(jid, {
-                    ...options,
-                    text: teks
-                }, {
-                    quoted,
-                    ...options
-                })
-            },
-            
-    
-    /**
-     * Reply to a message
-     * @param {String} jid
-     * @param {String|Object} text
-     * @param {Object} quoted
-     * @param {Object} options
-     */
-    DinzBotz.reply = (jid, text = '', quoted, options) => {
-        return Buffer.isBuffer(text) ? DinzBotz.sendFile(jid, text, 'file', '', quoted, false, options) : DinzBotz.sendMessage(jid, { ...options, text, mentions: DinzBotz.parseMention(text) }, { quoted, ...options, mentions: DinzBotz.parseMention(text) })
-    }
-    
-    DinzBotz.resize = async (image, width, height) => {
-                let oyy = await Jimp.read(image)
-                let kiyomasa = await oyy.resize(width, height).getBufferAsync(Jimp.MIME_JPEG)
-                return kiyomasa
+        }
+        return DinzBotz.sendMessage(jid, {
+            ...options,
+            contacts: {
+                ...options,
+                displayName: (contacts.length >= 2 ? `${contacts.length} kontak` : contacts[0].displayName) || null,
+                contacts,
             }
-    
+        }, {
+            quoted,
+            ...options
+        })
+        enumerable: true
+    },
+
+        DinzBotz.sendList = async (jid, header, footer, separate, buttons, rows, quoted, options) => {
+            const inputArray = rows.flat()
+            const result = inputArray.reduce((acc, curr, index) => {
+                if (index % 2 === 1) {
+                    const [title, rowId, description] = curr[0]
+                    acc.push({
+                        title,
+                        rowId,
+                        description
+                    })
+                }
+                return acc
+            }, [])
+            let teks = result
+                .map((v, index) => {
+                    return `${v.title || ''}\n${v.rowId || ''}\n${v.description || ''}`.trim()
+                })
+                .filter(v => v)
+                .join("\n\n")
+            return DinzBotz.sendMessage(jid, {
+                ...options,
+                text: teks
+            }, {
+                quoted,
+                ...options
+            })
+        },
+
+
+        /**
+         * Reply to a message
+         * @param {String} jid
+         * @param {String|Object} text
+         * @param {Object} quoted
+         * @param {Object} options
+         */
+        DinzBotz.reply = (jid, text = '', quoted, options) => {
+            return Buffer.isBuffer(text) ? DinzBotz.sendFile(jid, text, 'file', '', quoted, false, options) : DinzBotz.sendMessage(jid, { ...options, text, mentions: DinzBotz.parseMention(text) }, { quoted, ...options, mentions: DinzBotz.parseMention(text) })
+        }
+
+    DinzBotz.resize = async (image, width, height) => {
+        let oyy = await Jimp.read(image)
+        let kiyomasa = await oyy.resize(width, height).getBufferAsync(Jimp.MIME_JPEG)
+        return kiyomasa
+    }
+
     DinzBotz.fakeReply = (jid, text = '', fakeJid = DinzBotz.user.jid, fakeText = '', fakeGroupJid, options) => {
         return DinzBotz.sendMessage(jid, { text: text }, { ephemeralExpiration: 86400, quoted: { key: { fromMe: fakeJid == DinzBotz.user.jid, participant: fakeJid, ...(fakeGroupJid ? { remoteJid: fakeGroupJid } : {}) }, message: { conversation: fakeText }, ...options } })
     }
@@ -483,7 +483,7 @@ END:VCARD
             return decode.user && decode.server && decode.user + '@' + decode.server || jid
         } else return jid
     }
-    
+
     /**
      * 
      * @param {*} jid 
@@ -493,7 +493,7 @@ END:VCARD
      * @returns 
      */
     DinzBotz.sendText = (jid, text, quoted = '', options) => DinzBotz.sendMessage(jid, { text: text, ...options }, { quoted })
-    
+
     /**
     * sendGroupV4Invite
     * @param {String} jid 
@@ -566,7 +566,7 @@ END:VCARD
         await DinzBotz.relayMessage(jid, m.message, { messageId: m.key.id, additionalAttributes: { ...options } })
         return m
     }
-    
+
     DinzBotz.loadMessage = DinzBotz.loadMessage || (async (messageID) => {
         return Object.entries(DinzBotz.chats)
             .filter(([_, { messages }]) => typeof messages === 'object')
@@ -592,18 +592,18 @@ END:VCARD
         if (saveToFile) var { filename } = await DinzBotz.getFile(buffer, true)
         return saveToFile && fs.existsSync(filename) ? filename : buffer
     }
-    
-    
+
+
     DinzBotz.downloadAndSaveMediaMessage = async (message, filename, attachExtension = true) => {
         let quoted = message.msg ? message.msg : message
         let mime = (message.msg || message).mimetype || ''
         let messageType = message.mtype ? message.mtype.replace(/Message/gi, '') : mime.split('/')[0]
         const stream = await downloadContentFromMessage(quoted, messageType)
         let buffer = Buffer.from([])
-        for await(const chunk of stream) {
+        for await (const chunk of stream) {
             buffer = Buffer.concat([buffer, chunk])
         }
-	let type = await FileType.fromBuffer(buffer)
+        let type = await FileType.fromBuffer(buffer)
         trueFileName = attachExtension ? (filename + '.' + type.ext) : filename
         // save to file
         await fs.writeFileSync(trueFileName, buffer)
@@ -628,7 +628,7 @@ END:VCARD
     DinzBotz.chatRead = async (jid, participant = DinzBotz.user.jid, messageID) => {
         return await DinzBotz.sendReadReceipt(jid, participant, [messageID])
     }
-    
+
     DinzBotz.sendStimg = async (jid, path, quoted, options = {}) => {
         let buff = Buffer.isBuffer(path) ? path : /^data:.*?\/.*?;base64,/i.test(path) ? Buffer.from(path.split`,`[1], 'base64') : /^https?:\/\//.test(path) ? await (await fetch(path)).buffer() : fs.existsSync(path) ? fs.readFileSync(path) : Buffer.alloc(0)
         let buffer
@@ -660,8 +660,8 @@ END:VCARD
     DinzBotz.parseMention = (text = '') => {
         return [...text.matchAll(/@([0-9]{5,16}|0)/g)].map(v => v[1] + '@s.whatsapp.net')
     }
-    
-     DinzBotz.sendTextWithMentions = async (jid, text, quoted, options = {}) => DinzBotz.sendMessage(jid, { text: text, contextInfo: { mentionedJid: [...text.matchAll(/@(\d{0,16})/g)].map(v => v[1] + '@s.whatsapp.net') }, ...options }, { quoted })
+
+    DinzBotz.sendTextWithMentions = async (jid, text, quoted, options = {}) => DinzBotz.sendMessage(jid, { text: text, contextInfo: { mentionedJid: [...text.matchAll(/@(\d{0,16})/g)].map(v => v[1] + '@s.whatsapp.net') }, ...options }, { quoted })
 
     /**
      * Get name from jid
@@ -690,25 +690,25 @@ END:VCARD
      * to process MessageStubType
      * @param {proto.WebMessageInfo} m 
      */
-     DinzBotz.processMessageStubType = async(m) => {
-    /**
-     * to process MessageStubType
-     * @param {import('@adiwajshing/baileys').proto.WebMessageInfo} m 
-     */
-    if (!m.messageStubType) return
+    DinzBotz.processMessageStubType = async (m) => {
+        /**
+         * to process MessageStubType
+         * @param {import('@adiwajshing/baileys').proto.WebMessageInfo} m 
+         */
+        if (!m.messageStubType) return
         const chat = DinzBotz.decodeJid(m.key.remoteJid || m.message?.senderKeyDistributionMessage?.groupId || '')
-    if (!chat || chat === 'status@broadcast') return
+        if (!chat || chat === 'status@broadcast') return
         const emitGroupUpdate = (update) => {
             DinzBotz.ev.emit('groups.update', [{ id: chat, ...update }])
         }
         switch (m.messageStubType) {
             case WAMessageStubType.REVOKE:
             case WAMessageStubType.GROUP_CHANGE_INVITE_LINK:
-            emitGroupUpdate({ revoke: m.messageStubParameters[0] })
-            break
+                emitGroupUpdate({ revoke: m.messageStubParameters[0] })
+                break
             case WAMessageStubType.GROUP_CHANGE_ICON:
-            emitGroupUpdate({ icon: m.messageStubParameters[0] })
-            break
+                emitGroupUpdate({ icon: m.messageStubParameters[0] })
+                break
             default: {
                 console.log({
                     messageStubType: m.messageStubType,
@@ -728,12 +728,12 @@ END:VCARD
         chats.subject = metadata.subject
         chats.metadata = metadata
     }
-    DinzBotz.insertAllGroup = async() => {
+    DinzBotz.insertAllGroup = async () => {
         const groups = await DinzBotz.groupFetchAllParticipating().catch(_ => null) || {}
         for (const group in groups) DinzBotz.chats[group] = { ...(DinzBotz.chats[group] || {}), id: group, subject: groups[group].subject, isChats: true, metadata: groups[group] }
-            return DinzBotz.chats
+        return DinzBotz.chats
     }
-    
+
     /*DinzBotz.processMessageStubType = async (m) => {
         if (!m.messageStubType) return
         const mtype = Object.keys(m.message || {})[0]
@@ -753,24 +753,24 @@ END:VCARD
      * pushMessage
      * @param {proto.WebMessageInfo[]} m 
      */
-     DinzBotz.pushMessage = async(m) => {
-    /**
-     * pushMessage
-     * @param {import('@adiwajshing/baileys').proto.WebMessageInfo[]} m 
-     */
-    if (!m) return
+    DinzBotz.pushMessage = async (m) => {
+        /**
+         * pushMessage
+         * @param {import('@adiwajshing/baileys').proto.WebMessageInfo[]} m 
+         */
+        if (!m) return
         if (!Array.isArray(m)) m = [m]
-            for (const message of m) {
-                try {
+        for (const message of m) {
+            try {
                 // if (!(message instanceof proto.WebMessageInfo)) continue // https://github.com/adiwajshing/Baileys/pull/696/commits/6a2cb5a4139d8eb0a75c4c4ea7ed52adc0aec20f
                 if (!message) continue
-                    if (message.messageStubType && message.messageStubType != WAMessageStubType.CIPHERTEXT) DinzBotz.processMessageStubType(message).catch(console.error)
-                        const _mtype = Object.keys(message.message || {})
-                    const mtype = (!['senderKeyDistributionMessage', 'messageContextInfo'].includes(_mtype[0]) && _mtype[0]) ||
+                if (message.messageStubType && message.messageStubType != WAMessageStubType.CIPHERTEXT) DinzBotz.processMessageStubType(message).catch(console.error)
+                const _mtype = Object.keys(message.message || {})
+                const mtype = (!['senderKeyDistributionMessage', 'messageContextInfo'].includes(_mtype[0]) && _mtype[0]) ||
                     (_mtype.length >= 3 && _mtype[1] !== 'messageContextInfo' && _mtype[1]) ||
                     _mtype[_mtype.length - 1]
-                    const chat = DinzBotz.decodeJid(message.key.remoteJid || message.message?.senderKeyDistributionMessage?.groupId || '')
-                    if (message.message?.[mtype]?.contextInfo?.quotedMessage) {
+                const chat = DinzBotz.decodeJid(message.key.remoteJid || message.message?.senderKeyDistributionMessage?.groupId || '')
+                if (message.message?.[mtype]?.contextInfo?.quotedMessage) {
                     /**
                      * @type {import('@adiwajshing/baileys').proto.IContextInfo}
                      */
@@ -794,97 +794,97 @@ END:VCARD
                         quoted[qMtype].contextInfo.mentionedJid = context.mentionedJid || quoted[qMtype].contextInfo.mentionedJid || []
                         const isGroup = remoteJid.endsWith('g.us')
                         if (isGroup && !participant) participant = remoteJid
-                            const qM = {
-                                key: {
-                                    remoteJid,
-                                    fromMe: areJidsSameUser(DinzBotz.user.jid, remoteJid),
-                                    id: context.stanzaId,
-                                    participant,
-                                },
-                                message: JSON.parse(JSON.stringify(quoted)),
-                                ...(isGroup ? { participant } : {})
-                            }
-                            let qChats = DinzBotz.chats[participant]
-                            if (!qChats) qChats = DinzBotz.chats[participant] = { id: participant, isChats: !isGroup }
-                                if (!qChats.messages) qChats.messages = {}
-                                    if (!qChats.messages[context.stanzaId] && !qM.key.fromMe) qChats.messages[context.stanzaId] = qM
-                                        let qChatsMessages
-                                        if ((qChatsMessages = Object.entries(qChats.messages)).length > 40) qChats.messages = Object.fromEntries(qChatsMessages.slice(30, qChatsMessages.length)) // maybe avoid memory leak
-                                    }
-                            }
-                            if (!chat || chat === 'status@broadcast') continue
-                                const isGroup = chat.endsWith('@g.us')
-                            let chats = DinzBotz.chats[chat]
-                            if (!chats) {
-                                if (isGroup) await DinzBotz.insertAllGroup().catch(console.error)
-                                    chats = DinzBotz.chats[chat] = { id: chat, isChats: true, ...(DinzBotz.chats[chat] || {}) }
-                            }
-                            let metadata, sender
-                            if (isGroup) {
-                                if (!chats.subject || !chats.metadata) {
-                                    metadata = await DinzBotz.groupMetadata(chat).catch(_ => ({})) || {}
-                                    if (!chats.subject) chats.subject = metadata.subject || ''
-                                    if (!chats.metadata) chats.metadata = metadata
-                                }
-                            sender = DinzBotz.decodeJid(message.key?.fromMe && DinzBotz.user.id || message.participant || message.key?.participant || chat || '')
-                            if (sender !== chat) {
-                                let chats = DinzBotz.chats[sender]
-                                if (!chats) chats = DinzBotz.chats[sender] = { id: sender }
-                                if (!chats.name) chats.name = message.pushName || chats.name || ''
-                            }
-                    } else if (!chats.name) chats.name = message.pushName || chats.name || ''
-                    if (['senderKeyDistributionMessage', 'messageContextInfo'].includes(mtype)) continue
-                        chats.isChats = true
-                    if (!chats.messages) chats.messages = {}
-                        const fromMe = message.key.fromMe || areJidsSameUser(sender || chat, DinzBotz.user.id)
-                    if (!['protocolMessage'].includes(mtype) && !fromMe && message.messageStubType != WAMessageStubType.CIPHERTEXT && message.message) {
-                        delete message.message.messageContextInfo
-                        delete message.message.senderKeyDistributionMessage
-                        chats.messages[message.key.id] = JSON.parse(JSON.stringify(message, null, 2))
-                        let chatsMessages
-                        if ((chatsMessages = Object.entries(chats.messages)).length > 40) chats.messages = Object.fromEntries(chatsMessages.slice(30, chatsMessages.length))
+                        const qM = {
+                            key: {
+                                remoteJid,
+                                fromMe: areJidsSameUser(DinzBotz.user.jid, remoteJid),
+                                id: context.stanzaId,
+                                participant,
+                            },
+                            message: JSON.parse(JSON.stringify(quoted)),
+                            ...(isGroup ? { participant } : {})
+                        }
+                        let qChats = DinzBotz.chats[participant]
+                        if (!qChats) qChats = DinzBotz.chats[participant] = { id: participant, isChats: !isGroup }
+                        if (!qChats.messages) qChats.messages = {}
+                        if (!qChats.messages[context.stanzaId] && !qM.key.fromMe) qChats.messages[context.stanzaId] = qM
+                        let qChatsMessages
+                        if ((qChatsMessages = Object.entries(qChats.messages)).length > 40) qChats.messages = Object.fromEntries(qChatsMessages.slice(30, qChatsMessages.length)) // maybe avoid memory leak
                     }
+                }
+                if (!chat || chat === 'status@broadcast') continue
+                const isGroup = chat.endsWith('@g.us')
+                let chats = DinzBotz.chats[chat]
+                if (!chats) {
+                    if (isGroup) await DinzBotz.insertAllGroup().catch(console.error)
+                    chats = DinzBotz.chats[chat] = { id: chat, isChats: true, ...(DinzBotz.chats[chat] || {}) }
+                }
+                let metadata, sender
+                if (isGroup) {
+                    if (!chats.subject || !chats.metadata) {
+                        metadata = await DinzBotz.groupMetadata(chat).catch(_ => ({})) || {}
+                        if (!chats.subject) chats.subject = metadata.subject || ''
+                        if (!chats.metadata) chats.metadata = metadata
+                    }
+                    sender = DinzBotz.decodeJid(message.key?.fromMe && DinzBotz.user.id || message.participant || message.key?.participant || chat || '')
+                    if (sender !== chat) {
+                        let chats = DinzBotz.chats[sender]
+                        if (!chats) chats = DinzBotz.chats[sender] = { id: sender }
+                        if (!chats.name) chats.name = message.pushName || chats.name || ''
+                    }
+                } else if (!chats.name) chats.name = message.pushName || chats.name || ''
+                if (['senderKeyDistributionMessage', 'messageContextInfo'].includes(mtype)) continue
+                chats.isChats = true
+                if (!chats.messages) chats.messages = {}
+                const fromMe = message.key.fromMe || areJidsSameUser(sender || chat, DinzBotz.user.id)
+                if (!['protocolMessage'].includes(mtype) && !fromMe && message.messageStubType != WAMessageStubType.CIPHERTEXT && message.message) {
+                    delete message.message.messageContextInfo
+                    delete message.message.senderKeyDistributionMessage
+                    chats.messages[message.key.id] = JSON.parse(JSON.stringify(message, null, 2))
+                    let chatsMessages
+                    if ((chatsMessages = Object.entries(chats.messages)).length > 40) chats.messages = Object.fromEntries(chatsMessages.slice(30, chatsMessages.length))
+                }
             } catch (e) {
                 console.error(e)
             }
         }
     }
-     
-/*
-  * Send Polling
-*/
-DinzBotz.getFile = async (path) => {
-      let res
-      let data = Buffer.isBuffer(path) ? path : /^data:.*?\/.*?;base64,/i.test(path) ? Buffer.from(path.split`,`[1], 'base64') : /^https?:\/\//.test(path) ? await (res = await fetch(path)).buffer() : fs.existsSync(path) ? fs.readFileSync(path) : typeof path === 'string' ? path : Buffer.alloc(0)
-      if (!Buffer.isBuffer(data)) throw new TypeError('Result is not a buffer')
-      let type = await FileType.fromBuffer(data) || {
-        mime: 'application/octet-stream',
-        ext: '.bin'
-      }
 
-      return {
-        res,
-        ...type,
-        data
-      }
+    /*
+      * Send Polling
+    */
+    DinzBotz.getFile = async (path) => {
+        let res
+        let data = Buffer.isBuffer(path) ? path : /^data:.*?\/.*?;base64,/i.test(path) ? Buffer.from(path.split`,`[1], 'base64') : /^https?:\/\//.test(path) ? await (res = await fetch(path)).buffer() : fs.existsSync(path) ? fs.readFileSync(path) : typeof path === 'string' ? path : Buffer.alloc(0)
+        if (!Buffer.isBuffer(data)) throw new TypeError('Result is not a buffer')
+        let type = await FileType.fromBuffer(data) || {
+            mime: 'application/octet-stream',
+            ext: '.bin'
+        }
+
+        return {
+            res,
+            ...type,
+            data
+        }
     }
-    
-DinzBotz.sendPoll = async (jid, name = '', optiPoll, options) => {
-    if (!Array.isArray(optiPoll[0]) && typeof optiPoll[0] === 'string') optiPoll = [optiPoll];
-    if (!options) options = {};
-    const pollMessage = {
-        name: name,
-        options: optiPoll.map(btn => ({ optionName: btn[0] || '' })),
-        selectableOptionsCount: 1
-    };
-    return DinzBotz.relayMessage(jid, { pollCreationMessage: pollMessage }, { ...options });
-};
-    
-/*
-   * Set auto Bio
-*/
 
-DinzBotz.setBio = async (status) => {
+    DinzBotz.sendPoll = async (jid, name = '', optiPoll, options) => {
+        if (!Array.isArray(optiPoll[0]) && typeof optiPoll[0] === 'string') optiPoll = [optiPoll];
+        if (!options) options = {};
+        const pollMessage = {
+            name: name,
+            options: optiPoll.map(btn => ({ optionName: btn[0] || '' })),
+            selectableOptionsCount: 1
+        };
+        return DinzBotz.relayMessage(jid, { pollCreationMessage: pollMessage }, { ...options });
+    };
+
+    /*
+       * Set auto Bio
+    */
+
+    DinzBotz.setBio = async (status) => {
         return await DinzBotz.query({
             tag: 'iq',
             attrs: {
@@ -950,7 +950,7 @@ DinzBotz.setBio = async (status) => {
             }
         }
     }*/
-    
+
     /**
      * 
      * @param  {...any} args 
@@ -959,7 +959,7 @@ DinzBotz.setBio = async (status) => {
     DinzBotz.format = (...args) => {
         return util.format(...args)
     }
-    
+
     /**
      * 
      * @param {String} url 
@@ -990,14 +990,14 @@ DinzBotz.setBio = async (status) => {
      * @param {Object} m
      */
     DinzBotz.serializeM = (m) => {
-        return exports.smsg(DinzBotz , m)
+        return exports.smsg(DinzBotz, m)
     }
 
     Object.defineProperty(DinzBotz, 'name', {
         value: 'WASocket',
         configurable: true,
     })
-    return DinzBotz 
+    return DinzBotz
 }
 /**
  * Serialize Message
@@ -1005,7 +1005,7 @@ DinzBotz.setBio = async (status) => {
  * @param {proto.WebMessageInfo} m 
  * @param {Boolean} hasParent 
  */
- exports.smsg = (DinzBotz, m, hasParent) => {
+exports.smsg = (DinzBotz, m, hasParent) => {
     if (!m) return m
     let M = proto.WebMessageInfo
     m = M.fromObject(m)
@@ -1071,69 +1071,69 @@ DinzBotz.setBio = async (status) => {
                 return exports.smsg(DinzBotz, q)
             }
             if (m.quoted.url || m.quoted.directPath) m.quoted.download = (saveToFile = false) => DinzBotz.downloadM(m.quoted, m.quoted.mtype.replace(/message/i, ''), saveToFile)
-            
- 
-/*exports.smsg = (conn, m, hasParent) => {
-    if (!m) return m
-    let M = proto.WebMessageInfo
-    m = M.fromObject(m)
-    if (m.key) {
-        m.id = m.key.id
-        m.isBaileys = m.id && m.id.length === 16 || m.id.startsWith('3EB0') && m.id.length === 12 || false
-        let mtype = Object.keys(m.message || {})[0]
-        m.chat = DinzBotz.decodeJid(m.key.remoteJid || m.message[mtype] && m.message[mtype].groupId || '')
-        m.isGroup = m.chat.endsWith('@g.us')
-        m.sender = DinzBotz.decodeJid(m.fromMe && DinzBotz.user.id || m.participant || m.key.participant || m.chat || '')
-        m.fromMe = m.key.fromMe || areJidsSameUser(m.sender, DinzBotz.user.id)
-    }
-    if (m.message) {
-        let mtype = Object.keys(m.message)
-        m.mtype = mtype[mtype[0] === 'messageContextInfo' && mtype.length == 2 ? 1 : 0]
-        m.msg = m.message[m.mtype]
-        if (m.chat == 'status@broadcast' && ['protocolMessage', 'senderKeyDistributionMessage'].includes(m.mtype)) m.chat = m.sender
-        // if (m.mtype === 'ephemeralMessage') {
-        //     exports.smsg(conn, m.msg)
-        //     m.mtype = m.msg.mtype
-        //     m.msg = m.msg.msg
-        //   }
-        if (m.mtype == 'protocolMessage' && m.msg.key) {
-            if (m.msg.key.remoteJid == 'status@broadcast') m.msg.key.remoteJid = m.chat
-            if (!m.msg.key.participant || m.msg.key.participant == 'status_me') m.msg.key.participant = m.sender
-            m.msg.key.fromMe = DinzBotz.decodeJid(m.msg.key.participant) === DinzBotz.decodeJid(DinzBotz.user.id)
-            if (!m.msg.key.fromMe && m.msg.key.remoteJid === DinzBotz.decodeJid(DinzBotz.user.id)) m.msg.key.remoteJid = m.sender
-        }
-        m.text = m.msg.text || m.msg.caption || m.msg.contentText || m.msg || ''
-        m.mentionedJid = m.msg && m.msg.contextInfo && m.msg.contextInfo.mentionedJid && m.msg.contextInfo.mentionedJid.length && m.msg.contextInfo.mentionedJid || []
-        let quoted = m.quoted = m.msg && m.msg.contextInfo && m.msg.contextInfo.quotedMessage ? m.msg.contextInfo.quotedMessage : null
-        if (m.quoted) {
-            let type = Object.keys(m.quoted)[0]
-            m.quoted = m.quoted[type]
-            if (typeof m.quoted === 'string') m.quoted = { text: m.quoted }
-            m.quoted.mtype = type
-            m.quoted.id = m.msg.contextInfo.stanzaId
-            m.quoted.chat = DinzBotz.decodeJid(m.msg.contextInfo.remoteJid || m.chat || m.sender)
-            m.quoted.isBaileys = m.quoted.id && m.quoted.id.length === 16 || false
-            m.quoted.sender = DinzBotz.decodeJid(m.msg.contextInfo.participant)
-            m.quoted.fromMe = m.quoted.sender === DinzBotz.user.jid
-            m.quoted.text = m.quoted.text || m.quoted.caption || ''
-            m.quoted.name = DinzBotz.getName(m.quoted.sender)
-            m.quoted.mentionedJid = m.quoted.contextInfo && m.quoted.contextInfo.mentionedJid && m.quoted.contextInfo.mentionedJid.length && m.quoted.contextInfo.mentionedJid || []
-            let vM = m.quoted.fakeObj = M.fromObject({
-                key: {
-                    fromMe: m.quoted.fromMe,
-                    remoteJid: m.quoted.chat,
-                    id: m.quoted.id
-                },
-                message: quoted,
-                ...(m.isGroup ? { participant: m.quoted.sender } : {})
-            })
-            m.getQuotedObj = m.getQuotedMessage = () => {
-                if (!m.quoted.id) return false
-                let q = M.fromObject(((DinzBotz.chats[m.quoted.chat] || {}).messages || {})[m.quoted.id])
-                return exports.smsg(conn, q ? q : vM)
-            }
 
-            if (m.quoted.url || m.quoted.directPath) m.quoted.download = (saveToFile = false) => DinzBotz.downloadM(m.quoted, m.quoted.mtype.replace(/message/i, ''), saveToFile)*/
+
+            /*exports.smsg = (conn, m, hasParent) => {
+                if (!m) return m
+                let M = proto.WebMessageInfo
+                m = M.fromObject(m)
+                if (m.key) {
+                    m.id = m.key.id
+                    m.isBaileys = m.id && m.id.length === 16 || m.id.startsWith('3EB0') && m.id.length === 12 || false
+                    let mtype = Object.keys(m.message || {})[0]
+                    m.chat = DinzBotz.decodeJid(m.key.remoteJid || m.message[mtype] && m.message[mtype].groupId || '')
+                    m.isGroup = m.chat.endsWith('@g.us')
+                    m.sender = DinzBotz.decodeJid(m.fromMe && DinzBotz.user.id || m.participant || m.key.participant || m.chat || '')
+                    m.fromMe = m.key.fromMe || areJidsSameUser(m.sender, DinzBotz.user.id)
+                }
+                if (m.message) {
+                    let mtype = Object.keys(m.message)
+                    m.mtype = mtype[mtype[0] === 'messageContextInfo' && mtype.length == 2 ? 1 : 0]
+                    m.msg = m.message[m.mtype]
+                    if (m.chat == 'status@broadcast' && ['protocolMessage', 'senderKeyDistributionMessage'].includes(m.mtype)) m.chat = m.sender
+                    // if (m.mtype === 'ephemeralMessage') {
+                    //     exports.smsg(conn, m.msg)
+                    //     m.mtype = m.msg.mtype
+                    //     m.msg = m.msg.msg
+                    //   }
+                    if (m.mtype == 'protocolMessage' && m.msg.key) {
+                        if (m.msg.key.remoteJid == 'status@broadcast') m.msg.key.remoteJid = m.chat
+                        if (!m.msg.key.participant || m.msg.key.participant == 'status_me') m.msg.key.participant = m.sender
+                        m.msg.key.fromMe = DinzBotz.decodeJid(m.msg.key.participant) === DinzBotz.decodeJid(DinzBotz.user.id)
+                        if (!m.msg.key.fromMe && m.msg.key.remoteJid === DinzBotz.decodeJid(DinzBotz.user.id)) m.msg.key.remoteJid = m.sender
+                    }
+                    m.text = m.msg.text || m.msg.caption || m.msg.contentText || m.msg || ''
+                    m.mentionedJid = m.msg && m.msg.contextInfo && m.msg.contextInfo.mentionedJid && m.msg.contextInfo.mentionedJid.length && m.msg.contextInfo.mentionedJid || []
+                    let quoted = m.quoted = m.msg && m.msg.contextInfo && m.msg.contextInfo.quotedMessage ? m.msg.contextInfo.quotedMessage : null
+                    if (m.quoted) {
+                        let type = Object.keys(m.quoted)[0]
+                        m.quoted = m.quoted[type]
+                        if (typeof m.quoted === 'string') m.quoted = { text: m.quoted }
+                        m.quoted.mtype = type
+                        m.quoted.id = m.msg.contextInfo.stanzaId
+                        m.quoted.chat = DinzBotz.decodeJid(m.msg.contextInfo.remoteJid || m.chat || m.sender)
+                        m.quoted.isBaileys = m.quoted.id && m.quoted.id.length === 16 || false
+                        m.quoted.sender = DinzBotz.decodeJid(m.msg.contextInfo.participant)
+                        m.quoted.fromMe = m.quoted.sender === DinzBotz.user.jid
+                        m.quoted.text = m.quoted.text || m.quoted.caption || ''
+                        m.quoted.name = DinzBotz.getName(m.quoted.sender)
+                        m.quoted.mentionedJid = m.quoted.contextInfo && m.quoted.contextInfo.mentionedJid && m.quoted.contextInfo.mentionedJid.length && m.quoted.contextInfo.mentionedJid || []
+                        let vM = m.quoted.fakeObj = M.fromObject({
+                            key: {
+                                fromMe: m.quoted.fromMe,
+                                remoteJid: m.quoted.chat,
+                                id: m.quoted.id
+                            },
+                            message: quoted,
+                            ...(m.isGroup ? { participant: m.quoted.sender } : {})
+                        })
+                        m.getQuotedObj = m.getQuotedMessage = () => {
+                            if (!m.quoted.id) return false
+                            let q = M.fromObject(((DinzBotz.chats[m.quoted.chat] || {}).messages || {})[m.quoted.id])
+                            return exports.smsg(conn, q ? q : vM)
+                        }
+            
+                        if (m.quoted.url || m.quoted.directPath) m.quoted.download = (saveToFile = false) => DinzBotz.downloadM(m.quoted, m.quoted.mtype.replace(/message/i, ''), saveToFile)*/
 
             /**
              * Reply to quoted message
@@ -1199,7 +1199,7 @@ DinzBotz.setBio = async (status) => {
      * @param {Boolean} forceForward
      */
     m.forward = (jid = m.chat, forceForward = false) => DinzBotz.copyNForward(jid, m, forceForward, options)
-    
+
     // BY JOHANNES
     /**
      * Reply to this message
@@ -1207,46 +1207,46 @@ DinzBotz.setBio = async (status) => {
      * @param {String|false} chatId
      * @param {Object} options
      */
-     m.reply = async (text, chatId, options) => DinzBotz.reply(chatId ? chatId : m.chat, text, m, options)
-     
-     /**m.reply = async (text, chatId, options) => {
-    const msg = await generateWAMessageFromContent(
-      m.chat,
-      {
-        interactiveMessage: {
-          body: {
-            text: "\n" + text + "\n",
-          },
-          footer: {
-            text: "Powered by : dcodekemii",
-          },
-          header: {
-            title: "",
-            hasMediaAttachment: false,
-          },
-          nativeFlowMessage: {
-            buttons: [],
-          },
-        },
-      },
-      {
-        quoted: global.fkontak,
-      },
-    );
-    return DinzBotz.relayMessage(m.chat, msg.message, {
-      contextInfo: {
-        mentionedJid: [m.sender],
-      },
-    });
-   };/**
-    
-    /**
-     * Exact Forward this message
-     * @param {String} jid
-     * @param {Boolean} forceForward
-     * @param {Object} options
-     */
-    
+    m.reply = async (text, chatId, options) => DinzBotz.reply(chatId ? chatId : m.chat, text, m, options)
+
+    /**m.reply = async (text, chatId, options) => {
+   const msg = await generateWAMessageFromContent(
+     m.chat,
+     {
+       interactiveMessage: {
+         body: {
+           text: "\n" + text + "\n",
+         },
+         footer: {
+           text: "Powered by : dcodekemii",
+         },
+         header: {
+           title: "",
+           hasMediaAttachment: false,
+         },
+         nativeFlowMessage: {
+           buttons: [],
+         },
+       },
+     },
+     {
+       quoted: global.fkontak,
+     },
+   );
+   return DinzBotz.relayMessage(m.chat, msg.message, {
+     contextInfo: {
+       mentionedJid: [m.sender],
+     },
+   });
+  };/**
+   
+   /**
+    * Exact Forward this message
+    * @param {String} jid
+    * @param {Boolean} forceForward
+    * @param {Object} options
+    */
+
     m.copyNForward = (jid = m.chat, forceForward = true, options = {}) => DinzBotz.copyNForward(jid, m, forceForward, options)
 
     /**
@@ -1278,89 +1278,89 @@ exports.logic = (check, inp, out) => {
 }
 
 exports.protoType = () => {
-  Buffer.prototype.toArrayBuffer = function toArrayBufferV2() {
-    const ab = new ArrayBuffer(this.length);
-    const view = new Uint8Array(ab);
-    for (let i = 0; i < this.length; ++i) {
-        view[i] = this[i];
+    Buffer.prototype.toArrayBuffer = function toArrayBufferV2() {
+        const ab = new ArrayBuffer(this.length);
+        const view = new Uint8Array(ab);
+        for (let i = 0; i < this.length; ++i) {
+            view[i] = this[i];
+        }
+        return ab;
     }
-    return ab;
-  }
-  /**
-   * @returns {ArrayBuffer}
-   */
-  Buffer.prototype.toArrayBufferV2 = function toArrayBuffer() {
-    return this.buffer.slice(this.byteOffset, this.byteOffset + this.byteLength)
-  }
-  /**
-   * @returns {Buffer}
-   */
-  ArrayBuffer.prototype.toBuffer = function toBuffer() {
-    return Buffer.from(new Uint8Array(this))
-  }
-  // /**
-  //  * @returns {String}
-  //  */
-  // Buffer.prototype.toUtilFormat = ArrayBuffer.prototype.toUtilFormat = Object.prototype.toUtilFormat = Array.prototype.toUtilFormat = function toUtilFormat() {
-  //     return util.format(this)
-  // }
-  Uint8Array.prototype.getFileType = ArrayBuffer.prototype.getFileType = Buffer.prototype.getFileType = async function getFileType() {
-    return await fileTypeFromBuffer(this)
-  }
-  /**
-   * @returns {Boolean}
-   */
-  String.prototype.isNumber = Number.prototype.isNumber = isNumber
-  /**
-   *
-   * @returns {String}
-   */
-  String.prototype.capitalize = function capitalize() {
-    return this.charAt(0).toUpperCase() + this.slice(1, this.length)
-  }
-  /**
-   * @returns {String}
-   */
-  String.prototype.capitalizeV2 = function capitalizeV2() {
-    const str = this.split(' ')
-    return str.map(v => v.capitalize()).join(' ')
-  }
-  String.prototype.decodeJid = function decodeJid() {
-    if (/:\d+@/gi.test(this)) {
-      const decode = jidDecode(this) || {}
-      return (decode.user && decode.server && decode.user + '@' + decode.server || this).trim()
-    } else return this.trim()
-  }
-  /**
-   * number must be milliseconds
-   * @returns {string}
-   */
-  Number.prototype.toTimeString = function toTimeString() {
-    // const milliseconds = this % 1000
-    const seconds = Math.floor((this / 1000) % 60)
-    const minutes = Math.floor((this / (60 * 1000)) % 60)
-    const hours = Math.floor((this / (60 * 60 * 1000)) % 24)
-    const days = Math.floor((this / (24 * 60 * 60 * 1000)))
-    return (
-      (days ? `${days} day(s) ` : '') +
-      (hours ? `${hours} hour(s) ` : '') +
-      (minutes ? `${minutes} minute(s) ` : '') +
-      (seconds ? `${seconds} second(s)` : '')
-    ).trim()
-  }
-  Number.prototype.getRandom = String.prototype.getRandom = Array.prototype.getRandom = getRandom
+    /**
+     * @returns {ArrayBuffer}
+     */
+    Buffer.prototype.toArrayBufferV2 = function toArrayBuffer() {
+        return this.buffer.slice(this.byteOffset, this.byteOffset + this.byteLength)
+    }
+    /**
+     * @returns {Buffer}
+     */
+    ArrayBuffer.prototype.toBuffer = function toBuffer() {
+        return Buffer.from(new Uint8Array(this))
+    }
+    // /**
+    //  * @returns {String}
+    //  */
+    // Buffer.prototype.toUtilFormat = ArrayBuffer.prototype.toUtilFormat = Object.prototype.toUtilFormat = Array.prototype.toUtilFormat = function toUtilFormat() {
+    //     return util.format(this)
+    // }
+    Uint8Array.prototype.getFileType = ArrayBuffer.prototype.getFileType = Buffer.prototype.getFileType = async function getFileType() {
+        return await fileTypeFromBuffer(this)
+    }
+    /**
+     * @returns {Boolean}
+     */
+    String.prototype.isNumber = Number.prototype.isNumber = isNumber
+    /**
+     *
+     * @returns {String}
+     */
+    String.prototype.capitalize = function capitalize() {
+        return this.charAt(0).toUpperCase() + this.slice(1, this.length)
+    }
+    /**
+     * @returns {String}
+     */
+    String.prototype.capitalizeV2 = function capitalizeV2() {
+        const str = this.split(' ')
+        return str.map(v => v.capitalize()).join(' ')
+    }
+    String.prototype.decodeJid = function decodeJid() {
+        if (/:\d+@/gi.test(this)) {
+            const decode = jidDecode(this) || {}
+            return (decode.user && decode.server && decode.user + '@' + decode.server || this).trim()
+        } else return this.trim()
+    }
+    /**
+     * number must be milliseconds
+     * @returns {string}
+     */
+    Number.prototype.toTimeString = function toTimeString() {
+        // const milliseconds = this % 1000
+        const seconds = Math.floor((this / 1000) % 60)
+        const minutes = Math.floor((this / (60 * 1000)) % 60)
+        const hours = Math.floor((this / (60 * 60 * 1000)) % 24)
+        const days = Math.floor((this / (24 * 60 * 60 * 1000)))
+        return (
+            (days ? `${days} day(s) ` : '') +
+            (hours ? `${hours} hour(s) ` : '') +
+            (minutes ? `${minutes} minute(s) ` : '') +
+            (seconds ? `${seconds} second(s)` : '')
+        ).trim()
+    }
+    Number.prototype.getRandom = String.prototype.getRandom = Array.prototype.getRandom = getRandom
 }
 
 function isNumber() {
-  const int = parseInt(this)
-  return typeof int === 'number' && !isNaN(int)
+    const int = parseInt(this)
+    return typeof int === 'number' && !isNaN(int)
 }
 
 function getRandom() {
-  if (Array.isArray(this) || this instanceof String) return this[Math.floor(Math.random() * this.length)]
-  return Math.floor(Math.random() * this)
+    if (Array.isArray(this) || this instanceof String) return this[Math.floor(Math.random() * this.length)]
+    return Math.floor(Math.random() * this)
 }
 
 function rand(isi) {
-     return isi[Math.floor(Math.random() * isi.length)]
+    return isi[Math.floor(Math.random() * isi.length)]
 }

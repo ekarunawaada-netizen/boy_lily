@@ -3,7 +3,7 @@ module.exports = {
     command: [], // We'll populate this dynamically or use a regex in the dispatcher
     category: 'other',
     desc: 'Memainkan berbagai suara/musik lucu',
-    async run(DinzBotz, m, { command, text, isRegistered, replydaftar }) {
+    async run(LilyBot, m, { command, text, isRegistered, replydaftar }) {
         if (!isRegistered) {
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
         }
@@ -27,7 +27,7 @@ module.exports = {
         if (!sound) return;
 
         if (text && text.toLowerCase() === 'thumb') {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
                 audio: { url: sound },
                 mimetype: 'audio/mpeg',
                 ptt: false,
@@ -44,7 +44,7 @@ module.exports = {
                 }
             }, { quoted: m });
         } else {
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
                 audio: { url: sound },
                 mimetype: 'audio/mpeg',
                 ptt: false

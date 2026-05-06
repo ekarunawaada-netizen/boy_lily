@@ -1,5 +1,5 @@
 'use strict'
-const db = require('../lib/db')
+// Migrated to global.db
 
 function clock(ms) {
   let h = Math.floor(ms / 3600000)
@@ -15,13 +15,13 @@ function addExpAndLevel(user, exp) {
   if (user.exp >= needed) { user.level += 1; user.exp -= needed }
 }
 
-async function rpgGatherHandler(DinzBotz, m, { prefix, command, args, q }) {
+async function rpgGatherHandler(LilyBot, m, { prefix, command, args, q }) {
   const reply = t => m.reply(t)
   const sender = m.sender
   if (!m.isGroup) return reply('Perintah RPG hanya bisa digunakan di grup!')
   const now = Date.now()
 
-  let user = await db.getUser(sender)
+  let user = await global.db.users[sender]
 
   // ── .kerja ──────────────────────────────────────────────────────────────
   if (command === 'kerja') {
@@ -48,7 +48,7 @@ async function rpgGatherHandler(DinzBotz, m, { prefix, command, args, q }) {
     user.money += money
     user.lastkerja = now
     addExpAndLevel(user, exp)
-    await db.updateUser(sender, { money: user.money, exp: user.exp, level: user.level, lastkerja: now })
+    await Object.assign(global.db.users[sender], { money: user.money, exp: user.exp, level: user.level, lastkerja: now })
     return reply(`${p.icon} ${p.narasi(target)}\n💰 +${fmt(money)} Money\n⭐ +${exp} XP`)
   }
 
@@ -65,7 +65,7 @@ async function rpgGatherHandler(DinzBotz, m, { prefix, command, args, q }) {
     user.money += money
     user.lastnebang = now
     addExpAndLevel(user, exp)
-    await db.updateUser(sender, { wood: user.wood, money: user.money, exp: user.exp, level: user.level, lastnebang: now })
+    await Object.assign(global.db.users[sender], { wood: user.wood, money: user.money, exp: user.exp, level: user.level, lastnebang: now })
     return reply(`🪓 Selesai menebang!\n🪵 +${wood} Kayu\n💰 +${fmt(money)} Money\n⭐ +${exp} XP`)
   }
 
@@ -92,7 +92,7 @@ async function rpgGatherHandler(DinzBotz, m, { prefix, command, args, q }) {
     user.lastmining = now
     addExpAndLevel(user, exp)
 
-    await db.updateUser(sender, {
+    await Object.assign(global.db.users[sender], {
       rock: user.rock, iron: user.iron, gold: user.gold, diamond: user.diamond,
       health: user.health, exp: user.exp, level: user.level, lastmining: now
     })
@@ -133,7 +133,7 @@ async function rpgGatherHandler(DinzBotz, m, { prefix, command, args, q }) {
     user.lasthunt = now
     addExpAndLevel(user, exp)
 
-    await db.updateUser(sender, {
+    await Object.assign(global.db.users[sender], {
       [animal.name]: user[animal.name], health: user.health,
       exp: user.exp, level: user.level, lasthunt: now
     })
@@ -158,7 +158,7 @@ async function rpgGatherHandler(DinzBotz, m, { prefix, command, args, q }) {
     user.lastberkebon = now
     addExpAndLevel(user, exp)
 
-    await db.updateUser(sender, {
+    await Object.assign(global.db.users[sender], {
       pisang: user.pisang, anggur: user.anggur, mangga: user.mangga, jeruk: user.jeruk, apel: user.apel,
       bibitpisang: user.bibitpisang, bibitanggur: user.bibitanggur, bibitmangga: user.bibitmangga,
       bibitjeruk: user.bibitjeruk, bibitapel: user.bibitapel,

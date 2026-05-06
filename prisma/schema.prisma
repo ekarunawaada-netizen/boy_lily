@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model User {
+  id            String   @id
+  registered    Boolean  @default(false)
+  banned        Boolean  @default(false)
+  bannedTime    BigInt   @default(0)
+  premium       Boolean  @default(false)
+  premiumTime   BigInt   @default(0)
+  role          String   @default("Beginner")
+  warning       Int      @default(0)
+  limit         Int      @default(20)
+  
+  money         BigInt   @default(0)
+  bank          BigInt   @default(0)
+  exp           BigInt   @default(0)
+  level         Int      @default(0)
+  health        Int      @default(1000)
+  
+  rpgData       Json?    @default("{}") 
+}
+
+model Group {
+  id                String  @id
+  name              String  @default("")
+  welcome           Boolean @default(false)
+  left              Boolean @default(false)
+  proses            Boolean @default(false)
+  done              Boolean @default(false)
+  mute              Boolean @default(false)
+  nsfw              Boolean @default(false)
+  antitoxic         Boolean @default(false)
+  antivirus         Boolean @default(false)
+  antiwame          Boolean @default(false)
+  antilink          Boolean @default(false)
+  openaigc          Boolean @default(false)
+  chatDinzID        Boolean @default(false)
+  autosticker       Boolean @default(false)
+  
+  extraSettings     Json?   @default("{}")
+}
+
+model Chat {
+  id          String   @id
+  name        String   @default("")
+  totalChat   Json?    @default("{}")
+}
+
+model BotSetting {
+  id             String  @id
+  anticall       Boolean @default(true)
+  status         Int     @default(0)
+  stock          Int     @default(10)
+  autobio        Boolean @default(false)
+  autoread       Boolean @default(true)
+  auto_ai_grup   Boolean @default(true)
+  goodbye        Boolean @default(true)
+  onlygrub       Boolean @default(false)
+  onlypc         Boolean @default(false)
+  welcome        Boolean @default(true)
+}
+
+model SessionInfo {
+  sessionId   String   @id
+  sessionData String
+}

@@ -1,4 +1,4 @@
-const mongoDb = require('../lib/db')
+// Migrated to global.db
 
 // Helper untuk format waktu
 function clockString(ms) {
@@ -27,10 +27,10 @@ module.exports = {
     ],
     category: 'rpg',
     desc: 'Fitur tambahan RPG Games & Activities',
-    async run(DinzBotz, m, { command, args, prefix, isRegistered, replydaftar, sender, pushname }) {
+    async run(LilyBot, m, { command, args, prefix, isRegistered, replydaftar, sender, pushname }) {
         if (!isRegistered) return replydaftar()
 
-        const user = await mongoDb.getUser(sender)
+        const user = await global.db.users[sender]
         const now = Date.now()
 
         // ─── [INFO RPG] ────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ module.exports = {
 
             user.money -= 5000
             user.health = 1000
-            await mongoDb.updateUser(sender, user)
+            await Object.assign(global.db.users[sender], user)
             return m.reply(`🏥 Kamu telah berobat. Darah sekarang penuh (1000 HP).`)
         }
 
@@ -75,7 +75,7 @@ module.exports = {
             user.exp += 50
             user.lastmining = now
 
-            await mongoDb.updateUser(sender, user)
+            await Object.assign(global.db.users[sender], user)
             return m.reply(`⛏️ Kamu pergi ke tambang...\n\n📦 Hasil tambang:\n🪨 Rock: +${rock}\n⛓️ Iron: +${iron}\n🪙 Gold: +${gold}\n✨ XP: +50`)
         }
 
@@ -88,7 +88,7 @@ module.exports = {
             user.exp += 40
             user.lastnebang = now
 
-            await mongoDb.updateUser(sender, user)
+            await Object.assign(global.db.users[sender], user)
             return m.reply(`🪓 Kamu pergi ke hutan...\n\n📦 Hasil tebangan:\n🪵 Wood: +${wood}\n✨ XP: +40`)
         }
 
@@ -102,7 +102,7 @@ module.exports = {
                 user.wood -= 20
                 user.iron -= 10
                 user.sword = (user.sword || 1) + 1
-                await mongoDb.updateUser(sender, user)
+                await Object.assign(global.db.users[sender], user)
                 return m.reply(`⚔️ *CRAFTING SUKSES!* Senjata kamu sekarang Level *${user.sword}*.\nSerangan ke monster akan semakin kuat!`)
             }
 
@@ -111,7 +111,7 @@ module.exports = {
                 user.iron -= 20
                 user.gold -= 2
                 user.armor = (user.armor || 1) + 1
-                await mongoDb.updateUser(sender, user)
+                await Object.assign(global.db.users[sender], user)
                 return m.reply(`🥼 *CRAFTING SUKSES!* Armor kamu sekarang Level *${user.armor}*.\nDarah yang berkurang saat bertarung akan lebih sedikit!`)
             }
 
@@ -157,7 +157,7 @@ module.exports = {
                 resultMsg += `💀 *KALAH!* ${monster.name} terlalu kuat. Kamu terpaksa melarikan diri.`
             }
 
-            await mongoDb.updateUser(sender, user)
+            await Object.assign(global.db.users[sender], user)
             return m.reply(resultMsg)
         }
 
@@ -183,7 +183,7 @@ module.exports = {
             user.exp += act.xp
             user[`last${command}`] = now
 
-            await mongoDb.updateUser(sender, user)
+            await Object.assign(global.db.users[sender], user)
             return m.reply(`${act.msg}\n\n✅ Selesai! Kamu mendapatkan:\n💰 Money: Rp ${totalReward.toLocaleString()} (Bonus Level included)\n✨ XP: +${act.xp}`)
         }
 
@@ -200,12 +200,12 @@ module.exports = {
             if (success) {
                 const stolen = Math.floor(Math.random() * 50000) + 10000
                 user.money += stolen
-                await mongoDb.updateUser(sender, user)
+                await Object.assign(global.db.users[sender], user)
                 return m.reply(`🥷 *SUKSES!* Kamu berhasil merampok toko kelontong dan mendapatkan Rp ${stolen.toLocaleString()}!`)
             } else {
                 const fine = 15000
                 user.money = Math.max(0, user.money - fine)
-                await mongoDb.updateUser(sender, user)
+                await Object.assign(global.db.users[sender], user)
                 return m.reply(`🚔 *TERCIDUK!* Kamu tertangkap polisi saat beraksi. Kamu didenda Rp ${fine.toLocaleString()} dan uangmu disita!`)
             }
         }
@@ -237,7 +237,7 @@ module.exports = {
                 msg += `❌ *KALAH!* Coba lagi ya kak, jangan menyerah!`
             }
 
-            await mongoDb.updateUser(sender, user)
+            await Object.assign(global.db.users[sender], user)
             return m.reply(msg)
         }
 
@@ -249,11 +249,11 @@ module.exports = {
             const win = Math.random() > 0.55 // 45% chance win
             if (win) {
                 user.money += bet
-                await mongoDb.updateUser(sender, user)
+                await Object.assign(global.db.users[sender], user)
                 return m.reply(`🎰 *JUDI SUKSES!* Kamu menang Rp ${bet.toLocaleString()}!\n💰 Total Uang: Rp ${user.money.toLocaleString()}`)
             } else {
                 user.money -= bet
-                await mongoDb.updateUser(sender, user)
+                await Object.assign(global.db.users[sender], user)
                 return m.reply(`💸 *JUDI GAGAL!* Kamu kalah Rp ${bet.toLocaleString()}!\n💰 Sisa Uang: Rp ${user.money.toLocaleString()}`)
             }
         }
@@ -289,7 +289,7 @@ module.exports = {
                 result = `❌ Kamu kalah Rp ${bet.toLocaleString()}!`
             }
 
-            await mongoDb.updateUser(sender, user)
+            await Object.assign(global.db.users[sender], user)
             return m.reply(`🎮 *SUIT GAMES* 🎮\n\n👤 Kamu: ${userChoice}\n🤖 Lily: ${botChoice}\n\n🏆 Hasil: *${status}*\n${result}\n💰 Total Uang: Rp ${user.money.toLocaleString()}`)
         }
 
@@ -322,7 +322,7 @@ module.exports = {
                 msg += `❌ *KALAH!* Kehilangan Rp ${bet.toLocaleString()}.`
             }
 
-            await mongoDb.updateUser(sender, user)
+            await Object.assign(global.db.users[sender], user)
             return m.reply(msg)
         }
     }

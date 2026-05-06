@@ -7,7 +7,7 @@ module.exports = {
     command: ['tiktok', 'tt', 'tiktokdl', 'igdl', 'igvideo', 'igimage', 'igvid', 'igimg'],
     category: 'downloader',
     desc: 'Download media dari Tiktok dan Instagram',
-    async run(DinzBotz, m, { command, args, text, q, prefix, mess, replyviex, fetchJson }) {
+    async run(LilyBot, m, { command, args, text, q, prefix, mess, replyviex, fetchJson }) {
         if (!text || !text.startsWith("http")) return replyviex(`Contoh: ${prefix}${command} https://...`);
         
         await m.reply(mess.wait);
@@ -21,9 +21,9 @@ module.exports = {
                 
                 for (let item of res.data) {
                     if (item.url.includes('.mp4')) {
-                        await DinzBotz.sendMessage(m.chat, { video: { url: item.url }, caption: "Success download IG video" }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { video: { url: item.url }, caption: "Success download IG video" }, { quoted: m });
                     } else {
-                        await DinzBotz.sendMessage(m.chat, { image: { url: item.url }, caption: "Success download IG image" }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { image: { url: item.url }, caption: "Success download IG image" }, { quoted: m });
                     }
                 }
                 await m.react('✅');
@@ -36,7 +36,7 @@ module.exports = {
                 try {
                     let res = await fetchJson(`https://api.siputzx.my.id/api/d/tiktok?url=${encodeURIComponent(text)}`);
                     if (res?.data?.nowm) {
-                        await DinzBotz.sendMessage(m.chat, { video: { url: res.data.nowm }, caption: "✅ TikTok Video Downloader" }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { video: { url: res.data.nowm }, caption: "✅ TikTok Video Downloader" }, { quoted: m });
                         await m.react('✅');
                         return;
                     }
@@ -50,7 +50,7 @@ module.exports = {
                     if (result.status) {
                         let urlVid = result.data.find(e => e.type == "nowatermark_hd" || e.type == "nowatermark");
                         if (urlVid) {
-                            await DinzBotz.sendMessage(m.chat, { video: { url: urlVid.url }, caption: "✅ TikTok Downloader" }, { quoted: m });
+                            await LilyBot.sendMessage(m.chat, { video: { url: urlVid.url }, caption: "✅ TikTok Downloader" }, { quoted: m });
                             await m.react('✅');
                             return;
                         }

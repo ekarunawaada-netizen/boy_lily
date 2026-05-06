@@ -8,7 +8,7 @@ module.exports = {
     ],
     category: 'other',
     desc: 'Fitur pendukung (Misc & Primbon)',
-    async run(DinzBotz, m, { command, text, q, prefix, isRegistered, replydaftar, replyviex, mess }) {
+    async run(LilyBot, m, { command, text, q, prefix, isRegistered, replydaftar, replyviex, mess }) {
         if (!isRegistered) return replydaftar();
 
         switch (command) {
@@ -21,7 +21,7 @@ module.exports = {
                     const { UploadFileUgu } = require('../lib/uploader')
                     const url = await UploadFileUgu(img)
                     const res = `https://api.siputzx.my.id/api/tools/filters?url=${url.url}&filter=grayscale`
-                    await DinzBotz.sendMessage(m.chat, { image: { url: res }, caption: '✅ Efek Hitam Putih' }, { quoted: m })
+                    await LilyBot.sendMessage(m.chat, { image: { url: res }, caption: '✅ Efek Hitam Putih' }, { quoted: m })
                 } catch (e) { m.reply('❌ Gagal memproses gambar.') }
                 break;
             }
@@ -38,7 +38,7 @@ module.exports = {
 
             case 'soulmate': {
                 if (!text) return m.reply(`Tag atau masukkan nama target!`)
-                const target = m.mentionedJid[0] ? DinzBotz.getName(m.mentionedJid[0]) : text
+                const target = m.mentionedJid[0] ? LilyBot.getName(m.mentionedJid[0]) : text
                 const percent = Math.floor(Math.random() * 100)
                 m.reply(`❤️ *SOULMATE CHECK*\n\nKecocokan antara *${m.pushName}* dan *${target}* adalah:\n📊 *${percent}%*`)
                 break;
@@ -65,7 +65,7 @@ module.exports = {
                 const owner = JSON.parse(require('fs').readFileSync('./database/owner.json'))
                 let cap = `👑 *DAFTAR PEMILIK (OWNER)*\n\n`
                 owner.forEach((v, i) => { cap += `${i+1}. @${v}\n` })
-                DinzBotz.sendMessage(m.chat, { text: cap, mentions: owner.map(v => v + '@s.whatsapp.net') }, { quoted: m })
+                LilyBot.sendMessage(m.chat, { text: cap, mentions: owner.map(v => v + '@s.whatsapp.net') }, { quoted: m })
                 break;
             }
         }

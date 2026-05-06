@@ -8,7 +8,7 @@ module.exports = {
     ],
     category: 'ai',
     desc: 'Fitur AI tambahan (Free API)',
-    async run(DinzBotz, m, { command, text, q, prefix, isRegistered, replydaftar, replyviex, mess }) {
+    async run(LilyBot, m, { command, text, q, prefix, isRegistered, replydaftar, replyviex, mess }) {
         if (!isRegistered) return replydaftar();
         if (!text) return m.reply(`Mau nanya apa? Contoh: *${prefix}${command} Siapa presiden Indonesia?*`);
 

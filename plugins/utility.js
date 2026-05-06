@@ -20,7 +20,7 @@ module.exports = {
     ],
     category: 'utility',
     desc: 'Fitur utilitas umum bot',
-    async run(DinzBotz, m, { command, q, text, args, prefix, from,
+    async run(LilyBot, m, { command, q, text, args, prefix, from,
         DinzTheCreator, isOwner, isRegistered, isAdmins, isBotAdmins,
         quoted, mime, mess, replyviex, reply, fetchJson, getBuffer,
         totalfitur, runtime }) {
@@ -40,7 +40,7 @@ module.exports = {
                 let teks = `📊 *VOTE / POLL*\n\n❓ ${question}\n\n`;
                 options.forEach((opt, i) => { teks += `${i + 1}. ${opt}\n`; });
                 teks += `\nID Vote: \`${voteKey}\``;
-                await DinzBotz.sendMessage(m.chat, { text: teks }, { quoted: m });
+                await LilyBot.sendMessage(m.chat, { text: teks }, { quoted: m });
                 break;
             }
             case 'upvote': {
@@ -102,11 +102,11 @@ module.exports = {
                     let buff = Buffer.from([]);
                     for await (const chunk of stream) buff = Buffer.concat([buff, chunk]);
                     if (/image/.test(mime)) {
-                        await DinzBotz.sendMessage(m.chat, { image: buff, caption: '🔓 View Once dibuka!' }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { image: buff, caption: '🔓 View Once dibuka!' }, { quoted: m });
                     } else if (/video/.test(mime)) {
-                        await DinzBotz.sendMessage(m.chat, { video: buff, caption: '🔓 View Once dibuka!' }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { video: buff, caption: '🔓 View Once dibuka!' }, { quoted: m });
                     } else if (/audio/.test(mime)) {
-                        await DinzBotz.sendMessage(m.chat, { audio: buff, mimetype: 'audio/mp4' }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { audio: buff, mimetype: 'audio/mp4' }, { quoted: m });
                     }
                 } catch (e) {
                     console.error('[utility:rvo]', e);
@@ -124,7 +124,7 @@ module.exports = {
                 try {
                     const ssUrl = `https://api.siputzx.my.id/api/screenshot?url=${encodeURIComponent(url)}`;
                     replyviex(mess.wait || 'Mengambil screenshot...');
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         image: { url: ssUrl },
                         caption: `📸 Screenshot dari: ${url}`
                     }, { quoted: m });
@@ -141,7 +141,7 @@ module.exports = {
                 const link = q.split('https://chat.whatsapp.com/')[1];
                 if (!link) return replyviex('Link grup tidak valid!');
                 try {
-                    await DinzBotz.groupAcceptInvite(link);
+                    await LilyBot.groupAcceptInvite(link);
                     replyviex('✅ Berhasil join grup!');
                 } catch (e) {
                     replyviex('Gagal join grup: ' + e.message);
@@ -153,7 +153,7 @@ module.exports = {
             case 'react': {
                 if (!m.quoted) return replyviex(`Reply pesan dengan caption ${prefix}react [emoji]`);
                 const emoji = q || '❤️';
-                await DinzBotz.sendMessage(m.chat, {
+                await LilyBot.sendMessage(m.chat, {
                     react: { text: emoji, key: m.quoted.key }
                 });
                 break;
@@ -174,7 +174,7 @@ module.exports = {
             case 'listpc': {
                 if (!DinzTheCreator) return replyviex(mess.only.owner);
                 try {
-                    const chats = await DinzBotz.chats?.all?.() || [];
+                    const chats = await LilyBot.chats?.all?.() || [];
                     const pcs = chats.filter(c => !c.id.endsWith('@g.us'));
                     replyviex(`*📱 Daftar Private Chat*\n\nTotal: ${pcs.length}\n\n${pcs.slice(0,20).map((c,i) => `${i+1}. ${c.id}`).join('\n')}`);
                 } catch { replyviex('Gagal mengambil list PC'); }
@@ -183,7 +183,7 @@ module.exports = {
             case 'listgc': {
                 if (!DinzTheCreator) return replyviex(mess.only.owner);
                 try {
-                    const data = await DinzBotz.groupFetchAllParticipating();
+                    const data = await LilyBot.groupFetchAllParticipating();
                     const groups = Object.values(data);
                     replyviex(`*👥 Daftar Group Chat*\n\nTotal: ${groups.length}\n\n${groups.slice(0,20).map((g,i) => `${i+1}. ${g.subject}`).join('\n')}`);
                 } catch { replyviex('Gagal mengambil list GC'); }

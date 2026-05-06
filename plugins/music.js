@@ -22,7 +22,7 @@ module.exports = {
     ],
     category: 'music',
     desc: 'Download musik dari YouTube, TikTok, Spotify',
-    async run(DinzBotz, m, { command, q, text, args, prefix,
+    async run(LilyBot, m, { command, q, text, args, prefix,
         isRegistered, replydaftar, replyviex, reply,
         mime, quoted, mess, fetchJson, getBuffer, sleep }) {
 
@@ -55,7 +55,7 @@ module.exports = {
                         const searchRes = await fetchJson(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`);
                         throw new Error('ytdl2 tidak tersedia, gunakan savetube');
                     }
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         audio: { url: res.url || res },
                         mimetype: 'audio/mp4',
                         ptt: false
@@ -64,7 +64,7 @@ module.exports = {
                     // Fallback SaveTube API
                     try {
                         const st = await savetube(q, 'mp3');
-                        await DinzBotz.sendMessage(m.chat, {
+                        await LilyBot.sendMessage(m.chat, {
                             audio: { url: st.url },
                             mimetype: 'audio/mp4',
                             ptt: false
@@ -86,14 +86,14 @@ module.exports = {
                     } else {
                         throw new Error('ytdl2 tidak tersedia');
                     }
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         video: { url: res.url || res },
                         caption: `🎬 ${res.title || q}`
                     }, { quoted: m });
                 } catch {
                     try {
                         const st = await savetube(q, 'mp4');
-                        await DinzBotz.sendMessage(m.chat, {
+                        await LilyBot.sendMessage(m.chat, {
                             video: { url: st.url },
                             caption: `🎬 ${st.title || q}`
                         }, { quoted: m });
@@ -113,7 +113,7 @@ module.exports = {
                 replyviex(mess.wait || '📥 Mendownload TikTok...');
                 try {
                     const res = await tiktok(q);
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         video: { url: res.videoUrl || res.play || res.url },
                         caption: `🎵 ${res.title || 'TikTok Video'}\n👤 @${res.author || ''}`
                     }, { quoted: m });
@@ -131,7 +131,7 @@ module.exports = {
                 replyviex(mess.wait || '🎵 Mendownload audio TikTok...');
                 try {
                     const res = await tiktok(q);
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         audio: { url: res.music || res.musicUrl || res.audioUrl },
                         mimetype: 'audio/mp4',
                         ptt: false
@@ -153,7 +153,7 @@ module.exports = {
                     const images = res.images || res.image_post_info?.images || [];
                     if (!images.length) return replyviex('Tidak ada gambar slide!');
                     for (let i = 0; i < Math.min(images.length, 10); i++) {
-                        await DinzBotz.sendMessage(m.chat, {
+                        await LilyBot.sendMessage(m.chat, {
                             image: { url: images[i].display_image?.url_list?.[0] || images[i] },
                             caption: i === 0 ? `📷 TikTok Slide (${images.length} gambar)` : ''
                         });
@@ -176,7 +176,7 @@ module.exports = {
                     } else {
                         throw new Error('spotify lib tidak tersedia');
                     }
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         audio: { url: res.audioUrl || res.url },
                         mimetype: 'audio/mp4',
                         ptt: false
@@ -185,7 +185,7 @@ module.exports = {
                     // Fallback: cari di YouTube
                     try {
                         const st = await savetube(q + ' official audio', 'mp3');
-                        await DinzBotz.sendMessage(m.chat, {
+                        await LilyBot.sendMessage(m.chat, {
                             audio: { url: st.url },
                             mimetype: 'audio/mp4',
                             ptt: false

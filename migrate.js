@@ -1,156 +1,169 @@
-/**
- * migrate.js — Script Migrasi Data (Phase 3)
- * Jalankan SEKALI saja: node migrate.js
- *
- * Apa yang dilakukan script ini:
- * 1. Baca semua data dari database/database.json (users)
- * 2. Baca file-file JSON grup terpisah (welcome.json, nsfw.json, dll)
- * 3. Upload ke MongoDB Atlas
- */
+require('dotenv').config();
+const fs = require('fs');
+const { Pool } = require('pg');
+const { PrismaPg } = require('@prisma/adapter-pg');
+const { PrismaClient } = require('@prisma/client');
 
-'use strict'
+const connectionString = process.env.DATABASE_URL;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
-require('dotenv').config()
-const fs       = require('fs')
-const mongoose = require('mongoose')
-const { User, Group } = require('./lib/schema')
+async function runMigration() {
+    console.log('🔄 Memulai proses migrasi dari database.json ke Supabase (PostgreSQL)...');
 
-const DB_PATH = './database'
-
-// ─── Connect ─────────────────────────────────────────────────────────────────
-async function main() {
-    const uri = process.env.MONGO_URI
-    if (!uri) {
-        console.error('❌ MONGO_URI tidak ada di .env!')
-        process.exit(1)
+    // 1. Baca database lokal
+    if (!fs.existsSync('./database/database.json')) {
+        console.error('❌ File database.json tidak ditemukan! Pastikan file ada di ./database/database.json');
+        process.exit(1);
     }
 
-    console.log('🔌 Menghubungkan ke MongoDB Atlas...')
-    await mongoose.connect(uri, { serverSelectionTimeoutMS: 15000 })
-    console.log('✅ Terhubung!\n')
+    const rawData = fs.readFileSync('./database/database.json', 'utf-8');
+    const db = JSON.parse(rawData);
 
-    await migrateUsers()
-    await migrateGroups()
+    // 2. Migrasi Users
+    if (db.users) {
+        const users = Object.entries(db.users);
+        console.log(`\n👥 Memigrasikan ${users.length} Users...`);
+        let count = 0;
 
-    console.log('\n🎉 Migrasi selesai! Disconnect...')
-    await mongoose.disconnect()
-    process.exit(0)
-}
+        for (const [jid, data] of users) {
+            // Ekstrak properti utama
+            const {
+                registered = false,
+                banned = false,
+                bannedTime = 0,
+                premium = false,
+                premiumTime = 0,
+                role = "Beginner",
+                warning = 0,
+                limit = 20,
+                money = 0,
+                bank = 0,
+                exp = 0,
+                level = 0,
+                health = 1000,
+                _id, // Buang _id bawaan MongoDB
+                ...rpgData // Sisanya (wood, iron, lastclaim, dll) masuk ke rpgData
+            } = data;
 
-// ─── Migrate Users ────────────────────────────────────────────────────────────
-async function migrateUsers() {
-    console.log('👤 Migrasi Users...')
-    const raw = JSON.parse(fs.readFileSync(`${DB_PATH}/database.json`, 'utf-8'))
-    const users = raw.users || {}
-    const jids  = Object.keys(users)
-
-    console.log(`   Ditemukan ${jids.length} user`)
-
-    let ok = 0, skip = 0, fail = 0
-
-    for (const jid of jids) {
-        // Filter: skip newsletter (bukan user nyata)
-        if (jid.includes('@newsletter')) { skip++; continue }
-
-        try {
-            await User.findByIdAndUpdate(
-                jid,
-                { $set: { _id: jid, ...users[jid] } },
-                { upsert: true, new: true }
-            )
-            ok++
-        } catch (e) {
-            console.error(`   ❌ Gagal migrasi user ${jid}:`, e.message)
-            fail++
-        }
-    }
-
-    console.log(`   ✅ Berhasil: ${ok} | ⏭ Skip: ${skip} | ❌ Gagal: ${fail}`)
-}
-
-// ─── Migrate Groups ───────────────────────────────────────────────────────────
-async function migrateGroups() {
-    console.log('\n👥 Migrasi Groups...')
-
-    // Map file JSON ke field di schema Group
-    const groupFiles = {
-        'welcome.json':          { field: 'welcome',          isArray: true },
-        'left.json':             { field: 'left',             isArray: true },
-        'set_done.json':         { field: 'done',             isArray: true },
-        'set_proses.json':       { field: 'proses',           isArray: true },
-        'mute.json':             { field: 'mute',             isArray: true },
-        'nsfw.json':             { field: 'nsfw',             isArray: true },
-        'antitoxic.json':        { field: 'antitoxic',        isArray: false }, // format objek
-        'antivirus.json':        { field: 'antivirus',        isArray: false },
-        'antiwame.json':         { field: 'antiwame',         isArray: false },
-        'antilinkall.json':      { field: 'antilinkall',      isArray: true },
-        'antilinkfacebook.json': { field: 'antilinkfacebook', isArray: false },
-        'antilinkinstagram.json':{ field: 'antilinkinstagram',isArray: false },
-        'antilinktiktok.json':   { field: 'antilinktiktok',   isArray: true },
-        'antilinktelegram.json': { field: 'antilinktelegram', isArray: true },
-        'antilinktwitter.json':  { field: 'antilinktwitter',  isArray: true },
-        'antilinkytchannel.json':{ field: 'antilinkytchannel',isArray: true },
-        'antilinkytvideo.json':  { field: 'antilinkytvideo',  isArray: true },
-        'antilinkch.json':       { field: 'antilinkch',       isArray: true },
-        'openaigc.json':         { field: 'openaigc',         isArray: true },
-        'autosticker.json':      { field: 'autosticker',      isArray: false }, // {groupId: bool}
-    }
-
-    // Kumpulkan semua grup yang perlu diupdate ke dalam map { jid: {fields} }
-    const groupMap = {}
-
-    for (const [filename, config] of Object.entries(groupFiles)) {
-        const filePath = `${DB_PATH}/${filename}`
-        if (!fs.existsSync(filePath)) continue
-
-        let raw
-        try {
-            raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-        } catch {
-            console.warn(`   ⚠️  Gagal parse ${filename}, dilewati.`)
-            continue
-        }
-
-        if (config.isArray && Array.isArray(raw)) {
-            // Format: ["groupjid1", "groupjid2", ...]
-            for (const jid of raw) {
-                if (!jid.endsWith('@g.us')) continue
-                if (!groupMap[jid]) groupMap[jid] = {}
-                groupMap[jid][config.field] = true
-            }
-        } else if (typeof raw === 'object' && raw !== null) {
-            // Format: { "groupjid": true/false, ... }
-            for (const [jid, val] of Object.entries(raw)) {
-                if (!jid.endsWith('@g.us')) continue
-                if (!groupMap[jid]) groupMap[jid] = {}
-                groupMap[jid][config.field] = Boolean(val)
+            try {
+                await prisma.user.upsert({
+                    where: { id: jid },
+                    update: {
+                        registered, banned, bannedTime: BigInt(bannedTime),
+                        premium, premiumTime: BigInt(premiumTime),
+                        role, warning, limit,
+                        money: BigInt(money), bank: BigInt(bank),
+                        exp: BigInt(exp), level, health,
+                        rpgData
+                    },
+                    create: {
+                        id: jid,
+                        registered, banned, bannedTime: BigInt(bannedTime),
+                        premium, premiumTime: BigInt(premiumTime),
+                        role, warning, limit,
+                        money: BigInt(money), bank: BigInt(bank),
+                        exp: BigInt(exp), level, health,
+                        rpgData
+                    }
+                });
+                count++;
+            } catch (err) {
+                console.error(`Gagal migrasi user ${jid}:`, err.message);
             }
         }
+        console.log(`✅ Berhasil migrasi ${count} Users.`);
     }
 
-    const groupJids = Object.keys(groupMap)
-    console.log(`   Ditemukan ${groupJids.length} grup unik`)
+    // 3. Migrasi Groups
+    if (db.groups) {
+        const groups = Object.entries(db.groups);
+        console.log(`\n🏘️ Memigrasikan ${groups.length} Groups...`);
+        let count = 0;
 
-    let ok = 0, fail = 0
-    for (const jid of groupJids) {
-        try {
-            await Group.findByIdAndUpdate(
-                jid,
-                { $set: { _id: jid, ...groupMap[jid] } },
-                { upsert: true, new: true }
-            )
-            ok++
-        } catch (e) {
-            console.error(`   ❌ Gagal migrasi grup ${jid}:`, e.message)
-            fail++
+        for (const [jid, data] of groups) {
+            const {
+                name = "", welcome = false, left = false, proses = false,
+                done = false, mute = false, nsfw = false, antitoxic = false,
+                antivirus = false, antiwame = false, antilink = false,
+                openaigc = false, chatDinzID = false, autosticker = false,
+                _id,
+                ...extraSettings
+            } = data;
+
+            try {
+                await prisma.group.upsert({
+                    where: { id: jid },
+                    update: {
+                        name, welcome, left, proses, done, mute, nsfw,
+                        antitoxic, antivirus, antiwame, antilink,
+                        openaigc, chatDinzID, autosticker, extraSettings
+                    },
+                    create: {
+                        id: jid,
+                        name, welcome, left, proses, done, mute, nsfw,
+                        antitoxic, antivirus, antiwame, antilink,
+                        openaigc, chatDinzID, autosticker, extraSettings
+                    }
+                });
+                count++;
+            } catch (err) {
+                console.error(`Gagal migrasi grup ${jid}:`, err.message);
+            }
         }
+        console.log(`✅ Berhasil migrasi ${count} Groups.`);
     }
 
-    console.log(`   ✅ Berhasil: ${ok} | ❌ Gagal: ${fail}`)
+    // 4. Migrasi Chats
+    if (db.chats) {
+        const chats = Object.entries(db.chats);
+        console.log(`\n💬 Memigrasikan ${chats.length} Chats...`);
+        let count = 0;
+
+        for (const [jid, data] of chats) {
+            const { name = "", totalChat = {}, _id, ...rest } = data;
+
+            try {
+                await prisma.chat.upsert({
+                    where: { id: jid },
+                    update: { name, totalChat },
+                    create: { id: jid, name, totalChat }
+                });
+                count++;
+            } catch (err) {
+                console.error(`Gagal migrasi chat ${jid}:`, err.message);
+            }
+        }
+        console.log(`✅ Berhasil migrasi ${count} Chats.`);
+    }
+
+    // 5. Migrasi Settings
+    if (db.settings) {
+        const settings = Object.entries(db.settings);
+        console.log(`\n⚙️ Memigrasikan ${settings.length} Bot Settings...`);
+        let count = 0;
+
+        for (const [jid, data] of settings) {
+            try {
+                await prisma.botSetting.upsert({
+                    where: { id: jid },
+                    update: { ...data },
+                    create: { id: jid, ...data }
+                });
+                count++;
+            } catch (err) {
+                console.error(`Gagal migrasi setting ${jid}:`, err.message);
+            }
+        }
+        console.log(`✅ Berhasil migrasi ${count} Settings.`);
+    }
+
+    console.log('\n🎉 MIGRASI SELESAI! Anda sekarang bisa menghapus folder database dan menjalankan bot murni dari Supabase.');
+    process.exit(0);
 }
 
-// ─── Run ─────────────────────────────────────────────────────────────────────
-main().catch(err => {
-    console.error('❌ Fatal error:', err)
-    process.exit(1)
-})
+runMigration().catch(e => {
+    console.error(e);
+    process.exit(1);
+});

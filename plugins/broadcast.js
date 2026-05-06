@@ -3,7 +3,7 @@ module.exports = {
     command: ['bctext', 'broadcasttext', 'broadcast', 'broadcastimage', 'bcimage', 'broadcastvideo', 'broadcastvid', 'bcvideo'],
     category: 'owner',
     desc: 'Broadcast pesan teks/gambar/video ke semua grup',
-    async run(DinzBotz, m, { command, q, text, mime, quoted, DinzTheCreator, participants, replyviex, mess, sleep }) {
+    async run(LilyBot, m, { command, q, text, mime, quoted, DinzTheCreator, participants, replyviex, mess, sleep }) {
 
         if (!DinzTheCreator) return replyviex(mess.only.owner);
 
@@ -13,13 +13,13 @@ module.exports = {
             case 'broadcast': {
                 if (!q) return replyviex('Masukkan teks broadcast!');
                 try {
-                    const data = await DinzBotz.groupFetchAllParticipating();
+                    const data = await LilyBot.groupFetchAllParticipating();
                     const groups = Object.entries(data).map(e => e[1]);
                     const chatIds = groups.map(v => v.id);
                     replyviex(`📢 Menyiarkan ke ${chatIds.length} grup...`);
                     for (let id of chatIds) {
                         try {
-                            await DinzBotz.sendMessage(id, {
+                            await LilyBot.sendMessage(id, {
                                 text: `📣 *${global.ownername || 'Owner'}'s Siaran*\n\n${q}`
                             });
                             await sleep(1500);
@@ -41,7 +41,7 @@ module.exports = {
                 if (!quoted) return replyviex(`Reply gambar/video dengan caption ${prefix}${command}`);
                 if (!/image|video/.test(mime)) return replyviex('Hanya bisa broadcast gambar atau video!');
                 try {
-                    const data = await DinzBotz.groupFetchAllParticipating();
+                    const data = await LilyBot.groupFetchAllParticipating();
                     const groups = Object.entries(data).map(e => e[1]);
                     const chatIds = groups.map(v => v.id);
                     replyviex(`📢 Menyiarkan media ke ${chatIds.length} grup...`);
@@ -50,9 +50,9 @@ module.exports = {
                     for (let id of chatIds) {
                         try {
                             if (/image/.test(mime)) {
-                                await DinzBotz.sendMessage(id, { image: media, caption: txt });
+                                await LilyBot.sendMessage(id, { image: media, caption: txt });
                             } else {
-                                await DinzBotz.sendMessage(id, { video: media, caption: txt });
+                                await LilyBot.sendMessage(id, { video: media, caption: txt });
                             }
                             await sleep(2000);
                         } catch (e) { /* skip gagal */ }

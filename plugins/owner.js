@@ -15,7 +15,7 @@ module.exports = {
     ],
     category: 'owner',
     desc: 'Fitur khusus untuk owner bot',
-    async run(DinzBotz, m, { command, q, text, args, prefix, from,
+    async run(LilyBot, m, { command, q, text, args, prefix, from,
         DinzTheCreator, mess, replyviex, reply, isRegistered, replydaftar,
         totalfitur, DinzIDtotalpitur }) {
 
@@ -58,29 +58,29 @@ module.exports = {
             }
 
             case 'public':
-                DinzBotz.public = true;
+                LilyBot.public = true;
                 replyviex('✅ Bot diubah ke mode *PUBLIC*');
                 break;
 
             case 'self':
-                DinzBotz.public = false;
+                LilyBot.public = false;
                 replyviex('✅ Bot diubah ke mode *SELF*');
                 break;
 
             case 'clearall':
-                await DinzBotz.chatModify({
+                await LilyBot.chatModify({
                     delete: true,
                     lastMessages: [{ key: m.key, messageTimestamp: m.messageTimestamp }]
                 }, m.chat);
                 break;
 
             case 'pinchat':
-                await DinzBotz.chatModify({ pin: true }, m.chat);
+                await LilyBot.chatModify({ pin: true }, m.chat);
                 replyviex('📌 Berhasil Pin Chat');
                 break;
 
             case 'unpinchat':
-                await DinzBotz.chatModify({ pin: false }, m.chat);
+                await LilyBot.chatModify({ pin: false }, m.chat);
                 replyviex('📌 Berhasil Unpin Chat');
                 break;
 
@@ -88,7 +88,7 @@ module.exports = {
             case 'developer':
             case 'dev': {
                 const vcard = 'BEGIN:VCARD\nVERSION:3.0\nFN:DinzID\nORG:DinzID;\nTEL;type=CELL;type=VOICE;waid=6289523888644:+62 895-2388-8644\nEND:VCARD';
-                DinzBotz.sendMessage(m.chat, {
+                LilyBot.sendMessage(m.chat, {
                     contacts: { displayName: 'DinzID', contacts: [{ vcard }] }
                 }, { quoted: m });
                 break;
@@ -96,13 +96,13 @@ module.exports = {
 
             case 'setbotname':
                 if (!text) return replyviex(`Contoh: ${prefix}${command} LilyMD`);
-                await DinzBotz.updateProfileName(text);
+                await LilyBot.updateProfileName(text);
                 replyviex('✅ Nama bot berhasil diubah');
                 break;
 
             case 'setbotbio':
                 if (!text) return replyviex(`Contoh: ${prefix}${command} I am a bot`);
-                await DinzBotz.updateProfileStatus(text);
+                await LilyBot.updateProfileStatus(text);
                 replyviex('✅ Bio bot berhasil diubah');
                 break;
 
@@ -115,10 +115,10 @@ module.exports = {
                     let user = [...new Set([...(global.conns || []).filter(c => c.user).map(c => c.user)])];
                     let te = '*🤖 Rentbot List*\n\n';
                     for (let i of user) {
-                        const y = await DinzBotz.decodeJid(i.id);
+                        const y = await LilyBot.decodeJid(i.id);
                         te += ` • @${y.split('@')[0]} (${i.name})\n`;
                     }
-                    DinzBotz.sendMessage(from, { text: te }, { quoted: m });
+                    LilyBot.sendMessage(from, { text: te }, { quoted: m });
                 } catch {
                     replyviex('Belum ada pengguna yang menyewa bot');
                 }

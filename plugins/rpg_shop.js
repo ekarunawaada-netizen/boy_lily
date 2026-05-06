@@ -1,5 +1,5 @@
 'use strict'
-const db = require('../lib/db')
+// Migrated to global.db
 
 function fmt(n) { return Number(n).toLocaleString('id-ID') }
 function rng(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min }
@@ -28,12 +28,12 @@ const SHOP = {
 // Batas ATM per level
 function getAtmCap(level) { return level * 50000000 }
 
-async function rpgShopHandler(DinzBotz, m, { prefix, command, args, q }) {
+async function rpgShopHandler(LilyBot, m, { prefix, command, args, q }) {
   const reply = t => m.reply(t)
   const sender = m.sender
   if (!m.isGroup) return reply('Perintah RPG hanya bisa digunakan di grup!')
 
-  let user = await db.getUser(sender)
+  let user = await global.db.users[sender]
 
   // ── .shop ──────────────────────────────────────────────────────────────
   if (command === 'shop' || command === 'toko') {
@@ -61,7 +61,7 @@ async function rpgShopHandler(DinzBotz, m, { prefix, command, args, q }) {
       user.atm += 1
       user.fullatm = getAtmCap(user.atm)
       user.money -= shopItem.price
-      await db.updateUser(sender, { atm: user.atm, fullatm: user.fullatm, money: user.money })
+      await Object.assign(global.db.users[sender], { atm: user.atm, fullatm: user.fullatm, money: user.money })
       return reply(`✅ Berhasil upgrade ATM ke Level ${user.atm}!\n🏦 Kapasitas Bank: ${fmt(user.fullatm)}`)
     }
 
@@ -70,14 +70,14 @@ async function rpgShopHandler(DinzBotz, m, { prefix, command, args, q }) {
       if (user[item] > 0) return reply(`❌ Kamu sudah punya ${item}! Gunakan \`.upgrade ${item}\` untuk naik level.`)
       user[item] = 1
       user.money -= shopItem.price
-      await db.updateUser(sender, { [item]: user[item], money: user.money })
+      await Object.assign(global.db.users[sender], { [item]: user[item], money: user.money })
       return reply(`✅ Berhasil membeli *${shopItem.icon} ${item}*!\n💰 Sisa: ${fmt(user.money)}`)
     }
 
     // Item & Bibit: bisa beli banyak
     user[item] = (user[item] || 0) + qty
     user.money -= totalPrice
-    await db.updateUser(sender, { [item]: user[item], money: user.money })
+    await Object.assign(global.db.users[sender], { [item]: user[item], money: user.money })
     return reply(`✅ Berhasil membeli *${qty}x ${shopItem.icon} ${item}*\n💰 -${fmt(totalPrice)} | Sisa: ${fmt(user.money)}`)
   }
 
@@ -109,7 +109,7 @@ async function rpgShopHandler(DinzBotz, m, { prefix, command, args, q }) {
     user[type] += 1
 
     const updatePayload = { [type]: user[type], ...Object.fromEntries(Object.keys(needed).map(k => [k, user[k]])) }
-    await db.updateUser(sender, updatePayload)
+    await Object.assign(global.db.users[sender], updatePayload)
     return reply(`✅ *${type}* berhasil diupgrade ke Level *${user[type]}*!\n\nMaterial dipakai:\n${Object.entries(needed).map(([k,v]) => `• -${fmt(v)} ${k}`).join('\n')}`)
   }
 
@@ -122,7 +122,7 @@ async function rpgShopHandler(DinzBotz, m, { prefix, command, args, q }) {
     const actualQty = Math.min(qty, Math.ceil((1000 - user.health) / hpPer))
     user.potion -= actualQty
     user.health = Math.min(1000, user.health + actualQty * hpPer)
-    await db.updateUser(sender, { potion: user.potion, health: user.health })
+    await Object.assign(global.db.users[sender], { potion: user.potion, health: user.health })
     return reply(`💊 Berhasil heal *${actualQty}x potion*!\n❤️ HP: ${user.health}/1000\n🧪 Sisa potion: ${user.potion}`)
   }
 

@@ -3,7 +3,7 @@ module.exports = {
     command: ['can', 'is', 'when', 'where', 'what', 'how', 'rate', 'cekkhodam', 'khodam', 'akankah', 'akan', 'will', 'apakah', 'apa', 'bisakah', 'bisa'],
     category: 'fun',
     desc: 'Fitur hiburan dan ramalan lucu',
-    async run(DinzBotz, m, { command, text, prefix }) {
+    async run(LilyBot, m, { command, text, prefix }) {
         if (!text) return m.reply(`Masukkan pertanyaan/teks!\nContoh: *${prefix}${command} apakah lily cantik?*`)
 
         const khodamList = ['Macan Kemayoran', 'Tuyul Jabrik', 'Kuntilanak Merah', 'Nyi Roro Kidul', 'Genderuwo Galau', 'Pocong Lari', 'Buaya Darat', 'Kadal Bintit', 'Semut Genit'];

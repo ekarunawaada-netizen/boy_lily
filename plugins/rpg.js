@@ -1,5 +1,5 @@
 'use strict'
-const db = require('../lib/db')
+// Migrated to global.db
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function clock(ms) {
@@ -12,13 +12,13 @@ function rng(min, max) { return Math.floor(Math.random() * (max - min + 1)) + mi
 function fmt(n) { return Number(n).toLocaleString('id-ID') }
 
 // ── Handler Utama ─────────────────────────────────────────────────────────────
-async function rpgHandler(DinzBotz, m, { prefix, command, args, q }) {
+async function rpgHandler(LilyBot, m, { prefix, command, args, q }) {
   const reply = t => m.reply(t)
   const sender = m.sender
   const grpOnly = () => { if (!m.isGroup) { reply('Perintah ini hanya bisa digunakan di dalam grup!'); return true } return false }
 
   // Ambil user dari MongoDB (via db.js)
-  let user = await db.getUser(sender)
+  let user = await global.db.users[sender]
 
   // ── .profile ─────────────────────────────────────────────────────────────
   if (command === 'profile' || command === 'profil') {
@@ -72,7 +72,7 @@ async function rpgHandler(DinzBotz, m, { prefix, command, args, q }) {
     const actual = Math.min(amount, user.fullatm - user.bank)
     user.money -= actual
     user.bank += actual
-    await db.updateUser(sender, { money: user.money, bank: user.bank })
+    await Object.assign(global.db.users[sender], { money: user.money, bank: user.bank })
     return reply(`✅ Berhasil menabung *${fmt(actual)} 💰* ke bank!\n🏦 Saldo Bank: ${fmt(user.bank)}/${fmt(user.fullatm)}`)
   }
 
@@ -85,7 +85,7 @@ async function rpgHandler(DinzBotz, m, { prefix, command, args, q }) {
     if (user.bank < amount) return reply('❌ Saldo bank tidak cukup!')
     user.money += amount
     user.bank -= amount
-    await db.updateUser(sender, { money: user.money, bank: user.bank })
+    await Object.assign(global.db.users[sender], { money: user.money, bank: user.bank })
     return reply(`✅ Berhasil menarik *${fmt(amount)} 💰* dari bank!`)
   }
 
@@ -97,11 +97,11 @@ async function rpgHandler(DinzBotz, m, { prefix, command, args, q }) {
     const amount = parseInt(args[1] || args[0])
     if (!amount || isNaN(amount) || amount < 1000) return reply('Minimal transfer 1.000 💰')
     if (user.money < amount) return reply('❌ Uangmu tidak cukup!')
-    const targetUser = await db.getUser(target)
+    const targetUser = await global.db.users[target]
     user.money -= amount
     targetUser.money += amount
-    await db.updateUser(sender, { money: user.money })
-    await db.updateUser(target, { money: targetUser.money })
+    await Object.assign(global.db.users[sender], { money: user.money })
+    await Object.assign(global.db.users[target], { money: targetUser.money })
     return reply(`✅ Berhasil mengirim *${fmt(amount)} 💰* ke @${target.split('@')[0]}`)
   }
 
@@ -111,7 +111,7 @@ async function rpgHandler(DinzBotz, m, { prefix, command, args, q }) {
     const target = m.mentionedJid?.[0] || m.quoted?.sender
     if (!target) return reply('❌ Tag orang yang mau kamu rampok!')
     if (target === sender) return reply('❌ Tidak bisa merampok diri sendiri!')
-    const targetUser = await db.getUser(target)
+    const targetUser = await global.db.users[target]
     if (!targetUser) return reply('❌ User tidak ada di database.')
     if (targetUser.level > user.level) return reply(`❌ Level kamu harus lebih tinggi dari target!`)
     if (targetUser.money < 10000) return reply('❌ Target tidak punya cukup uang.')
@@ -122,8 +122,8 @@ async function rpgHandler(DinzBotz, m, { prefix, command, args, q }) {
     targetUser.money -= dapat
     user.money += dapat
     user.lastrampok = now
-    await db.updateUser(sender, { money: user.money, lastrampok: user.lastrampok })
-    await db.updateUser(target, { money: targetUser.money })
+    await Object.assign(global.db.users[sender], { money: user.money, lastrampok: user.lastrampok })
+    await Object.assign(global.db.users[target], { money: targetUser.money })
     return reply(`🦹 Berhasil merampok @${target.split('@')[0]}!\n💰 Kamu mendapat: ${fmt(dapat)}`)
   }
 
@@ -141,7 +141,7 @@ async function rpgHandler(DinzBotz, m, { prefix, command, args, q }) {
     if (kamu > bot) { user[type] += amount; status = 'Menang'; hasil = `+${fmt(amount)}` }
     else if (kamu < bot) { user[type] -= amount; status = 'Kalah'; hasil = `-${fmt(amount)}` }
     else { user[type] += Math.floor(amount / 2); status = 'Seri'; hasil = `+${fmt(Math.floor(amount / 2))}` }
-    await db.updateUser(sender, { [type]: user[type] })
+    await Object.assign(global.db.users[sender], { [type]: user[type] })
     return reply(`🎲 *BETTING*\n🤖 Bot: ${bot}  |  👤 Kamu: ${kamu}\n\nStatus: *${status}* (${hasil} ${type})`)
   }
 
@@ -160,7 +160,7 @@ async function rpgHandler(DinzBotz, m, { prefix, command, args, q }) {
     // Cek level up
     const xpNeeded = (user.level + 1) * 1000
     if (user.exp >= xpNeeded) { user.level += 1; user.exp -= xpNeeded }
-    await db.updateUser(sender, { money: user.money, exp: user.exp, level: user.level, lastclaim: user.lastclaim })
+    await Object.assign(global.db.users[sender], { money: user.money, exp: user.exp, level: user.level, lastclaim: user.lastclaim })
     return reply(`🎁 *DAILY CLAIM*\n💰 +${fmt(money)} Money\n⭐ +${exp} XP\n\nTotal Money: ${fmt(user.money)}`)
   }
 
@@ -185,7 +185,7 @@ async function rpgHandler(DinzBotz, m, { prefix, command, args, q }) {
     } else {
       msg = `🏃 Kamu melarikan diri dari sidak bansos, tidak rugi tidak untung.`
     }
-    await db.updateUser(sender, { money: user.money, lastbansos: user.lastbansos })
+    await Object.assign(global.db.users[sender], { money: user.money, lastbansos: user.lastbansos })
     return reply(msg)
   }
 }

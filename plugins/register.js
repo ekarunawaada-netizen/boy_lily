@@ -1,4 +1,4 @@
-const mongoDb = require('../lib/db')
+// Migrated to global.db
 
 // ─── Starter Pack Definitions ─────────────────────────────────────────────────
 const PACKS = {
@@ -153,14 +153,11 @@ const PACKS = {
 
 // ─── Deteksi Role ──────────────────────────────────────────────────────────────
 function detectRole(sender) {
-  const ownerList = JSON.parse(require('fs').readFileSync('./database/owner.json'))
-  const premList  = JSON.parse(require('fs').readFileSync('./database/premium.json'))
-  const ownerJid  = ownerList.map(n => n.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
-  const premJid   = premList.map(n => n.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
+  const ownerJid = (global.owner || []).map(n => n.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
+  const premJid  = (global.db?.users && Object.keys(global.db.users).filter(u => global.db.users[u].premium)) || []
 
-  // Developer = owner ke-1 (index 0) atau sesuai OWNER_NUMBER di env
-  const devNumber = (process.env.OWNER_NUMBER || '').replace(/[^0-9]/g, '') + '@s.whatsapp.net'
-  const devJids   = [ownerJid[0], devNumber].filter(Boolean)
+  // Developer = owner ke-1 (index 0)
+  const devJids = [ownerJid[0]].filter(Boolean)
 
   if (devJids.includes(sender)) return 'developer'
   if (ownerJid.includes(sender)) return 'owner'
@@ -202,7 +199,7 @@ module.exports = {
   category: 'main',
   desc: 'Mendaftar sebagai pengguna bot',
 
-  async run(DinzBotz, m, { prefix, command, args, sender }) {
+  async run(LilyBot, m, { prefix, command, args, sender }) {
     const fs = require('fs')
 
     // Pastikan global.db.users ada
@@ -219,7 +216,6 @@ module.exports = {
 
       const updateData = { ...pack.data, role: pack.role }
       Object.assign(user, updateData)
-      await mongoDb.updateUser(sender, updateData)
 
       return m.reply(`✅ *Pack berhasil di-apply!*\n\n${packMessage(pack, name, age)}`)
     }
@@ -255,9 +251,8 @@ module.exports = {
       ...pack.data,
     }
 
-    // Simpan ke global.db & MongoDB
+    // Simpan ke global.db
     Object.assign(user, updateData)
-    await mongoDb.updateUser(sender, updateData)
 
     return m.reply(`🎉 *PENDAFTARAN BERHASIL!*\n\n${packMessage(pack, name, age)}`)
   }

@@ -6,7 +6,7 @@ module.exports = {
     command: ['hentaivid2', 'hentaivideo', 'trap', 'hneko', 'nwaifu', 'milf', 'yuri', 'zettai'],
     category: 'nsfw',
     desc: 'NSFW Content',
-    async run(DinzBotz, m, { command, isPrem, mess, replyprem, replyviex, pickRandom }) {
+    async run(LilyBot, m, { command, isPrem, mess, replyprem, replyviex, pickRandom }) {
         if (!isPrem) return replyprem(mess.premium);
         
         // Anti NSFW Check (optional, if group settings allow)
@@ -17,7 +17,7 @@ module.exports = {
             case 'hentaivid2':
             case 'hentaivideo':
                 await m.reply(mess.wait);
-                await DinzBotz.sendMessage(m.chat, {
+                await LilyBot.sendMessage(m.chat, {
                     video: { url: `https://api.fgmods.xyz/api/nsfw-nime/hentai-mp4?apikey=qzu9Ja5Q` },
                     caption: `success`
                 }, { quoted: m });
@@ -26,31 +26,31 @@ module.exports = {
             case 'trap':
                 await m.reply(mess.wait);
                 let resTrap = await axios.get(`https://waifu.pics/api/nsfw/trap`);
-                await DinzBotz.sendMessage(m.chat, { image: { url: resTrap.data.url }, caption: mess.success }, { quoted: m });
+                await LilyBot.sendMessage(m.chat, { image: { url: resTrap.data.url }, caption: mess.success }, { quoted: m });
                 break;
 
             case 'hneko':
             case 'hentai-neko':
                 let resNeko = await axios.get(`https://waifu.pics/api/nsfw/neko`);
-                await DinzBotz.sendMessage(m.chat, { image: { url: resNeko.data.url }, caption: mess.success }, { quoted: m });
+                await LilyBot.sendMessage(m.chat, { image: { url: resNeko.data.url }, caption: mess.success }, { quoted: m });
                 break;
 
             case 'milf':
                 let milfData = JSON.parse(fs.readFileSync("./data/DinzIDMedia/nsfw/milf.json"));
                 let milfRes = milfData[Math.floor(Math.random() * milfData.length)];
-                await DinzBotz.sendMessage(m.chat, { image: { url: milfRes.url }, caption: mess.success }, { quoted: m });
+                await LilyBot.sendMessage(m.chat, { image: { url: milfRes.url }, caption: mess.success }, { quoted: m });
                 break;
             
             case 'yuri':
                 let yuriData = JSON.parse(fs.readFileSync("./data/DinzIDMedia/nsfw/yuri.json"));
                 let yuriRes = yuriData[Math.floor(Math.random() * yuriData.length)];
-                await DinzBotz.sendMessage(m.chat, { image: { url: yuriRes.url }, caption: mess.success }, { quoted: m });
+                await LilyBot.sendMessage(m.chat, { image: { url: yuriRes.url }, caption: mess.success }, { quoted: m });
                 break;
 
             case 'zettai':
                 let zettaiData = JSON.parse(fs.readFileSync("./data/DinzIDMedia/nsfw/zettai.json"));
                 let zettaiRes = zettaiData[Math.floor(Math.random() * zettaiData.length)];
-                await DinzBotz.sendMessage(m.chat, { image: { url: zettaiRes.url }, caption: mess.success }, { quoted: m });
+                await LilyBot.sendMessage(m.chat, { image: { url: zettaiRes.url }, caption: mess.success }, { quoted: m });
                 break;
         }
     }

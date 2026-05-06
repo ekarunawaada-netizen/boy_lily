@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const mongoDb = require('../lib/db');
+// Migrated to global.db;
 
 // Path ke folder data games
 const DATA_PATH = path.join(__dirname, '../data update games');
@@ -38,14 +38,14 @@ module.exports = {
     command: Object.keys(GAMES_CONFIG),
     category: 'game',
     desc: 'Kumpulan game tebak-tebakan dari database lokal',
-    async run(DinzBotz, m, { command, prefix, isRegistered, replydaftar }) {
+    async run(LilyBot, m, { command, prefix, isRegistered, replydaftar }) {
         if (!isRegistered) return replydaftar();
 
         const id = m.chat;
         const config = GAMES_CONFIG[command];
         
         // Cek jika game sedang berjalan
-        if (DinzBotz[command] && DinzBotz[command][id]) {
+        if (LilyBot[command] && LilyBot[command][id]) {
             return m.reply(`Masih ada soal yang belum terjawab di chat ini! Ketik *nyerah* untuk menyerah.`);
         }
 
@@ -73,20 +73,20 @@ module.exports = {
 
             let msg;
             if (config.isImage && item.img) {
-                msg = await DinzBotz.sendMessage(m.chat, { image: { url: item.img }, caption }, { quoted: m });
+                msg = await LilyBot.sendMessage(m.chat, { image: { url: item.img }, caption }, { quoted: m });
             } else {
-                msg = await DinzBotz.sendMessage(m.chat, { text: caption }, { quoted: m });
+                msg = await LilyBot.sendMessage(m.chat, { text: caption }, { quoted: m });
             }
 
             // Simpan Sesi
-            DinzBotz[command] = DinzBotz[command] ? DinzBotz[command] : {};
-            DinzBotz[command][id] = [
+            LilyBot[command] = LilyBot[command] ? LilyBot[command] : {};
+            LilyBot[command][id] = [
                 msg,
                 item,
                 setTimeout(() => {
-                    if (DinzBotz[command] && DinzBotz[command][id]) {
-                        DinzBotz.sendMessage(m.chat, { text: `⌛ *Waktu Habis!*\nJawaban: *${item.jawaban}*${config.hasDesk ? `\n\n💡 *Penjelasan:* ${item.deskripsi}` : ''}` }, { quoted: msg });
-                        delete DinzBotz[command][id];
+                    if (LilyBot[command] && LilyBot[command][id]) {
+                        LilyBot.sendMessage(m.chat, { text: `⌛ *Waktu Habis!*\nJawaban: *${item.jawaban}*${config.hasDesk ? `\n\n💡 *Penjelasan:* ${item.deskripsi}` : ''}` }, { quoted: msg });
+                        delete LilyBot[command][id];
                     }
                 }, timeout),
                 reward,

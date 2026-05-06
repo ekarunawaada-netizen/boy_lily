@@ -5,7 +5,7 @@ module.exports = {
     command: ['ai', 'chatgpt', 'gemini', 'logic'],
     category: 'ai',
     desc: 'Fitur kecerdasan buatan (Artificial Intelligence)',
-    async run(DinzBotz, m, { command, text, q, isRegistered, replydaftar, replyviex, mess }) {
+    async run(LilyBot, m, { command, text, q, isRegistered, replydaftar, replyviex, mess }) {
         if (!isRegistered) {
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦");
         }

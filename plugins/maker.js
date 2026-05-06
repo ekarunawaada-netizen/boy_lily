@@ -5,7 +5,7 @@ module.exports = {
     command: ['sticker', 's', 'sgif', 'swm', 'wm', 'tovideo', 'tomp4'],
     category: 'maker',
     desc: 'Fitur pembuatan media (Sticker, Video conversion)',
-    async run(DinzBotz, m, { command, prefix, text, q, isRegistered, replydaftar, replyviex, mime, quoted, getBuffer, mess }) {
+    async run(LilyBot, m, { command, prefix, text, q, isRegistered, replydaftar, replyviex, mime, quoted, getBuffer, mess }) {
         if (!isRegistered) {
             return replydaftar("👋 Halo kak, anda belum bisa mengakses bot nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA\n\n💂‍♀: Kenapa harus daftar sih?\n🍁: Agar bot mengenal siapa anda\n💂‍♀: Ribet banget harus daftar segala\n🍁: Jika tidak daftar, Anda tidak bisa menggunakan fitur bot");
         }
@@ -19,8 +19,8 @@ module.exports = {
                     return replyviex(`Kirim/reply gambar/video dengan caption ${prefix}${command}`);
                 }
                 try {
-                    let img = await DinzBotz.downloadAndSaveMediaMessage(quoted);
-                    await DinzBotz.sendImageAsSticker(m.chat, img, m, {
+                    let img = await LilyBot.downloadAndSaveMediaMessage(quoted);
+                    await LilyBot.sendImageAsSticker(m.chat, img, m, {
                         packname: global.packname || 'Furina-MD',
                         author: global.author || 'LilyMD'
                     });
@@ -40,9 +40,9 @@ module.exports = {
                 await m.reply(mess.wait || 'Memproses...');
                 try {
                     const { webp2mp4File } = require('../lib/uploader');
-                    let img = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+                    let img = await LilyBot.downloadAndSaveMediaMessage(quoted);
                     let result = await webp2mp4File(img);
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         video: { url: result.url || result },
                         caption: mess.success || '✅ Berhasil'
                     }, { quoted: m });

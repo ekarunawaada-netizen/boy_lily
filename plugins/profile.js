@@ -1,15 +1,11 @@
-const mongoDb = require('../lib/db')
-
 module.exports = {
     name: 'profile',
     command: ['me', 'profile', 'profil', 'myinfo'],
     category: 'main',
     desc: 'Melihat profil pengguna bot',
-    async run(DinzBotz, m, { prefix, isOwner, DinzTheCreator, isPrem, sender, pushname }) {
-        // Selalu ambil fresh dari MongoDB
-        const user = await mongoDb.getUser(sender)
+    async run(LilyBot, m, { prefix, isOwner, DinzTheCreator, isPrem, sender, pushname }) {
         if (!global.db?.users) global.db.users = {}
-        global.db.users[sender] = user
+        const user = global.db.users[sender] || { money: 0, exp: 0, limit: 20, level: 1, role: 'Beginner', afkTime: -1, afkReason: '' };
 
         // ── Role ────────────────────────────────────────────────────────────
         let roleLabel, roleBadge
@@ -92,10 +88,10 @@ ${!user.registered ? '\n💡 Ketik *.daftar Nama.Umur* untuk mendaftar!' : ''}`
         // ── Kirim dengan foto profil ─────────────────────────────────────────
         try {
             let ppUrl
-            try { ppUrl = await DinzBotz.profilePictureUrl(sender, 'image') }
+            try { ppUrl = await LilyBot.profilePictureUrl(sender, 'image') }
             catch { ppUrl = global.thumbnail || 'https://files.catbox.moe/yng1lr.jpg' }
 
-            await DinzBotz.sendMessage(m.chat, {
+            await LilyBot.sendMessage(m.chat, {
                 image: { url: ppUrl },
                 caption: profileText
             }, { quoted: m })

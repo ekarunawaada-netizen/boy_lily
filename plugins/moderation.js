@@ -44,7 +44,7 @@ module.exports = {
     ],
     category: 'group',
     desc: 'Fitur moderasi otomatis grup (antilink, antivirus, antitoxic, dll)',
-    async run(DinzBotz, m, { command, args, from, mess,
+    async run(LilyBot, m, { command, args, from, mess,
         DinzTheCreator, isBotAdmins, isAdmins,
         replyviex, reply,
         // Anti-feature states dari Furina.js
@@ -79,9 +79,9 @@ module.exports = {
             case 'antivirtex': {
                 toggleFeature(`${dbBase}antivirus.json`, from, antiVirtex, 'Anti Virus/Virtex', replyviex);
                 if (action === 'on') {
-                    const groupe = await DinzBotz.groupMetadata(from);
+                    const groupe = await LilyBot.groupMetadata(from);
                     const mems = groupe.participants.map(a => a.id);
-                    DinzBotz.sendMessage(from, {
+                    LilyBot.sendMessage(from, {
                         text: '```「 ⚠️ Warning ⚠️ 」```\n\nAnti Virus telah aktif! Siapapun yang mengirim virus/virtex akan langsung dikick!',
                         contextInfo: { mentionedJid: mems }
                     });

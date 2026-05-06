@@ -16,7 +16,7 @@ module.exports = {
     ],
     category: 'group',
     desc: 'Fitur administrasi grup lanjutan (Admin/Owner only)',
-    async run(DinzBotz, m, { command, text, q, args, prefix, from, mess,
+    async run(LilyBot, m, { command, text, q, args, prefix, from, mess,
         DinzTheCreator, isBotAdmins, isAdmins, isGroupOwner,
         groupMetadata, participants, quoted, mime, reply, replyviex,
         generateProfilePicture, WA_DEFAULT_EPHEMERAL, fs }) {
@@ -34,7 +34,7 @@ module.exports = {
             case 'ban': {
                 if (!DinzTheCreator) return replyviex(mess.only.owner);
                 const users = m.mentionedJid[0] || (m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, '') + '@s.whatsapp.net');
-                await DinzBotz.updateBlockStatus(users, 'block');
+                await LilyBot.updateBlockStatus(users, 'block');
                 replyviex('✅ Berhasil blokir pengguna');
                 break;
             }
@@ -42,7 +42,7 @@ module.exports = {
             case 'unban': {
                 if (!DinzTheCreator) return replyviex(mess.only.owner);
                 const users = m.mentionedJid[0] || (m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, '') + '@s.whatsapp.net');
-                await DinzBotz.updateBlockStatus(users, 'unblock');
+                await LilyBot.updateBlockStatus(users, 'unblock');
                 replyviex('✅ Berhasil unblokir pengguna');
                 break;
             }
@@ -52,7 +52,7 @@ module.exports = {
             case 'banlist': {
                 if (!DinzTheCreator) return replyviex(mess.only.owner);
                 try {
-                    const blocked = await DinzBotz.fetchBlocklist();
+                    const blocked = await LilyBot.fetchBlocklist();
                     replyviex(`*DAFTAR BLOCK*\n\nTotal: ${blocked.length}\n\n${blocked.map((b, i) => `${i + 1}. @${b.split('@')[0]}`).join('\n')}`);
                 } catch (e) {
                     replyviex('Gagal mengambil daftar block');
@@ -71,7 +71,7 @@ module.exports = {
             case 'resetgruplink': {
                 if (!m.isGroup) return replyviex(mess.only.group || 'Hanya di grup!');
                 if (!isBotAdmins) return replyviex('Bot harus menjadi admin terlebih dahulu!');
-                await DinzBotz.groupRevokeInvite(m.chat);
+                await LilyBot.groupRevokeInvite(m.chat);
                 replyviex('✅ Link grup berhasil direset');
                 break;
             }
@@ -79,7 +79,7 @@ module.exports = {
             // === LEAVE GC ===
             case 'leavegc': {
                 if (!DinzTheCreator) return reply(mess.only.owner);
-                await DinzBotz.groupLeave(m.chat);
+                await LilyBot.groupLeave(m.chat);
                 break;
             }
 
@@ -90,7 +90,7 @@ module.exports = {
                 if (!isBotAdmins) return reply('Bot harus menjadi admin!');
                 const memberIds = participants.filter(p => !p.admin).map(p => p.id);
                 if (memberIds.length === 0) return replyviex('Tidak ada member yang bisa di-kick');
-                await DinzBotz.groupParticipantsUpdate(m.chat, memberIds, 'remove');
+                await LilyBot.groupParticipantsUpdate(m.chat, memberIds, 'remove');
                 replyviex(`✅ Berhasil kick ${memberIds.length} member`);
                 break;
             }
@@ -105,7 +105,7 @@ module.exports = {
                 if (adminIds.length === 0) return replyviex('Tidak ada admin lain!');
                 for (const id of adminIds) {
                     try {
-                        await DinzBotz.groupParticipantsUpdate(m.chat, [id], 'demote');
+                        await LilyBot.groupParticipantsUpdate(m.chat, [id], 'demote');
                     } catch {}
                 }
                 replyviex('✅ Kudeta berhasil! Semua admin lain sudah di-demote');
@@ -117,7 +117,7 @@ module.exports = {
             case 'del': {
                 if (!DinzTheCreator && !isAdmins) return reply(mess.only.owner);
                 if (!m.quoted) return replyviex('Reply pesan yang ingin dihapus!');
-                await DinzBotz.sendMessage(m.chat, {
+                await LilyBot.sendMessage(m.chat, {
                     delete: { remoteJid: m.chat, fromMe: false, id: m.quoted.id, participant: m.quoted.sender }
                 });
                 break;
@@ -125,14 +125,14 @@ module.exports = {
             case 'd': {
                 if (!m.quoted) return replyviex('Reply pesan bot yang ingin dihapus!');
                 if (!m.quoted.isBaileys) return replyviex('Pesan bukan dari bot!');
-                await DinzBotz.sendMessage(m.chat, {
+                await LilyBot.sendMessage(m.chat, {
                     delete: { remoteJid: m.chat, fromMe: true, id: m.quoted.id, participant: m.quoted.sender }
                 });
                 break;
             }
             case '>l': {
                 if (!m.quoted) return;
-                await DinzBotz.sendMessage(m.chat, {
+                await LilyBot.sendMessage(m.chat, {
                     delete: { remoteJid: m.chat, fromMe: false, id: m.quoted.id, participant: m.quoted.sender }
                 });
                 break;
@@ -144,10 +144,10 @@ module.exports = {
                 if (!isBotAdmins) return reply('Bot harus menjadi admin!');
                 if (!text) return replyviex('Gunakan: enable / disable');
                 if (args[0] === 'enable') {
-                    await DinzBotz.sendMessage(m.chat, { disappearingMessagesInChat: ephemeralVal });
+                    await LilyBot.sendMessage(m.chat, { disappearingMessagesInChat: ephemeralVal });
                     replyviex('✅ Pesan menghilang diaktifkan');
                 } else if (args[0] === 'disable') {
-                    await DinzBotz.sendMessage(m.chat, { disappearingMessagesInChat: false });
+                    await LilyBot.sendMessage(m.chat, { disappearingMessagesInChat: false });
                     replyviex('✅ Pesan menghilang dinonaktifkan');
                 } else {
                     replyviex('Gunakan: enable / disable');
@@ -164,8 +164,8 @@ module.exports = {
                 const timer = args[0] * timeMap[args[1]];
                 replyviex(`⏰ Grup akan ditutup dalam ${q}`);
                 setTimeout(() => {
-                    DinzBotz.groupSettingUpdate(m.chat, 'announcement');
-                    DinzBotz.sendMessage(m.chat, { text: '*Waktu habis!* Grup ditutup otomatis oleh Admin' });
+                    LilyBot.groupSettingUpdate(m.chat, 'announcement');
+                    LilyBot.sendMessage(m.chat, { text: '*Waktu habis!* Grup ditutup otomatis oleh Admin' });
                 }, timer);
                 break;
             }
@@ -177,8 +177,8 @@ module.exports = {
                 const timer = args[0] * timeMap[args[1]];
                 replyviex(`⏰ Grup akan dibuka dalam ${q}`);
                 setTimeout(() => {
-                    DinzBotz.groupSettingUpdate(m.chat, 'not_announcement');
-                    DinzBotz.sendMessage(m.chat, { text: '*Waktu habis!* Grup dibuka otomatis oleh Admin' });
+                    LilyBot.groupSettingUpdate(m.chat, 'not_announcement');
+                    LilyBot.sendMessage(m.chat, { text: '*Waktu habis!* Grup dibuka otomatis oleh Admin' });
                 }, timer);
                 break;
             }
@@ -190,7 +190,7 @@ module.exports = {
                 if (!m.isGroup) return reply(mess.only.group || 'Hanya di grup!');
                 if (!isBotAdmins) return reply('Bot harus menjadi admin!');
                 if (!text) return replyviex('Masukkan nama grup baru!');
-                await DinzBotz.groupUpdateSubject(m.chat, text);
+                await LilyBot.groupUpdateSubject(m.chat, text);
                 replyviex('✅ Nama grup berhasil diubah');
                 break;
             }
@@ -199,7 +199,7 @@ module.exports = {
                 if (!m.isGroup) return reply(mess.only.group || 'Hanya di grup!');
                 if (!isBotAdmins) return reply('Bot harus menjadi admin!');
                 if (!text) return replyviex('Masukkan deskripsi grup baru!');
-                await DinzBotz.groupUpdateDescription(m.chat, text);
+                await LilyBot.groupUpdateDescription(m.chat, text);
                 replyviex('✅ Deskripsi grup berhasil diubah');
                 break;
             }
@@ -209,11 +209,11 @@ module.exports = {
                 const users = m.mentionedJid[0] || (m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, '') + '@s.whatsapp.net');
                 let ppUrl;
                 try {
-                    ppUrl = await DinzBotz.profilePictureUrl(users, 'image');
+                    ppUrl = await LilyBot.profilePictureUrl(users, 'image');
                 } catch {
                     ppUrl = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
                 }
-                await DinzBotz.sendMessage(m.chat, { image: { url: ppUrl } }, { quoted: m });
+                await LilyBot.sendMessage(m.chat, { image: { url: ppUrl } }, { quoted: m });
                 break;
             }
             case 'setppgroup':
@@ -225,16 +225,16 @@ module.exports = {
                     return replyviex(`Kirim/Reply gambar dengan caption ${prefix}${command}`);
                 }
                 try {
-                    const mediz = await DinzBotz.downloadAndSaveMediaMessage(quoted, 'ppgc.jpeg');
+                    const mediz = await LilyBot.downloadAndSaveMediaMessage(quoted, 'ppgc.jpeg');
                     if (args[0] === 'full') {
                         const { img } = await genPP(mediz);
-                        await DinzBotz.query({
+                        await LilyBot.query({
                             tag: 'iq',
                             attrs: { to: m.chat, type: 'set', xmlns: 'w:profile:picture' },
                             content: [{ tag: 'picture', attrs: { type: 'image' }, content: img }]
                         });
                     } else {
-                        await DinzBotz.updateProfilePicture(m.chat, { url: mediz });
+                        await LilyBot.updateProfilePicture(m.chat, { url: mediz });
                     }
                     try { fsModule.unlinkSync(mediz); } catch {}
                     replyviex('✅ Foto profil grup berhasil diubah');
@@ -250,14 +250,14 @@ module.exports = {
             case 'delppgroup': {
                 if (!m.isGroup) return reply(mess.only.group || 'Hanya di grup!');
                 if (!isBotAdmins) return reply('Bot harus menjadi admin!');
-                await DinzBotz.removeProfilePicture(m.chat);
+                await LilyBot.removeProfilePicture(m.chat);
                 replyviex('✅ Foto profil grup berhasil dihapus');
                 break;
             }
             case 'deleteppbot':
             case 'delppbot': {
                 if (!DinzTheCreator) return reply(mess.only.owner);
-                await DinzBotz.removeProfilePicture(DinzBotz.user.id);
+                await LilyBot.removeProfilePicture(LilyBot.user.id);
                 replyviex('✅ Foto profil bot berhasil dihapus');
                 break;
             }
@@ -270,8 +270,8 @@ module.exports = {
                 if (!m.isGroup) return reply(mess.only.group || 'Hanya di grup!');
                 if (!isBotAdmins) return reply('Bot harus menjadi admin!');
                 try {
-                    const code = await DinzBotz.groupInviteCode(m.chat);
-                    DinzBotz.sendMessage(m.chat, {
+                    const code = await LilyBot.groupInviteCode(m.chat);
+                    LilyBot.sendMessage(m.chat, {
                         text: `🔗 *Link Grup: ${groupMetadata.subject || ''}*\n\nhttps://chat.whatsapp.com/${code}`,
                     }, { quoted: m });
                 } catch (e) {
@@ -300,7 +300,7 @@ module.exports = {
                 }
                 if (siderList.length === 0) return reply('✅ Tidak ada member sider di grup ini!');
                 const teks = `*${siderList.length}/${member.length}* Member sider di grup ini!\n\n*Pesan:* _"${pesan}"_\n\n${siderList.map(v => `• @${v.split('@')[0]}`).join('\n')}`;
-                await DinzBotz.sendMessage(m.chat, { text: teks, mentions: siderList }, { quoted: m });
+                await LilyBot.sendMessage(m.chat, { text: teks, mentions: siderList }, { quoted: m });
                 break;
             }
 

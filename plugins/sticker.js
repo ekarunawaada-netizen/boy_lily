@@ -12,7 +12,7 @@ module.exports = {
     ],
     category: 'maker',
     desc: 'Fitur konversi gambar & sticker (meme, ghibli, upscale, dll)',
-    async run(DinzBotz, m, { command, text, q, args, prefix,
+    async run(LilyBot, m, { command, text, q, args, prefix,
         isRegistered, replydaftar, replyviex, reply,
         mime, quoted, mess, getBuffer, fetchJson }) {
 
@@ -34,10 +34,10 @@ module.exports = {
                     const atas = text.split('|')[0] || '-';
                     const bawah = text.split('|')[1] || '-';
                     const { UploadFileUgu } = require('../lib/uploader');
-                    const imgPath = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+                    const imgPath = await LilyBot.downloadAndSaveMediaMessage(quoted);
                     const uploaded = await UploadFileUgu(imgPath);
                     const memeUrl = `https://api.memegen.link/images/custom/${encodeURIComponent(atas)}/${encodeURIComponent(bawah)}.png?background=${uploaded.url}`;
-                    await DinzBotz.sendImageAsSticker(m.chat, memeUrl, m, {
+                    await LilyBot.sendImageAsSticker(m.chat, memeUrl, m, {
                         packname: global.packname || 'LilyMD',
                         author: global.author || 'KaaPhiww'
                     });
@@ -57,9 +57,9 @@ module.exports = {
                 try {
                     replyviex(mess.wait || 'Memproses...');
                     const { toGhibli } = require('../lib/uploader');
-                    const imgPath = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+                    const imgPath = await LilyBot.downloadAndSaveMediaMessage(quoted);
                     const result = await toGhibli(imgPath);
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         image: { url: result.url || result },
                         caption: '✅ Ghibli Style!'
                     }, { quoted: m });
@@ -80,9 +80,9 @@ module.exports = {
                 try {
                     replyviex(mess.wait || 'Memproses Anime Style...');
                     const { toAnime } = require('../lib/uploader');
-                    const imgPath = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+                    const imgPath = await LilyBot.downloadAndSaveMediaMessage(quoted);
                     const result = await toAnime(imgPath);
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         image: { url: result.url || result },
                         caption: '✅ Anime Style!'
                     }, { quoted: m });
@@ -90,11 +90,11 @@ module.exports = {
                 } catch (e) {
                     // Fallback ke API external
                     try {
-                        const imgPath2 = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+                        const imgPath2 = await LilyBot.downloadAndSaveMediaMessage(quoted);
                         const { UploadFileUgu } = require('../lib/uploader');
                         const up = await UploadFileUgu(imgPath2);
                         const apiUrl = `https://api.siputzx.my.id/api/edit/jadianime?url=${encodeURIComponent(up.url)}`;
-                        await DinzBotz.sendMessage(m.chat, {
+                        await LilyBot.sendMessage(m.chat, {
                             image: { url: apiUrl },
                             caption: '✅ Anime Style!'
                         }, { quoted: m });
@@ -116,9 +116,9 @@ module.exports = {
                 try {
                     replyviex(mess.wait || 'Meningkatkan kualitas gambar...');
                     const { toHD } = require('../lib/hd');
-                    const imgPath = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+                    const imgPath = await LilyBot.downloadAndSaveMediaMessage(quoted);
                     const result = await toHD(imgPath);
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         image: { url: result.url || result },
                         caption: '✅ Gambar sudah di-upscale!'
                     }, { quoted: m });
@@ -139,9 +139,9 @@ module.exports = {
                 try {
                     replyviex(mess.wait || 'Memproses Remini...');
                     const { remini } = require('../lib/remini');
-                    const imgPath = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+                    const imgPath = await LilyBot.downloadAndSaveMediaMessage(quoted);
                     const result = await remini(imgPath);
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         image: { url: result.url || result },
                         caption: '✅ Remini berhasil!'
                     }, { quoted: m });
@@ -160,10 +160,10 @@ module.exports = {
                 try {
                     replyviex(mess.wait || 'Menghapus background...');
                     const { UploadFileUgu } = require('../lib/uploader');
-                    const imgPath = await DinzBotz.downloadAndSaveMediaMessage(quoted);
+                    const imgPath = await LilyBot.downloadAndSaveMediaMessage(quoted);
                     const up = await UploadFileUgu(imgPath);
                     const apiUrl = `https://api.siputzx.my.id/api/edit/removebg?url=${encodeURIComponent(up.url)}`;
-                    await DinzBotz.sendMessage(m.chat, {
+                    await LilyBot.sendMessage(m.chat, {
                         image: { url: apiUrl },
                         caption: '✅ Background berhasil dihapus!'
                     }, { quoted: m });

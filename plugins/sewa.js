@@ -21,7 +21,7 @@ module.exports = {
     command: ['addsewa', 'delsewa', 'delwa', 'listsewa', 'ceksewa', 'sewa', 'sewabot'],
     category: 'owner',
     desc: 'Manajemen sewa bot per grup',
-    async run(DinzBotz, m, { command, text, q, args, prefix, DinzTheCreator, isSewa, sewa, replyviex, reply, mess }) {
+    async run(LilyBot, m, { command, text, q, args, prefix, DinzTheCreator, isSewa, sewa, replyviex, reply, mess }) {
 
         switch (command) {
             case 'sewa':
@@ -47,7 +47,7 @@ module.exports = {
                 }
                 try {
                     const groupId = link.split('https://chat.whatsapp.com/')[1];
-                    const groupData = await DinzBotz.groupAcceptInvite(groupId);
+                    const groupData = await LilyBot.groupAcceptInvite(groupId);
                     if (checkSewaGroup(groupData, sewa)) return replyviex('Bot sudah disewa di grup tersebut!');
                     addSewaGroup(groupData, waktu, sewa);
                     replyviex('✅ Berhasil menambahkan sewa grup!');
@@ -79,7 +79,7 @@ module.exports = {
                     let expiry = x.expired === 'PERMANENT' ? 'PERMANENT' : msToDate(x.expired - Date.now());
                     list += `*ID:* ${x.id}\n*Expire:* ${expiry}\n\n`;
                 }
-                DinzBotz.sendMessage(m.chat, { text: list }, { quoted: m });
+                LilyBot.sendMessage(m.chat, { text: list }, { quoted: m });
                 break;
             }
 
@@ -89,7 +89,7 @@ module.exports = {
                     let expiry = x.expired === 'PERMANENT' ? 'PERMANENT' : msToDate(x.expired - Date.now());
                     list += `*ID:* ${x.id}\n*Expire:* ${expiry}\n\n`;
                 }
-                DinzBotz.sendMessage(m.chat, { text: list }, { quoted: m });
+                LilyBot.sendMessage(m.chat, { text: list }, { quoted: m });
                 break;
             }
         }

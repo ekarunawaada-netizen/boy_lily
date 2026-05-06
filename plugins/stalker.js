@@ -12,7 +12,7 @@ module.exports = {
     ],
     category: 'stalker',
     desc: 'Cari info profil dari berbagai platform',
-    async run(DinzBotz, m, { command, q, args, prefix, isRegistered, replydaftar, replyviex, fetchJson }) {
+    async run(LilyBot, m, { command, q, args, prefix, isRegistered, replydaftar, replyviex, fetchJson }) {
 
         if (!isRegistered) return replydaftar('👋 Daftar dulu ya kak!\n\nCara: .daftar nama.umur\nContoh: .daftar Lily.20');
         if (!q) return replyviex(`Masukkan parameter!\nContoh: ${prefix}${command} username/id`);
@@ -63,7 +63,7 @@ module.exports = {
 
                     const profilePic = d.profile_pic_url_hd || d.profile_pic_url;
                     if (profilePic) {
-                        await DinzBotz.sendMessage(m.chat, { image: { url: profilePic }, caption: teks }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { image: { url: profilePic }, caption: teks }, { quoted: m });
                     } else replyviex(teks);
                     break;
                 }
@@ -75,7 +75,7 @@ module.exports = {
                     const d = res.data;
                     const teks = `╭──「 *TIKTOK STALK* 」──\n│ 👤 Nama: ${d.nickname||'-'}\n│ 📛 Username: @${d.uniqueId||q}\n│ 📝 Bio: ${d.signature||'-'}\n│ 👥 Followers: ${(d.followerCount||0).toLocaleString()}\n│ ❤️ Likes: ${(d.heartCount||0).toLocaleString()}\n│ 🎥 Video: ${(d.videoCount||0).toLocaleString()}\n│ ✅ Verified: ${d.verified?'Ya':'Tidak'}\n╰───────────────────✦`;
                     if (d.avatarLarger) {
-                        await DinzBotz.sendMessage(m.chat, { image: { url: d.avatarLarger }, caption: teks }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { image: { url: d.avatarLarger }, caption: teks }, { quoted: m });
                     } else replyviex(teks);
                     break;
                 }
@@ -112,7 +112,7 @@ module.exports = {
                     if (!res?.login) return replyviex('User GitHub tidak ditemukan!');
                     const teks = `╭──「 *GITHUB STALK* 」──\n│ 👤 Nama: ${res.name||'-'}\n│ 📛 Username: @${res.login}\n│ 📝 Bio: ${res.bio||'-'}\n│ 👥 Followers: ${(res.followers||0).toLocaleString()}\n│ 📁 Repos: ${res.public_repos||0}\n│ 📍 Lokasi: ${res.location||'-'}\n│ 🔗 ${res.html_url}\n╰───────────────────✦`;
                     if (res.avatar_url) {
-                        await DinzBotz.sendMessage(m.chat, { image: { url: res.avatar_url }, caption: teks }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { image: { url: res.avatar_url }, caption: teks }, { quoted: m });
                     } else replyviex(teks);
                     break;
                 }
@@ -125,7 +125,7 @@ module.exports = {
                     const d = res.data;
                     const teks = `╭──「 *YOUTUBE STALK* 」──\n│ 📺 Channel: ${d.title||q}\n│ 👥 Subscriber: ${d.subscriberCount||'-'}\n│ 🎥 Video: ${d.videoCount||'-'}\n│ 👁️ Views: ${d.viewCount||'-'}\n╰───────────────────✦`;
                     if (d.thumbnail) {
-                        await DinzBotz.sendMessage(m.chat, { image: { url: d.thumbnail }, caption: teks }, { quoted: m });
+                        await LilyBot.sendMessage(m.chat, { image: { url: d.thumbnail }, caption: teks }, { quoted: m });
                     } else replyviex(teks);
                     break;
                 }
@@ -134,7 +134,7 @@ module.exports = {
                 case 'wanumber': {
                     const number = q.replace(/[^0-9]/g, '');
                     if (!number) return replyviex(`Masukkan nomor WA!\nContoh: ${prefix}${command} 6281234567890`);
-                    const [result] = await DinzBotz.onWhatsApp(number + '@s.whatsapp.net');
+                    const [result] = await LilyBot.onWhatsApp(number + '@s.whatsapp.net');
                     replyviex(`╭──「 *WA CHECK* 」──\n│ 📞 Nomor: +${number}\n│ ✅ Terdaftar: ${result?.exists?'Ya':'Tidak'}\n╰───────────────────✦`);
                     break;
                 }

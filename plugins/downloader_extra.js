@@ -5,7 +5,7 @@ module.exports = {
     command: ['tiktoknukthy', 'hentaivid', 'weather', 'cuaca', 'twittervid', 'twdl', 'igvid'],
     category: 'downloader',
     desc: 'Fitur downloader tambahan & Cuaca',
-    async run(DinzBotz, m, { command, text, q, prefix, isRegistered, replydaftar, replyviex, mess }) {
+    async run(LilyBot, m, { command, text, q, prefix, isRegistered, replydaftar, replyviex, mess }) {
         if (!isRegistered) return replydaftar();
 
         switch (command) {
@@ -22,7 +22,7 @@ module.exports = {
                     cap += `💧 Kelembapan: ${d.current.humidity}%\n`;
                     cap += `💨 Angin: ${d.current.wind_kph} kph\n`;
                     cap += `📅 Update: ${d.current.last_updated}`;
-                    await DinzBotz.sendMessage(m.chat, { image: { url: 'https:' + d.current.condition.icon }, caption: cap }, { quoted: m });
+                    await LilyBot.sendMessage(m.chat, { image: { url: 'https:' + d.current.condition.icon }, caption: cap }, { quoted: m });
                 } catch (e) {
                     m.reply(`❌ Kota tidak ditemukan atau API sedang down.`);
                 }
@@ -36,7 +36,7 @@ module.exports = {
                 try {
                     const res = await axios.get(`https://api.siputzx.my.id/api/d/twitter?url=${q}`);
                     const vid = res.data.data[0].url; // Ambil kualitas pertama
-                    await DinzBotz.sendMessage(m.chat, { video: { url: vid }, caption: '✅ Twitter Video Downloader' }, { quoted: m });
+                    await LilyBot.sendMessage(m.chat, { video: { url: vid }, caption: '✅ Twitter Video Downloader' }, { quoted: m });
                 } catch (e) {
                     m.reply(`❌ Gagal mendownload video Twitter.`);
                 }
@@ -47,7 +47,7 @@ module.exports = {
                 await m.reply(mess.wait);
                 try {
                     const res = await axios.get(`https://api.siputzx.my.id/api/nsfw/hentai`);
-                    await DinzBotz.sendMessage(m.chat, { video: { url: res.data.result.video_1 }, caption: '🔞 Hentai Video' }, { quoted: m });
+                    await LilyBot.sendMessage(m.chat, { video: { url: res.data.result.video_1 }, caption: '🔞 Hentai Video' }, { quoted: m });
                 } catch (e) {
                     m.reply(`❌ Server sedang sibuk.`);
                 }
@@ -58,7 +58,7 @@ module.exports = {
                 await m.reply(mess.wait);
                 try {
                     const res = await axios.get(`https://api.siputzx.my.id/api/d/tiktok?url=https://www.tiktok.com/@nukthy/video/7311394149202169094`); // Contoh endpoint random tiktok
-                    await DinzBotz.sendMessage(m.chat, { video: { url: res.data.data.nowm }, caption: '✅ TikTok Nukthy' }, { quoted: m });
+                    await LilyBot.sendMessage(m.chat, { video: { url: res.data.data.nowm }, caption: '✅ TikTok Nukthy' }, { quoted: m });
                 } catch (e) {
                     m.reply(`❌ Gagal mengambil video.`);
                 }
