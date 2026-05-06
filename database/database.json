@@ -1,6 +1,58 @@
 {
   "sticker": {},
   "database": {},
+  "groups": {
+    "120363419906970969@g.us": {
+      "name": "",
+      "welcome": false,
+      "left": false,
+      "proses": false,
+      "done": false,
+      "mute": false,
+      "nsfw": false,
+      "antitoxic": false,
+      "antivirus": false,
+      "antiwame": false,
+      "antilink": false,
+      "antilinkall": false,
+      "antilinkfacebook": false,
+      "antilinkinstagram": false,
+      "antilinktiktok": false,
+      "antilinktelegram": false,
+      "antilinktwitter": false,
+      "antilinkytchannel": false,
+      "antilinkytvideo": false,
+      "antilinkch": false,
+      "openaigc": false,
+      "chatDinzID": false,
+      "autosticker": false
+    },
+    "120363354538380309@g.us": {
+      "name": "",
+      "welcome": false,
+      "left": false,
+      "proses": false,
+      "done": false,
+      "mute": false,
+      "nsfw": false,
+      "antitoxic": false,
+      "antivirus": false,
+      "antiwame": false,
+      "antilink": false,
+      "antilinkall": false,
+      "antilinkfacebook": false,
+      "antilinkinstagram": false,
+      "antilinktiktok": false,
+      "antilinktelegram": false,
+      "antilinktwitter": false,
+      "antilinkytchannel": false,
+      "antilinkytvideo": false,
+      "antilinkch": false,
+      "openaigc": false,
+      "chatDinzID": false,
+      "autosticker": false
+    }
+  },
   "game": {},
   "others": {
     "vote": []
@@ -149,7 +201,7 @@
       "skill": "",
       "warning": 0,
       "WarnReason": "",
-      "money": 1000628254,
+      "money": 1000703254,
       "bank": 999999999,
       "atm": 10,
       "fullatm": 999999999,
@@ -268,8 +320,7 @@
       "babi": 0,
       "ayam": 0,
       "panda": 0,
-      "babihutan": 0,
-      "lastfight": 1777865960665
+      "babihutan": 0
     }
   },
   "chats": {

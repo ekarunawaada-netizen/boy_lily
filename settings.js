@@ -25,8 +25,8 @@ global.delayJpm = 7000
 //=====================================//
 //=========UBAH BAGIAN THUMBNAIL MENU & ALLMENU==========//
 global.gif = './data/image/yoimiya.mp4' // Use path instead of buffer
-    global.thumbnail = 'https://files.catbox.moe/yng1lr.jpg', //THUMB MENU KALIAN
-    global.dinzmenu = 'https://files.catbox.moe/b0j8ps.jpg', //THUMB MENU button KALIAN
+    global.thumbnail = 'https://img1.pixhost.to/images/8859/642894040_lily.jpg', //THUMB MENU KALIAN
+    global.dinzmenu = 'https://img1.pixhost.to/images/8859/642894040_lily.jpg', //THUMB MENU button KALIAN
     /////////////////////////////////////////////////////////////////////////////////
     global.setwel = "https://img1.pixhost.to/images/8859/642894040_lily.jpg"
 
@@ -39,10 +39,10 @@ global.welcome = true
 
 
 ///////////////////)/)) FAKE REPLY/FAKE QUOTED //////////////////))/
-global.replyDinzID = 'https://files.catbox.moe/9lkwtv.jpg'
-global.replydinz = 'https://files.catbox.moe/b7m6c0.jp'
-global.replyin = 'https://files.catbox.moe/9lkwtv.jpg'
-global.replyviex = 'https://files.catbox.moe/9lkwtv.jpg'
+global.replyDinzID = 'https://img1.pixhost.to/images/8859/642894040_lily.jpg'
+global.replydinz = 'https://img1.pixhost.to/images/8859/642894040_lily.jpg'
+global.replyin = 'https://img1.pixhost.to/images/8859/642894040_lily.jpg'
+global.replyviex = 'https://img1.pixhost.to/images/8859/642894040_lily.jpg'
 /////////////////////////////////////////////////////////////////////////////////
 
 
