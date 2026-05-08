@@ -41,32 +41,52 @@ async function runMigration() {
                 money = 0,
                 bank = 0,
                 exp = 0,
-                level = 0,
+                level = 1,
                 health = 1000,
                 _id, // Buang _id bawaan MongoDB
-                ...rpgData // Sisanya (wood, iron, lastclaim, dll) masuk ke rpgData
+                ...rpgProperties // Sisanya (wood, iron, lastclaim, dll)
             } = data;
+
+            // Pastikan BigInt aman
+            const cleanData = {
+                registered, banned, bannedTime: BigInt(bannedTime),
+                premium, premiumTime: BigInt(premiumTime),
+                role, warning, limit,
+                money: BigInt(money), bank: BigInt(bank),
+                exp: BigInt(exp), level: level || 1, health,
+            };
+
+            // Masukkan semua properti RPG yang ada di schema
+            const schemaFields = [
+                'chip', 'pickaxe', 'sword', 'fishingrod', 'armor', 'atm', 'fullatm',
+                'rock', 'iron', 'gold', 'diamond', 'emerald', 'wood', 'string',
+                'potion', 'umpan', 'petfood', 'makanan',
+                'pisang', 'anggur', 'mangga', 'jeruk', 'apel',
+                'bibitpisang', 'bibitanggur', 'bibitmangga', 'bibitjeruk', 'bibitapel',
+                'ayam', 'kambing', 'sapi', 'babi', 'harimau', 'gajah',
+                'lastrampok', 'lastclaim', 'lastbansos', 'lastkerja', 'lastnebang', 'lastmining', 'lasthunt', 'lastberkebon',
+                'afkTime', 'afkReason'
+            ];
+
+            for (const field of schemaFields) {
+                if (rpgProperties[field] !== undefined) {
+                    if (['lastrampok', 'lastclaim', 'lastbansos', 'lastkerja', 'lastnebang', 'lastmining', 'lasthunt', 'lastberkebon', 'afkTime', 'chip', 'fullatm'].includes(field)) {
+                        cleanData[field] = BigInt(rpgProperties[field] || 0);
+                    } else {
+                        cleanData[field] = rpgProperties[field];
+                    }
+                    delete rpgProperties[field];
+                }
+            }
+
+            // Sisa yang tidak ada di schema masuk ke extraData
+            cleanData.extraData = rpgProperties;
 
             try {
                 await prisma.user.upsert({
                     where: { id: jid },
-                    update: {
-                        registered, banned, bannedTime: BigInt(bannedTime),
-                        premium, premiumTime: BigInt(premiumTime),
-                        role, warning, limit,
-                        money: BigInt(money), bank: BigInt(bank),
-                        exp: BigInt(exp), level, health,
-                        rpgData
-                    },
-                    create: {
-                        id: jid,
-                        registered, banned, bannedTime: BigInt(bannedTime),
-                        premium, premiumTime: BigInt(premiumTime),
-                        role, warning, limit,
-                        money: BigInt(money), bank: BigInt(bank),
-                        exp: BigInt(exp), level, health,
-                        rpgData
-                    }
+                    update: cleanData,
+                    create: { id: jid, ...cleanData }
                 });
                 count++;
             } catch (err) {

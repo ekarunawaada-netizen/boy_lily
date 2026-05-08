@@ -293,32 +293,20 @@ let _left = [];
 let set_proses = [];
 let set_done = [];
 let db_respon_list = [];
-const DB_FILE = "./database/database.json";
-function loadDB() {
-  if (fs.existsSync(DB_FILE)) {
-    try {
-      const raw = fs.readFileSync(DB_FILE);
-      return JSON.parse(raw);
-    } catch (err) {
-      console.error("Error reading DB file:", err);
-      return {
-        chats: {}
-      };
-    }
-  } else {
-    return {
-      chats: {}
-    };
-  }
-}
-function saveDB(db) {
-  if (!db || !db.users) return; // Jangan save jika db rusak
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+const { supabase, upsertUser, upsertGroup } = require('./lib/supabase');
+
+/**
+ * Legacy saveDB bridge for Supabase
+ * Ensures old code calling saveDB() doesn't crash and stays synced.
+ */
+async function saveDB() {
+  // We don't need to do anything here because we use real-time sync in m.reply
+  // But we keep it defined to prevent ReferenceError.
+  return true;
 }
 
-// Hanya load dari JSON jika global.db masih kosong (belum diisi oleh index.js/MongoDB)
+// Hanya load dari Supabase jika global.db masih kosong
 if (!global.db || Object.keys(global.db.users || {}).length === 0) {
-  let localDB = loadDB();
   global.db = {
     sticker: {},
     database: {},
@@ -327,14 +315,12 @@ if (!global.db || Object.keys(global.db.users || {}).length === 0) {
     users: {},
     chats: {},
     settings: {},
-    ...(localDB || {}),
     ...(global.db || {})
   };
-}
 
-setInterval(() => {
-  saveDB(global.db);
-}, 30000); // Auto-save ke JSON lokal setiap 30 detik
+  // Initial load from Supabase (optional, usually we load per-user on message)
+  console.log('🔄 Database initialized with Supabase Real-time Sync');
+}
 
 // ================= MODULE COMMAND HANDLER ================= //
 global.plugins = {};
@@ -385,12 +371,52 @@ module.exports = LilyBot = async (LilyBot, m, chatUpdate, store) => {
     if (!global.db.users) global.db.users = {};
     if (!global.db.chats) global.db.chats = {};
     if (!global.db.settings) global.db.settings = {};
-    
+
     if (!global.db.users[m.sender]) {
-      global.db.users[m.sender] = {
-        money: 0, exp: 0, limit: 20, level: 1, role: 'Beginner', afkTime: -1, afkReason: ''
-      };
+      // Load user from Supabase first
+      const { data: userDb } = await supabase.from('User').select('*').eq('id', m.sender).single();
+      if (userDb) {
+        global.db.users[m.sender] = userDb;
+      } else {
+        global.db.users[m.sender] = {
+          name: m.pushName || '', age: 0,
+          registered: false, registeredAt: 0,
+          money: 0, exp: 0, limit: 20, level: 1, role: 'Beginner', health: 1000, chip: 0,
+          pickaxe: 0, sword: 0, fishingrod: 0, armor: 0, atm: 0, fullatm: 0,
+          rock: 0, iron: 0, gold: 0, diamond: 0, emerald: 0, wood: 0, string: 0,
+          trash: 0, botol: 0, kardus: 0, kaleng: 0, gelas: 0, plastik: 0,
+          potion: 0, umpan: 0, petfood: 0, makanan: 0,
+          common: 0, uncommon: 0, mythic: 0, legendary: 0, pet: 0,
+          pisang: 0, anggur: 0, mangga: 0, jeruk: 0, apel: 0,
+          bibitpisang: 0, bibitanggur: 0, bibitmangga: 0, bibitjeruk: 0, bibitapel: 0,
+          ayam: 0, kambing: 0, sapi: 0, babi: 0, harimau: 0, gajah: 0,
+          paus: 0, kepiting: 0, gurita: 0, cumi: 0, buntal: 0, dory: 0, lumba: 0, lobster: 0, hiu: 0, udang: 0, orca: 0,
+          banteng: 0, panda: 0, buaya: 0, kerbau: 0, monyet: 0, babihutan: 0,
+          horse: 0, cat: 0, dog: 0, fox: 0, robo: 0, horseexp: 0, catexp: 0, dogexp: 0, foxexp: 0, roboexp: 0,
+          horselastfeed: 0, catlastfeed: 0, doglastfeed: 0, foxlastfeed: 0, robolastfeed: 0,
+          robodurability: 0, armordurability: 0, sworddurability: 0, pickaxedurability: 0, fishingroddurability: 0,
+          lastrampok: 0, lastclaim: 0, lastbansos: 0, lastkerja: 0, lastnebang: 0, lastmining: 0, lasthunt: 0, lastberkebon: 0,
+          lastadventure: 0, lastkill: 0, lastmisi: 0, lastdungeon: 0, lastwar: 0, lastsda: 0, lastduel: 0,
+          afkTime: -1, afkReason: ''
+        };
+        await upsertUser(m.sender, global.db.users[m.sender]);
+      }
     }
+
+    // Auto-sync proxy: Every time the command finishes, we sync
+    // (A simpler alternative to deep proxies for 1.9MB file)
+    const originalReply = m.reply;
+    m.reply = async (text, ...args) => {
+      const result = await originalReply.call(m, text, ...args);
+      if (global.db.users[m.sender]) {
+        await upsertUser(m.sender, global.db.users[m.sender]);
+      }
+      if (m.isGroup && global.db.groups && global.db.groups[m.chat]) {
+        await upsertGroup(m.chat, global.db.groups[m.chat]);
+      }
+      return result;
+    };
+
     if (m.chat && !global.db.chats[m.chat]) {
       global.db.chats[m.chat] = {};
     }
@@ -522,10 +548,10 @@ module.exports = LilyBot = async (LilyBot, m, chatUpdate, store) => {
     // ================= [GENERIC GAME HANDLER] ================= //
     // Mendeteksi jawaban untuk semua game tebak-tebakan secara otomatis
     const tebakNames = [
-      'tebakhewan', 'tebakgambar', 'tebakkata', 'tebakkalimat', 'tebaklirik', 
-      'tebaktebakan', 'tebakbendera', 'tebakbendera2', 'tebakmakanan', 
-      'tebakprofesi', 'tebaknegara', 'tebakjkt48', 'tebakepep', 'tebakdrakor', 
-      'tebakfilm', 'tebakkimia', 'tebakkabupaten', 'siapakahaku', 'susunkata', 
+      'tebakhewan', 'tebakgambar', 'tebakkata', 'tebakkalimat', 'tebaklirik',
+      'tebaktebakan', 'tebakbendera', 'tebakbendera2', 'tebakmakanan',
+      'tebakprofesi', 'tebaknegara', 'tebakjkt48', 'tebakepep', 'tebakdrakor',
+      'tebakfilm', 'tebakkimia', 'tebakkabupaten', 'siapakahaku', 'susunkata',
       'asahotak', 'tekateki', 'caklontong', 'riddle', 'asmaulhusna'
     ];
 
@@ -791,7 +817,7 @@ module.exports = LilyBot = async (LilyBot, m, chatUpdate, store) => {
     try {
       const isNumber = x => typeof x === "number" && !isNaN(x);
       // user & chats sudah didefinisikan di awal fungsi (MIGRASI DB)
-      
+
       if (user) {
         if (!isNumber(user.chip)) {
           user.chip = 0;
@@ -5183,15 +5209,15 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
       if (!plugin) continue
       if (plugin.name === command || (plugin.command && plugin.command.includes(command))) {
         const user = global.db.users[m.sender];
-        
+
         // Cek Registrasi (Kecuali kategori dasar: main, owner, info, atau command daftar)
         const basicCategories = ['main', 'owner', 'info'];
         const isBasic = basicCategories.includes(plugin.category?.toLowerCase()) || command === 'daftar' || command === 'menu' || command === 'ping';
-        
+
         if (!isRegistered && !isBasic) {
           return replydaftar("👋 Halo kak, anda belum bisa mengakses fitur ini nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA");
         }
-        
+
         if (!isOwner && !DinzTheCreator && !isPrem && user.limit <= 0) return m.reply(`Limit harian kamu habis kak! 🎫\nBeli limit lewat owner atau tunggu besok.`);
         try {
           await plugin.run(LilyBot, m, {
@@ -5292,7 +5318,7 @@ ${isSurrender ? "" : `+${room.winScore} Money tiap jawaban benar`}
     // Global Registration Check untuk Command Hardcoded
     const basicHardcoded = ['public', 'self', 'daftar', 'menu', 'owner', 'ping', 'runtime', 'speed'];
     if (isCmd && !isRegistered && !basicHardcoded.includes(command) && command) {
-        return replydaftar("👋 Halo kak, anda belum bisa mengakses fitur ini nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA");
+      return replydaftar("👋 Halo kak, anda belum bisa mengakses fitur ini nih daftar dulu ya.\n\n╭──「 `CARA DAFTAR` 」─✦\n│⦿ 〔 Cara : .daftar nama.umur\n│⦿ 〔 Contoh : .daftar Lily.20\n│⦿ 〔 Botname : LilyMD✨\n╰───────────────────✦\n\nDENGAN DAFTAR KAMU BISA AKSES BOT SEPUASNYA");
     }
 
     switch (command) {
@@ -10287,97 +10313,7 @@ Silakan hubungi owner atau Ketik : *.owner*
           });
         }
         break;
-      case "daftar":
-      case "regis":
-      case "register":
-        {
-          if (isRegistered) {
-            return replyviex("Kamu sudah terdaftar");
-          }
-          const serialUser = createSerial(20);
-          const umurUser = q.substring(q.lastIndexOf(".") + 1);
-          const nomor = m.sender.split("@")[0];
-          const channelJid = "120363398684744234@newsletter"; // JID Channel kamu
-          if (umurUser > 20) {
-            return replyviex(`Maximal umur 20 untuk melakukan register`);
-          }
-          if (umurUser < 10) {
-            return replyviex(`Umur kamu belum cukup untuk melakukan registrasi`);
-          }
-          const mzd = `╭───• *NEW USER* •───
-├⎆ *Status:*  _*Success ✓*_
-├⎆ *Name:* ${pushname}
-├⎆ *Umur:* ${umurUser}
 
-⟢ *SN:* ${createSerial(20)}
-
-⟢ 𝗗𝗮𝘁𝗲: ${new Date().toLocaleString()}
-
-_Sekarang anda sudah bisa mengakses Lily MD_
-`;
-          const notifLog = `╭───• *NEW USER* •───
-├⎆ *Status:*  _*Success ✓*_
-├⎆ *Name:* ${pushname}
-├⎆ *Umur:* ${umurUser}
-
-⟢ *SN:* ${createSerial(20)}
-
-⟢ 𝗗𝗮𝘁𝗲: ${new Date().toLocaleString()}
-
-_Sekarang anda sudah bisa mengakses Lily MD_
-`;
-          veri = m.sender;
-          global.db.users[m.sender].registered = true;
-          global.db.users[m.sender].name = pushname;
-          global.db.users[m.sender].age = umurUser;
-          global.db.users[m.sender].regTime = new Date().toLocaleString();
-          global.db.users[m.sender].serial = serialUser;
-          addRegisteredUser(m.sender, pushname, umurUser, serialUser);
-          let ppuser;
-          try {
-            ppuser = await LilyBot.profilePictureUrl(m.sender, "image");
-          } catch {
-            ppuser = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460960720.png?q=60";
-          }
-
-          // Kirim ke user
-          LilyBot.sendMessage(m.chat, {
-            text: mzd,
-            contextInfo: {
-              isForwarded: true,
-              mentionedJid: [m.sender],
-              forwardedNewsletterMessageInfo: {
-                newsletterJid: "120363186130999681@newsletter",
-                newsletterName: `ғᴜʀɪɴᴀ ʙʏ ғᴀʟʟᴢx💫`
-              },
-              externalAdReply: {
-                title: `Register succes ✓`,
-                body: `© Lily Md - 2025`,
-                thumbnailUrl: "https://files.catbox.moe/ptq0jd.jpeg",
-                sourceUrl: "https://whatsapp.com/channel/0029Vb7WoIXJf05c6lVZxD2X",
-                mediaType: 1,
-                renderLargerThumbnail: true
-              }
-            }
-          });
-
-          // Kirim ke channel
-          LilyBot.sendMessage(channelJid, {
-            text: notifLog,
-            contextInfo: {
-              mentionedJid: [m.sender],
-              externalAdReply: {
-                title: "System Notification",
-                body: "Notification Register",
-                thumbnailUrl: "https://files.catbox.moe/ptq0jd.jpeg",
-                sourceUrl: "https://whatsapp.com/channel/0029VbAoANF8fewkLU1ZYU34",
-                mediaType: 1,
-                renderLargerThumbnail: true
-              }
-            }
-          });
-        }
-        break;
       case "tourl":
         {
           if (!mime) {
@@ -13704,35 +13640,8 @@ ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times).map(type =>
         }
         break;
       //======================================================================
-      case "nulis":
-      case "magernulis":
-        {
-          if (!text) {
-            return reply("iya kak,  mau nulis apa? untuk menulis caranya begini ya\n> .nulis nama|kelas|teks yang mau ditulis");
-          }
-          nama = text.split("|")[0] ? text.split("|")[0] : "-";
-          kelas = text.split("|")[1] ? text.split("|")[1] : "-";
-          nulis = text.split("|")[2] ? text.split("|")[2] : "-";
-          LilyBot.sendMessage(m.chat, {
-            react: {
-              text: `⏱️`,
-              key: m.key
-            }
-          });
-          try {
-            LilyBot.sendMessage(m.chat, {
-              image: {
-                url: `https://api.siputzx.my.id/api/m/nulis?text=${encodeURIComponent(nulis)}&name=${encodeURIComponent(nama)}&class=${encodeURIComponent(kelas)}`
-              },
-              caption: "berhasil.."
-            }, {
-              quoted: m
-            });
-          } catch {
-            reply("yah Error kak laporankan ke owner agar di perbaiki");
-          }
-        }
-        break;
+      // [LEGACY NULIS COMMANDS REMOVED - MIGRATED TO PLUGINS]
+
       case "ttslide":
       case "tiktokslide":
         {
@@ -31185,22 +31094,8 @@ seperti hasil kamera Smartphone modern`;
         }
       }
         break;
-      case "nuliskiri":
-        {
-          if (!text) {
-            return m.reply(`Kirim perintah *${prefix + command}* Teksnya`);
-          }
-          m.reply(mess.wait);
-          const splitText = text.replace(/(\S+\s*){1,9}/g, "$&\n");
-          const fixHeight = splitText.split("\n").slice(0, 31).join("\n");
-          spawn("convert", ["./src/nulis/images/buku/sebelumkiri.jpg", "-font", "./src/nulis/font/Indie-Flower.ttf", "-size", "960x1280", "-pointsize", "23", "-interline-spacing", "2", "-annotate", "+140+153", fixHeight, "./src/nulis/images/buku/setelahkiri.jpg"]).on("error", () => m.reply(mess.error)).on("exit", () => {
-            m.reply({
-              image: fs.readFileSync("./src/nulis/images/buku/setelahkiri.jpg"),
-              caption: "Jangan Malas Lord. Jadilah siswa yang rajin ರ_ರ"
-            });
-          });
-        }
-        break;
+      // [LEGACY NULISKIRI COMMANDS REMOVED - MIGRATED TO PLUGINS]
+
       case "totalchat":
       case "totalpesan":
         {
@@ -41210,112 +41105,112 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
       const fetchData = async (url, cdn, body = {}) => {
           const headers = {
               accept: '*/ /*',
-          referer: 'https://ytshorts.savetube.me/',
-          origin: 'https://ytshorts.savetube.me/',
-          'user-agent': 'Postify/1.0.0',
-          'Content-Type': 'application/json',
-          authority: `cdn${cdn}.savetube.su`
-          };
-          try {
-          const response = await axios.post(url, body, { headers });
-          return response.data;
-          } catch (error) {
-          console.error(`Error accessing CDN${cdn}: ${error.message}`);
-          throw new Error('❌ Gagal mengambil data dari server.');
-          }
-          };
-          const randomCdn = () => {
-          const availableCdns = [51, 52, 53, 54, 56, 57, 58, 59, 60, 61];
-          return availableCdns[Math.floor(Math.random() * availableCdns.length)];
-          };
-          const dLink = (cdnUrl, type, quality, videoKey) => {
-          return `https://${cdnUrl}/download`;
-          };
-          const dl = async (link, qualityIndex, typeIndex) => {
-          const type = typeIndex === 1 ? 'audio' : 'video';
-          const qualities = { 1: '32', 2: '64', 3: '128', 4: '192' };
-          const quality = qualities[qualityIndex];
-          if (!type) throw new Error('❌ Tipe tidak valid. Pilih 1 untuk audio atau 2 untuk video.');
-          checkQuality(type, qualityIndex);
-          const cdnNumber = randomCdn();
-          const cdnUrl = `cdn${cdnNumber}.savetube.su`;
-          const videoInfo = await fetchData(`https://${cdnUrl}/info`, cdnNumber, { url: link });
-          const body = {
-          downloadType: type,
-          quality: quality,
-          key: videoInfo.data.key
-          };
-          const dlRes = await fetchData(dLink(cdnUrl, type, quality, videoInfo.data.key), cdnNumber, body);
-          return {
-          link: dlRes.data.downloadUrl,
-          duration: videoInfo.data.duration,
-          durationLabel: videoInfo.data.durationLabel,
-          fromCache: videoInfo.data.fromCache,
-          id: videoInfo.data.id,
-          key: videoInfo.data.key,
-          thumbnail: videoInfo.data.thumbnail,
-          thumbnail_formats: videoInfo.data.thumbnail_formats,
-          title: videoInfo.data.title,
-          titleSlug: videoInfo.data.titleSlug,
-          videoUrl: videoInfo.data.url,
-          quality,
-          type
-          };
-          };
-          if (!text) return reply("Kirim perintah dengan link YouTube-nya!");
-          try {
-          LilyBot.sendMessage(m.chat, { react: { text: "⏱️",key: m.key,}})
-          let rus = await yts(text);
-          if (rus.all.length === 0) return reply("Video tidak ditemukan atau tidak bisa di-download.");
-          let data = rus.all.filter(v => v.type === 'video');
-          if (data.length === 0) return reply("Tidak ada video yang ditemukan.");
-          let res = data[0];
-          let thumbUrl = `https://i.ytimg.com/vi/${res.videoId}/hqdefault.jpg`;
-          let inithumb = await getBuffer(thumbUrl);
-          let teks = `*🎶 Y O U T U B E  -  P L A Y 🎶*\n\n` +
-          `📺 *Channel* : ${res.author.name}\n` +
-          `👀 *Viewers* : ${res.views} kali\n` +
-          `⏱️ *Durasi* : ${res.timestamp}\n` +
-          `🔗 *Link Video* : ${res.url}\n\n` +
-          `🎧 *Audio sedang diproses...* 🎶`;
-          await LilyBot.sendMessage(m.chat, {
-          contextInfo: { 
-          externalAdReply: { 
-          showAdAttribution: true, 
-          title: res.title,
-          body: new Date().toLocaleString(),													
-          mediaType: 2,  
-          renderLargerThumbnail: true,
-          thumbnail: inithumb,
-          mediaUrl: res.url,
-          sourceUrl: res.url
-          }
-          },
-          image: { url: thumbUrl },
-          text: teks
-          }, { quoted: m });
-          const isUrl = /^https?:\/\/(www\.)?youtube\.com\/watch\?v=/.test(q);
-          let videoUrl = text;
-          if (!isUrl) {
-          let searchResults = await yts(text);
-          if (!searchResults.all.length) return reply("Video tidak ditemukan!");
-          let videoData = searchResults.all.find(v => v.type === 'video');
-          if (!videoData) return reply("Tidak ada video yang cocok ditemukan!");
-          videoUrl = videoData.url;
-          }
-          const qualityIndex = randomAudioQuality();
-          const audioData = await dl(videoUrl, qualityIndex, 1); 
-          await LilyBot.sendMessage(m.chat, { 
-          audio: { url: audioData.link }, 
-          mimetype: 'audio/mp4' 
-          }, { quoted: m });
-          } catch (err) {
-          console.error(err);
-          reply(`Terjadi kesalahan: ${err.message}`);
-          }
-          }
-          break;
-          */
+referer: 'https://ytshorts.savetube.me/',
+origin: 'https://ytshorts.savetube.me/',
+'user-agent': 'Postify/1.0.0',
+'Content-Type': 'application/json',
+authority: `cdn${cdn}.savetube.su`
+};
+try {
+const response = await axios.post(url, body, { headers });
+return response.data;
+} catch (error) {
+console.error(`Error accessing CDN${cdn}: ${error.message}`);
+throw new Error('❌ Gagal mengambil data dari server.');
+}
+};
+const randomCdn = () => {
+const availableCdns = [51, 52, 53, 54, 56, 57, 58, 59, 60, 61];
+return availableCdns[Math.floor(Math.random() * availableCdns.length)];
+};
+const dLink = (cdnUrl, type, quality, videoKey) => {
+return `https://${cdnUrl}/download`;
+};
+const dl = async (link, qualityIndex, typeIndex) => {
+const type = typeIndex === 1 ? 'audio' : 'video';
+const qualities = { 1: '32', 2: '64', 3: '128', 4: '192' };
+const quality = qualities[qualityIndex];
+if (!type) throw new Error('❌ Tipe tidak valid. Pilih 1 untuk audio atau 2 untuk video.');
+checkQuality(type, qualityIndex);
+const cdnNumber = randomCdn();
+const cdnUrl = `cdn${cdnNumber}.savetube.su`;
+const videoInfo = await fetchData(`https://${cdnUrl}/info`, cdnNumber, { url: link });
+const body = {
+downloadType: type,
+quality: quality,
+key: videoInfo.data.key
+};
+const dlRes = await fetchData(dLink(cdnUrl, type, quality, videoInfo.data.key), cdnNumber, body);
+return {
+link: dlRes.data.downloadUrl,
+duration: videoInfo.data.duration,
+durationLabel: videoInfo.data.durationLabel,
+fromCache: videoInfo.data.fromCache,
+id: videoInfo.data.id,
+key: videoInfo.data.key,
+thumbnail: videoInfo.data.thumbnail,
+thumbnail_formats: videoInfo.data.thumbnail_formats,
+title: videoInfo.data.title,
+titleSlug: videoInfo.data.titleSlug,
+videoUrl: videoInfo.data.url,
+quality,
+type
+};
+};
+if (!text) return reply("Kirim perintah dengan link YouTube-nya!");
+try {
+LilyBot.sendMessage(m.chat, { react: { text: "⏱️",key: m.key,}})
+let rus = await yts(text);
+if (rus.all.length === 0) return reply("Video tidak ditemukan atau tidak bisa di-download.");
+let data = rus.all.filter(v => v.type === 'video');
+if (data.length === 0) return reply("Tidak ada video yang ditemukan.");
+let res = data[0];
+let thumbUrl = `https://i.ytimg.com/vi/${res.videoId}/hqdefault.jpg`;
+let inithumb = await getBuffer(thumbUrl);
+let teks = `*🎶 Y O U T U B E  -  P L A Y 🎶*\n\n` +
+`📺 *Channel* : ${res.author.name}\n` +
+`👀 *Viewers* : ${res.views} kali\n` +
+`⏱️ *Durasi* : ${res.timestamp}\n` +
+`🔗 *Link Video* : ${res.url}\n\n` +
+`🎧 *Audio sedang diproses...* 🎶`;
+await LilyBot.sendMessage(m.chat, {
+contextInfo: { 
+externalAdReply: { 
+showAdAttribution: true, 
+title: res.title,
+body: new Date().toLocaleString(),													
+mediaType: 2,  
+renderLargerThumbnail: true,
+thumbnail: inithumb,
+mediaUrl: res.url,
+sourceUrl: res.url
+}
+},
+image: { url: thumbUrl },
+text: teks
+}, { quoted: m });
+const isUrl = /^https?:\/\/(www\.)?youtube\.com\/watch\?v=/.test(q);
+let videoUrl = text;
+if (!isUrl) {
+let searchResults = await yts(text);
+if (!searchResults.all.length) return reply("Video tidak ditemukan!");
+let videoData = searchResults.all.find(v => v.type === 'video');
+if (!videoData) return reply("Tidak ada video yang cocok ditemukan!");
+videoUrl = videoData.url;
+}
+const qualityIndex = randomAudioQuality();
+const audioData = await dl(videoUrl, qualityIndex, 1); 
+await LilyBot.sendMessage(m.chat, { 
+audio: { url: audioData.link }, 
+mimetype: 'audio/mp4' 
+}, { quoted: m });
+} catch (err) {
+console.error(err);
+reply(`Terjadi kesalahan: ${err.message}`);
+}
+}
+break;
+*/
       case "ytvideo":
       case "ytmp4":
         {
@@ -41475,8 +41370,8 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
           prem.push(prrkek);
           fs.writeFileSync("./database/premium.json", JSON.stringify(prem));
           if (global.db.users[prrkek]) {
-             global.db.users[prrkek].premium = true;
-             global.db.users[prrkek].premiumTime = Date.now() + (30 * 24 * 60 * 60 * 1000); // Default 30 days
+            global.db.users[prrkek].premium = true;
+            global.db.users[prrkek].premiumTime = Date.now() + (30 * 24 * 60 * 60 * 1000); // Default 30 days
           }
           replyviex(`The Number ${prrkek} Has Been Premium!`);
         }
@@ -41529,8 +41424,8 @@ Copy the link above and type the .ytmp3 link for audio and the .ytmp4 link for v
         prem.splice(unp, 1);
         fs.writeFileSync("./database/premium.json", JSON.stringify(prem));
         if (global.db.users[ya]) {
-           global.db.users[ya].premium = false;
-           global.db.users[ya].premiumTime = 0;
+          global.db.users[ya].premium = false;
+          global.db.users[ya].premiumTime = 0;
         }
         replyviex(`The Number ${ya} Has Been Removed Premium!`);
         break;
@@ -47331,9 +47226,9 @@ Sekarang, jawab pertanyaan user dengan gaya yang santai dan menyenangkan!
           LilyBot.copyNForward(m.chat, msgs[budy.toLowerCase()], true);
         }
 
-        // === [MIGRASI DB] Auto-save data ke MongoDB setelah eksekusi ===
-        await mongoDb.updateUser(m.sender, user);
-        await mongoDb.updateGroup(m.chat, chats);
+        // === [SUPABASE SYNC] Final safety net sync after command execution ===
+        if (global.db.users[m.sender]) await upsertUser(m.sender, global.db.users[m.sender]);
+        if (m.isGroup && global.db.groups && global.db.groups[m.chat]) await upsertGroup(m.chat, global.db.groups[m.chat]);
     }
   } catch (err) {
     console.log(util.format(err));

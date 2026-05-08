@@ -8,6 +8,7 @@ datasource db {
 
 model User {
   id            String   @id
+  name          String   @default("")
   registered    Boolean  @default(false)
   banned        Boolean  @default(false)
   bannedTime    BigInt   @default(0)
@@ -16,14 +17,139 @@ model User {
   role          String   @default("Beginner")
   warning       Int      @default(0)
   limit         Int      @default(20)
+  age           Int      @default(0)
+  registeredAt  BigInt   @default(0)
   
+  // Core RPG Stats
   money         BigInt   @default(0)
   bank          BigInt   @default(0)
   exp           BigInt   @default(0)
-  level         Int      @default(0)
+  level         Int      @default(1)
   health        Int      @default(1000)
+  chip          BigInt   @default(0)
   
-  rpgData       Json?    @default("{}") 
+  // Tools (Level)
+  pickaxe       Int      @default(0)
+  sword         Int      @default(0)
+  fishingrod    Int      @default(0)
+  armor         Int      @default(0)
+  atm           Int      @default(0)
+  fullatm       BigInt   @default(0)
+  
+  // Materials
+  rock          Int      @default(0)
+  iron          Int      @default(0)
+  gold          Int      @default(0)
+  diamond       Int      @default(0)
+  emerald       Int      @default(0)
+  wood          Int      @default(0)
+  string        Int      @default(0)
+  trash         Int      @default(0)
+  botol         Int      @default(0)
+  kardus        Int      @default(0)
+  kaleng        Int      @default(0)
+  gelas         Int      @default(0)
+  plastik       Int      @default(0)
+  
+  // Consumables & Items
+  potion        Int      @default(0)
+  umpan         Int      @default(0)
+  petfood       Int      @default(0)
+  makanan       Int      @default(0)
+  common        Int      @default(0)
+  uncommon      Int      @default(0)
+  mythic        Int      @default(0)
+  legendary     Int      @default(0)
+  pet           Int      @default(0)
+  
+  // Food & Crops
+  pisang        Int      @default(0)
+  anggur        Int      @default(0)
+  mangga        Int      @default(0)
+  jeruk         Int      @default(0)
+  apel          Int      @default(0)
+  
+  // Seeds
+  bibitpisang   Int      @default(0)
+  bibitanggur   Int      @default(0)
+  bibitmangga   Int      @default(0)
+  bibitjeruk    Int      @default(0)
+  bibitapel     Int      @default(0)
+  
+  // Animals (Farm)
+  ayam          Int      @default(0)
+  kambing       Int      @default(0)
+  sapi          Int      @default(0)
+  babi          Int      @default(0)
+  harimau       Int      @default(0)
+  gajah         Int      @default(0)
+
+  // Animals (Hunt/Fish)
+  paus          Int      @default(0)
+  kepiting      Int      @default(0)
+  gurita        Int      @default(0)
+  cumi          Int      @default(0)
+  buntal        Int      @default(0)
+  dory          Int      @default(0)
+  lumba         Int      @default(0)
+  lobster       Int      @default(0)
+  hiu           Int      @default(0)
+  udang         Int      @default(0)
+  orca          Int      @default(0)
+  banteng       Int      @default(0)
+  panda         Int      @default(0)
+  buaya         Int      @default(0)
+  kerbau        Int      @default(0)
+  monyet        Int      @default(0)
+  babihutan     Int      @default(0)
+
+  // Pets
+  horse         Int      @default(0)
+  cat           Int      @default(0)
+  dog           Int      @default(0)
+  fox           Int      @default(0)
+  robo          Int      @default(0)
+  horseexp      Int      @default(0)
+  catexp        Int      @default(0)
+  dogexp        Int      @default(0)
+  foxexp        Int      @default(0)
+  roboexp       Int      @default(0)
+  horselastfeed BigInt   @default(0)
+  catlastfeed   BigInt   @default(0)
+  doglastfeed   BigInt   @default(0)
+  foxlastfeed   BigInt   @default(0)
+  robolastfeed  BigInt   @default(0)
+
+  // Durability
+  robodurability       Int      @default(0)
+  armordurability      Int      @default(0)
+  sworddurability      Int      @default(0)
+  pickaxedurability    Int      @default(0)
+  fishingroddurability Int      @default(0)
+  
+  // Cooldowns (Timestamps)
+  lastrampok    BigInt   @default(0)
+  lastclaim     BigInt   @default(0)
+  lastbansos    BigInt   @default(0)
+  lastkerja     BigInt   @default(0)
+  lastnebang    BigInt   @default(0)
+  lastmining    BigInt   @default(0)
+  lasthunt      BigInt   @default(0)
+  lastberkebon  BigInt   @default(0)
+  lastadventure BigInt   @default(0)
+  lastkill      BigInt   @default(0)
+  lastmisi      BigInt   @default(0)
+  lastdungeon   BigInt   @default(0)
+  lastwar       BigInt   @default(0)
+  lastsda       BigInt   @default(0)
+  lastduel      BigInt   @default(0)
+  
+  // AFK & Misc
+  afkTime       BigInt   @default(-1)
+  afkReason     String   @default("")
+  
+  // Catch-all for extra data
+  extraData     Json?    @default("{}") 
 }
 
 model Group {
@@ -64,6 +190,13 @@ model BotSetting {
   onlygrub       Boolean @default(false)
   onlypc         Boolean @default(false)
   welcome        Boolean @default(true)
+}
+
+model BaileysStore {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
 }
 
 model SessionInfo {

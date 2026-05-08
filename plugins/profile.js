@@ -27,8 +27,8 @@ module.exports = {
         const chip     = (user.chip  || 0).toLocaleString('id-ID')
         const limitTxt = (user.limit || 0) >= 999 ? '∞ Unlimited' : `${user.limit || 20}/hari`
         const status   = user.registered ? '✅ Aktif' : '❌ Belum Daftar'
-        const regDate  = user.registeredAt
-                         ? new Date(user.registeredAt).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })
+        const regDate  = user.registeredAt && Number(user.registeredAt) > 0
+                         ? new Date(Number(user.registeredAt)).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })
                          : '—'
 
         // ── XP Bar ──────────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 const { exec } = require('child_process');
 const fs = require('fs');
+const { upsertUser } = require('../lib/supabase');
 
 module.exports = {
     name: 'owner',
@@ -11,7 +12,7 @@ module.exports = {
         'setbotname', 'setbotbio',
         'jadibot', 'listjadibot',
         'totalfitur', 'delsesi', 'clearsession',
-        'amountbug'
+        'amountbug', 'addprem', 'delprem', 'addowner', 'delowner', 'adddev', 'deldev'
     ],
     category: 'owner',
     desc: 'Fitur khusus untuk owner bot',
@@ -154,6 +155,72 @@ module.exports = {
             case 'amountbug':
                 replyviex('🐛 Fitur amountbug sedang dalam pengembangan.');
                 break;
+
+            case 'addprem': {
+                if (!args[0]) return replyviex(`Penggunaan: ${prefix}${command} @user / nomor\nContoh: ${prefix}${command} 628xxx`);
+                let jid = m.mentionedJid[0] ? m.mentionedJid[0] : args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+                if (!global.db.users[jid]) global.db.users[jid] = { premium: false, role: 'Beginner' };
+                global.db.users[jid].premium = true;
+                global.db.users[jid].role = 'Premium';
+                await upsertUser(jid, global.db.users[jid]);
+                replyviex(`✅ @${jid.split('@')[0]} sekarang adalah user Premium!`);
+                break;
+            }
+
+            case 'delprem': {
+                if (!args[0]) return replyviex(`Penggunaan: ${prefix}${command} @user / nomor\nContoh: ${prefix}${command} 628xxx`);
+                let jid = m.mentionedJid[0] ? m.mentionedJid[0] : args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+                if (!global.db.users[jid]) return replyviex('User tidak ditemukan di database!');
+                global.db.users[jid].premium = false;
+                global.db.users[jid].role = 'Beginner';
+                await upsertUser(jid, global.db.users[jid]);
+                replyviex(`✅ @${jid.split('@')[0]} sekarang bukan user Premium lagi.`);
+                break;
+            }
+
+            case 'addowner': {
+                if (!args[0]) return replyviex(`Penggunaan: ${prefix}${command} @user / nomor\nContoh: ${prefix}${command} 628xxx`);
+                let jid = m.mentionedJid[0] ? m.mentionedJid[0] : args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+                if (!global.db.users[jid]) global.db.users[jid] = { role: 'Beginner' };
+                global.db.users[jid].role = 'Owner';
+                await upsertUser(jid, global.db.users[jid]);
+                replyviex(`✅ @${jid.split('@')[0]} sekarang memiliki role Owner di database!`);
+                break;
+            }
+
+            case 'delowner': {
+                if (!args[0]) return replyviex(`Penggunaan: ${prefix}${command} @user / nomor\nContoh: ${prefix}${command} 628xxx`);
+                let jid = m.mentionedJid[0] ? m.mentionedJid[0] : args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+                if (!global.db.users[jid]) return replyviex('User tidak ditemukan di database!');
+                global.db.users[jid].role = 'Beginner';
+                await upsertUser(jid, global.db.users[jid]);
+                replyviex(`✅ Role Owner @${jid.split('@')[0]} telah dihapus.`);
+                break;
+            }
+
+            case 'adddev': {
+                if (!args[0]) return replyviex(`Penggunaan: ${prefix}${command} @user / nomor\nContoh: ${prefix}${command} 628xxx`);
+                let jid = m.mentionedJid[0] ? m.mentionedJid[0] : args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+                if (!global.db.users[jid]) global.db.users[jid] = { registered: true, role: 'Beginner' };
+                global.db.users[jid].role = 'Developer';
+                global.db.users[jid].registered = true;
+                
+                // Directly adapting the user's requested logic using the project's helper
+                await upsertUser(jid, global.db.users[jid]);
+                
+                replyviex(`✅ @${jid.split('@')[0]} sekarang terdaftar sebagai Developer di database!`);
+                break;
+            }
+
+            case 'deldev': {
+                if (!args[0]) return replyviex(`Penggunaan: ${prefix}${command} @user / nomor\nContoh: ${prefix}${command} 628xxx`);
+                let jid = m.mentionedJid[0] ? m.mentionedJid[0] : args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+                if (!global.db.users[jid]) return replyviex('User tidak ditemukan di database!');
+                global.db.users[jid].role = 'Beginner';
+                await upsertUser(jid, global.db.users[jid]);
+                replyviex(`✅ Role Developer @${jid.split('@')[0]} telah dihapus.`);
+                break;
+            }
         }
     }
 };

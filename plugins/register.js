@@ -1,4 +1,5 @@
-// Migrated to global.db
+const { upsertUser } = require('../lib/supabase')
+const { createSerial, addRegisteredUser } = require('../lib/register')
 
 // ─── Starter Pack Definitions ─────────────────────────────────────────────────
 const PACKS = {
@@ -14,7 +15,7 @@ const PACKS = {
       chip: 999_999,
       exp: 0,
       level: 100,
-      limit: 999,
+      limit: 999_999,
       health: 1000,
       potion: 999,
       pickaxe: 10,
@@ -55,7 +56,7 @@ const PACKS = {
       chip: 500_000,
       exp: 0,
       level: 50,
-      limit: 999,
+      limit: 9999,
       health: 1000,
       potion: 100,
       pickaxe: 8,
@@ -126,14 +127,14 @@ const PACKS = {
     badge: '🌱',
     role: 'Beginner',
     data: {
-      money: 100_000,
+      money: 10_000,
       bank: 0,
       atm: 0,
       fullatm: 0,
       chip: 0,
       exp: 0,
-      level: 0,
-      limit: 20,
+      level: 1,
+      limit: 25,
       health: 1000,
       potion: 5,
       pickaxe: 1,
@@ -151,20 +152,6 @@ const PACKS = {
   },
 }
 
-// ─── Deteksi Role ──────────────────────────────────────────────────────────────
-function detectRole(sender) {
-  const ownerJid = (global.owner || []).map(n => n.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
-  const premJid  = (global.db?.users && Object.keys(global.db.users).filter(u => global.db.users[u].premium)) || []
-
-  // Developer = owner ke-1 (index 0)
-  const devJids = [ownerJid[0]].filter(Boolean)
-
-  if (devJids.includes(sender)) return 'developer'
-  if (ownerJid.includes(sender)) return 'owner'
-  if (premJid.includes(sender)) return 'premium'
-  return 'free'
-}
-
 // ─── Format Pack Message ───────────────────────────────────────────────────────
 function packMessage(pack, name, age) {
   const d = pack.data
@@ -177,7 +164,7 @@ function packMessage(pack, name, age) {
 │ 💰 Money    : ${d.money?.toLocaleString('id-ID') ?? 0}
 │ 🏦 Bank     : ${d.bank?.toLocaleString('id-ID') ?? 0}
 │ 🎰 Chip     : ${d.chip?.toLocaleString('id-ID') ?? 0}
-│ 🎫 Limit    : ${d.limit === 999 ? 'Unlimited' : d.limit}
+│ 🎫 Limit    : ${d.limit >= 999 ? 'Unlimited' : d.limit}
 │ 🏅 Level    : ${d.level}
 │ ❤️ HP       : ${d.health}/1000
 │ 🧪 Potion   : ${d.potion}
@@ -195,33 +182,50 @@ function packMessage(pack, name, age) {
 // ─── Plugin Handler ────────────────────────────────────────────────────────────
 module.exports = {
   name: 'register',
-  command: ['daftar', 'register', 'claimpack'],
+  command: ['daftar', 'register', 'regis', 'claimpack'],
   category: 'main',
   desc: 'Mendaftar sebagai pengguna bot',
 
-  async run(LilyBot, m, { prefix, command, args, sender }) {
-    const fs = require('fs')
-
+  async run(LilyBot, m, { prefix, command, args, sender, isOwner, isPrem, DinzTheCreator }) {
     // Pastikan global.db.users ada
     if (!global.db?.users) global.db.users = {}
-    if (!global.db.users[sender]) global.db.users[sender] = {}
+    if (!global.db.users[sender]) global.db.users[sender] = { money: 0, exp: 0, limit: 20, level: 1, role: 'Beginner' }
     let user = global.db.users[sender]
+
+    // ── Deteksi Role ────────────────────────────────────────────────────────────
+    const detectRole = () => {
+      if (DinzTheCreator) return 'developer'
+      if (isOwner) return 'owner'
+      if (isPrem) return 'premium'
+      return 'free'
+    }
 
     // ── .claimpack — Paksa apply pack untuk user yg sudah terdaftar ─────────
     if (command === 'claimpack') {
-      const role   = detectRole(sender)
-      const pack   = PACKS[role]
-      const name   = user.name || m.pushName || 'User'
-      const age    = user.age || 0
+      const roleKey = detectRole()
+      const pack    = PACKS[roleKey]
+      const name    = user.name || m.pushName || 'User'
+      const age     = user.age || 0
 
-      const updateData = { ...pack.data, role: pack.role }
+      const updateData = { 
+        ...pack.data, 
+        role: pack.role,
+        registered: true,
+        registeredAt: user.registeredAt || Date.now()
+      }
+      
       Object.assign(user, updateData)
+
+      // Sync to Supabase
+      await upsertUser(sender, user).catch(console.error)
 
       return m.reply(`✅ *Pack berhasil di-apply!*\n\n${packMessage(pack, name, age)}`)
     }
 
     // ── .daftar / .register ─────────────────────────────────────────────────
-    if (user.registered) return m.reply(`Kamu sudah terdaftar! ✨\nKetik *.profile* untuk cek profil atau *.claimpack* untuk apply ulang pack kamu.`)
+    if (user.registered && command !== 'claimpack') {
+       return m.reply(`Kamu sudah terdaftar! ✨\nKetik *.profile* untuk cek profil atau *.claimpack* untuk apply ulang pack kamu.`)
+    }
 
     // Parsing nama & umur dari args
     const input = args.join(' ')
@@ -235,11 +239,12 @@ module.exports = {
     if (!age)                return m.reply(`❌ Umur harus diisi!\nContoh: *${prefix}${command} Lily.18*`)
     if (name.length > 20)    return m.reply(`❌ Nama kepanjangan, maksimal 20 karakter!`)
     if (isNaN(age))          return m.reply(`❌ Umur harus berupa angka!`)
-    if (+age > 100 || +age < 5) return m.reply(`❌ Umur tidak masuk akal...`)
+    if (+age > 40 || +age < 10) return m.reply(`❌ Umur tidak valid (10-40 thn).`)
 
     // Deteksi role & ambil pack
-    const role = detectRole(sender)
-    const pack = PACKS[role]
+    const roleKey = detectRole()
+    const pack = PACKS[roleKey]
+    const sn = createSerial(20)
 
     // Data yang disimpan
     const updateData = {
@@ -247,12 +252,24 @@ module.exports = {
       name: name,
       age: parseInt(age),
       registeredAt: Date.now(),
+      serial: sn,
       role: pack.role,
       ...pack.data,
     }
 
     // Simpan ke global.db
     Object.assign(user, updateData)
+    
+    // Legacy sync
+    addRegisteredUser(sender, name, age, sn)
+
+    // === [DATABASE SYNC] ===
+    // Force sync to Supabase immediately
+    try {
+      await upsertUser(sender, user)
+    } catch (err) {
+      console.error('[DATABASE ERROR] Sync failed:', err)
+    }
 
     return m.reply(`🎉 *PENDAFTARAN BERHASIL!*\n\n${packMessage(pack, name, age)}`)
   }

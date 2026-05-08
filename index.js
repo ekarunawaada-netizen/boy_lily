@@ -36,6 +36,7 @@ let _welcome = [];
 let _left = [];
 const makeWASocket = require("lily-baileys").default
 const { usePrismaAuthState } = require('./lib/usePrismaAuthState')
+const { useSupabaseStore } = require('./lib/supabaseStore')
 const Pino = require("pino")
 const readline = require("readline")
 const colors = require('colors')
@@ -43,11 +44,11 @@ const { start } = require('./lib/spinner')
 const { uncache, nocache } = require('./lib/loader')
 const { imageToWebp, videoToWebp, writeExifImg, writeExifVid } = require('./lib/exif')
 const { smsg, isUrl, generateMessageTag, getBuffer, getSizeMedia, fetchJson, await, sleep, reSize } = require('./lib/myfunc')
+const CloudDBAdapter = require('./lib/cloudDBAdapter')
 
 const prefix = ''
 let phoneNumber = "628813788606"
-global.db = { users: {}, groups: {}, chats: {}, settings: {} };
-if (global.db) global.db = {
+global.db = {
     sticker: {},
     database: {},
     groups: {},
@@ -55,14 +56,22 @@ if (global.db) global.db = {
     others: {},
     users: {},
     chats: {},
-    settings: {},
-    ...(global.db || {})
-}
+    settings: {}
+};
+
+const userAdapter = new CloudDBAdapter('User');
+userAdapter.read().then(users => {
+    if (users) {
+        Object.assign(global.db.users, users);
+        console.log('🔄 Database initialized with Supabase Real-time Sync');
+    }
+});
 const pairingCode = !!phoneNumber || process.argv.includes("--pairing-code")
 const useMobile = process.argv.includes("--mobile")
 const owner = ["6289523888644"];
 
 const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) })
+const supabaseStore = useSupabaseStore(store)
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 const question = (text) => new Promise((resolve) => rl.question(text, resolve))
 
@@ -135,7 +144,9 @@ async function theFontaine() {
         console.log(`𝙽𝙸 𝙺𝙾𝙳𝙴 𝙿𝙰𝙸𝚁𝙸𝙽𝙶 𝙻𝚄 :`, code);
     }
 
+    await supabaseStore.load()
     store.bind(Lily.ev)
+    supabaseStore.bind(Lily.ev)
 
     // Bersihkan file temp setiap 30 menit (hemat disk Pterodactyl)
     setInterval(() => { cleanTempFiles(); }, 30 * 60 * 1000);
@@ -403,6 +414,8 @@ async function theFontaine() {
         await fs.writeFileSync(trueFileName, buffer)
         return trueFileName
     }
+
+
 
     Lily.downloadMediaMessage = async (message) => {
         let mime = (message.msg || message).mimetype || ''

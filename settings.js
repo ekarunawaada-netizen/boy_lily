@@ -25,7 +25,7 @@ global.delayJpm = 7000
 //=====================================//
 //=========UBAH BAGIAN THUMBNAIL MENU & ALLMENU==========//
 global.gif = './data/image/yoimiya.mp4' // Use path instead of buffer
-    global.thumbnail = 'https://img1.pixhost.to/images/8859/642894040_lily.jpg', //THUMB MENU KALIAN
+global.thumbnail = 'https://img1.pixhost.to/images/8859/642894040_lily.jpg', //THUMB MENU KALIAN
     global.dinzmenu = 'https://img1.pixhost.to/images/8859/642894040_lily.jpg', //THUMB MENU button KALIAN
     /////////////////////////////////////////////////////////////////////////////////
     global.setwel = "https://img1.pixhost.to/images/8859/642894040_lily.jpg"
@@ -116,9 +116,9 @@ global.linkSaluran = "https://whatsapp.com/channel/0029Vb7WoIXJf05c6lVZxD2X"
 global.ownerNumber = [`${process.env.OWNER_NUMBER || '6289523888644'}@s.whatsapp.net`] //NOMORLU
 global.ownerweb = ""//WEB LU//OPSIONAL
 global.websitex = ""//OPSIONAL
-global.wagc = "https://chat.whatsapp.com/KBeOpfm2Wyw62ImBHypEUx"
-global.wach = 'https://whatsapp.com/channel/0029Vb7WoIXJf05c6lVZxD2X'
-global.saluran = "https://whatsapp.com/channel/0029Vb7WoIXJf05c6lVZxD2X"
+global.wagc = ""
+global.wach = ''
+global.saluran = ""
 global.themeemoji = '🪀'
 global.wm = "Lily X KaaPhiww"
 global.botscript = 'MAAS MAF INI BELI YAA :D'
